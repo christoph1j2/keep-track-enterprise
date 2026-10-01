@@ -1,0 +1,2 @@
+-- This is a seed file for populating the database with initial data.
+-- Only run after the db is setup correctly.

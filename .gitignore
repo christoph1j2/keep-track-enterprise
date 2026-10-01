@@ -1,0 +1,12 @@
+# Env vars
+.env
+
+# Deps
+/vendor/
+
+# IDE trash
+.idea/
+.vscode/
+
+# Logs
+*.log
