@@ -1,0 +1,8 @@
+# Ensure index.php loads automatically as the primary home page
+DirectoryIndex index.php index.html
+
+# Prevent users from browsing your folder structures if an index file is missing
+Options -Indexes
+
+# Enable URL rewriting (useful for clean URLs)
+RewriteEngine On

@@ -6,9 +6,18 @@ services:
     networks:
       - kiv-web
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8080}:80"
     volumes:
-      - ./src:/var/www/html
+      - ./:/var/www/html
+    env_file:
+      - .env
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-mydatabase}
+      DB_USER: ${DB_USER:-myuser}
+      DB_PASS: ${DB_PASS:-mypassword}
+      DB_CHARSET: ${DB_CHARSET:-utf8mb4}
     depends_on:
       - db
     
@@ -19,12 +28,12 @@ services:
     networks:
       - kiv-web
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydatabase}
+      MYSQL_USER: ${MYSQL_USER:-myuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
     volumes:
       - mariadb_data:/var/lib/mysql
 
@@ -35,10 +44,10 @@ services:
     networks:
       - kiv-web
     ports:
-      - "8081:80"
+      - "${PMA_PORT:-8081}:80"
     environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: rootpassword
+      PMA_HOST: ${PMA_HOST:-db}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
     depends_on:
       - db
 
