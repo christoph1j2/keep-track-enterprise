@@ -5,7 +5,7 @@ namespace Src\Models;
 
 use PDO;
 
-abstract class BaseModel{
+abstract class BaseModel {
     
     // Database connection
     protected PDO $db;
@@ -36,6 +36,10 @@ abstract class BaseModel{
         $this->db = $db;
     }
 
+    /**
+     * Gets all database entries.
+     * @return array - Array of all DB entries
+     */
     public function getAll(): array
     {
         // If table is not whitelisted, throw exception
@@ -46,5 +50,39 @@ abstract class BaseModel{
 
         $stmt = $this->db->query("SELECT * FROM ". $this->table);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Fetches a specific entry by using ID.
+     *
+     * @param $id - Unique identifier
+     * @return void
+     */
+    public function getById($id)
+    {
+        if (!in_array($this->table, $this->allowedTables, true))
+        {
+            throw new \InvalidArgumentException("Invalid table.");
+        }
+
+        $stmt = $this->db->query("SELECT * FROM ". $this->table ." WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Deletes a specific entry by using ID.
+     *
+     * @param $id - Unique identifier
+     * @return void
+     */
+    public function delete($id)
+    {
+        if (!in_array($this->table, $this->allowedTables, true))
+        {
+            throw new \InvalidArgumentException("Invalid table.");
+        }
+
+        $stmt = $this->db->query("DELETE FROM ". $this->table ." WHERE id = :id");
+        $stmt->execute([':id' => $id]);
     }
 }
