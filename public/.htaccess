@@ -6,3 +6,8 @@ Options -Indexes
 
 # Enable URL rewriting (useful for clean URLs)
 RewriteEngine On
+# If a file or directory exists, load it
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# else send everything to index.php
+RewriteRule ^(.*)$ index.php [QSA,L]

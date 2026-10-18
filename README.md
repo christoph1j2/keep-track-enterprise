@@ -17,7 +17,7 @@ Cílem je vytvořit webovou aplikaci pro evidenci financí OSVČ, která vycház
 - **Nepřihlášený uživatel** vidí úvodní stránku s popisem aplikace a může se přihlásit nebo zaregistrovat. Registrace nabízí dvě volby:
   - *Registrovat jako OSVČ*: standardní registrace (jméno, e-mail, heslo).
   - *Registrovat jako účetní pod OSVČ*: stejné údaje a navíc přístupový klíč (accountant pass key) s omezenou platností, který vygenerovala OSVČ.
-- **OSVČ** spravuje (CRUD) své klienty, faktury včetně položek, platby a jejich přiřazení k fakturám a své výdaje. Platba se vždy vytváří společně s přiřazením k alespoň jedné faktuře (jeden krok, jedna transakce). Ke faktuře může nahrát PDF a k výdaji doklad. Na přehledu vidí bilanci, výdaje podle kategorií, příjmy podle klientů, nezaplacené faktury a procento uhrazení faktur. V profilu může vygenerovat přístupový klíč pro účetního a kdykoli mu přístup odebrat.
+- **OSVČ** spravuje (CRUD) své klienty, faktury včetně položek, platby a jejich přiřazení k fakturám a své výdaje. Platba se vždy vytváří společně s přiřazením k alespoň jedné faktuře (jeden krok, jedna transakce). Na přehledu vidí bilanci, výdaje podle kategorií, příjmy podle klientů, nezaplacené faktury a procento uhrazení faktur. V profilu může vygenerovat přístupový klíč pro účetního a kdykoli mu přístup odebrat.
 - **Účetní** vidí (read-only) data OSVČ, které mu klíčem udělily přístup, včetně přehledů a nahraných dokladů. Může upravit kategorii výdaje. Další OSVČ může přidat zadáním dalšího klíče ve svém profilu.
 - **Administrátor** spravuje uživatele (blokace, smazání, povýšení na administrátora) a číselníky (kategorie výdajů, typy klientů).
 - *Volitelně* **SuperAdmin**, který jako jediný spravuje ostatní administrátory (klasičtí administrátoři se navzájem upravovat nemohou).
@@ -53,7 +53,3 @@ HTML5, CSS, PHP (OOP, MVC, jeden vstupní soubor `index.php`), MySQL přes PDO. 
 **6. Plánovaná volitelná rozšíření**
 
 Bootstrap, JavaScript/AJAX, Git, Composer, Docker, namespaces, unikátní názvy nahraných souborů, případně SuperAdmin.
-
----
-
-Chceš to i jako .docx nebo .md soubor pro odevzdání, nebo ti stačí tato verze v chatu?

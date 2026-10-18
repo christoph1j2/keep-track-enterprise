@@ -6,14 +6,20 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use Src\Core\Database;
+use Src\Core\Router;
 
 /** @var Database $database */
 $database = Database::getInstance();
-/** @var \PDO $db */
 $db = $database->getConnection();
 
-// TODO: router
-// TODO: routes
+$router = new Router();
+
+// route registrations
+// ...
+
+$router->dispatch($db);
+
+// TEMPORARY
 
 echo "<h1>Cigi Nigi</h1>";
 var_dump($database);
