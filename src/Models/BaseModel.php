@@ -11,10 +11,10 @@ abstract class BaseModel {
     protected PDO $db;
     
     // Table name for the model
-    protected $table;
+    protected string $table;
     
     // Whitelist of allowed tables
-    protected $allowedTables =
+    protected array $allowedTables =
     [
         'users',
         'clients',
@@ -65,15 +65,17 @@ abstract class BaseModel {
             throw new \InvalidArgumentException("Invalid table.");
         }
 
-        $stmt = $this->db->query("SELECT * FROM ". $this->table ." WHERE id = :id");
+        $stmt = $this->db->prepare("SELECT * FROM ". $this->table ." WHERE id = :id");
         $stmt->execute([':id' => $id]);
+
+        return $stmt->fetch();
     }
 
     /**
      * Deletes a specific entry by using ID.
      *
      * @param $id - Unique identifier
-     * @return void
+     * @return bool
      */
     public function delete($id)
     {
@@ -82,7 +84,7 @@ abstract class BaseModel {
             throw new \InvalidArgumentException("Invalid table.");
         }
 
-        $stmt = $this->db->query("DELETE FROM ". $this->table ." WHERE id = :id");
-        $stmt->execute([':id' => $id]);
+        $stmt = $this->db->prepare("DELETE FROM ". $this->table ." WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
     }
 }

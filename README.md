@@ -35,13 +35,12 @@ Jeden účetní tak může obsluhovat více OSVČ, každá OSVČ má nejvýše j
 
 **4. Databázový model**
 
-Vychází z 9 tabulek z DB1: `users`, `clients`, `client_types`, `invoices`, `invoice_items`, `payments`, `invoice_payment` (vazba M:N), `expenses`, `expense_categories`. Pro potřeby webu je rozšířen o:
+Vychází z 8 tabulek z DB1 (1 odebrána): `users`, `clients`, `client_types`, `invoices`, `invoice_items`, `payments`, `invoice_payment` (vazba M:N), `expenses`. Odebrána `expense_categories`. Pro potřeby webu je rozšířen o:
 
 - tabulku `roles` a sloupec `users.role_id`,
 - `users.is_blocked` (blokace uživatele),
 - `users.accountant_id` (účetní přiřazený OSVČ),
 - `users.accountant_key` a `users.accountant_key_expires` (pozvánka pro účetního),
-- `invoices.pdf_path` a `expenses.receipt_path` (cesty k nahraným souborům).
 
 Platba (`payments`) nemá vlastní odkaz na uživatele. Protože se vždy vytváří zároveň s přiřazením k faktuře, je její vlastnictví odvoditelné přes `invoice_payment → invoices → clients → users`, čímž se model vyhýbá zbytečnému cyklu.
 

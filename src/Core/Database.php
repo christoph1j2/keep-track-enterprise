@@ -6,15 +6,17 @@ use PDO;
 
 final class Database
 {
-    private ?PDO $connection = null;
+    // Single instance (Singleton)
+    private static ?Database $instance = null;
 
-    public function getConnection(): PDO
+    // PDO object
+    private ?PDO $connection;
+
+    /**
+     * Private constructor to prevent external instantiation
+     */
+    private function __construct()
     {
-        if ($this->connection instanceof PDO)
-        {
-            return $this->connection;
-        }
-
         $host = getenv('DB_HOST');
         $db = getenv('DB_NAME');
         $user = getenv('DB_USER');
@@ -29,15 +31,41 @@ final class Database
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
-        // Create a new PDO instance
         try
         {
             $this->connection = new PDO($dsn, $user, $pass, $options);
-            return $this->connection;
-        } 
-        catch (\PDOException $e) 
+        }
+        catch (\PDOException $e)
         {
             throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Getter for database singleton instance
+     *
+     * @return Database|null - The Database instance.
+     */
+    public static function getInstance(): ?Database
+    {
+        // if not instantiated
+        if (self::$instance === null)
+        {
+            // instantiate
+            self::$instance = new Database();
+        }
+
+        // return
+        return self::$instance;
+    }
+
+    /**
+     * Getter for database connection PDO object
+     *
+     * @return PDO - The PDO instance.
+     */
+    public function getConnection(): PDO
+    {
+        return $this->connection;
     }
 }

@@ -4,7 +4,7 @@ namespace Src\Models;
 
 class UserModel extends BaseModel
 {
-    protected $table = 'users';
+    protected string $table = 'users';
 
     /**
      * Fetches specific user using email.
@@ -14,7 +14,7 @@ class UserModel extends BaseModel
      */
     public function findByEmail(string $email)
     {
-        $stmt = $this->db->query("SELECT * FROM ". $this->table ." WHERE email = :email");
+        $stmt = $this->db->prepare("SELECT * FROM ". $this->table ." WHERE email = :email");
         $stmt->execute([':email' => $email]);
 
         return $stmt->fetch();
@@ -28,7 +28,7 @@ class UserModel extends BaseModel
      */
     public function findByUsername(string $username)
     {
-        $stmt = $this->db->query("SELECT * FROM ". $this->table ." WHERE username = :username");
+        $stmt = $this->db->prepare("SELECT * FROM ". $this->table ." WHERE username = :username");
         $stmt->execute([':username' => $username]);
 
         return $stmt->fetch();

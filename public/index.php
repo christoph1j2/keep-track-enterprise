@@ -1,19 +1,24 @@
 <?php 
 declare(strict_types=1);
-use Src\Models\BaseModel;
+
+// TODO: session and cookie init
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Src\Core\Database;
+
+/** @var Database $database */
+$database = Database::getInstance();
+/** @var \PDO $db */
+$db = $database->getConnection();
+
+// TODO: router
+// TODO: routes
+
 echo "<h1>Cigi Nigi</h1>";
+var_dump($database);
+echo "<br/>";
+var_dump($db);
 
 phpInfo();
 
-// temp
-// $baseModel = new BaseModel(new PDO('mysql:host=db;dbname=keeptrack;charset=utf8mb4', 'myuser', 'mypassword'));
-// $baseModel->table = "client_types";
-// $types = $baseModel->getAll();
-// foreach ($types as $type) {
-//     echo "<p>Client Type: " . htmlspecialchars($type['name']) . "</p>";
-// }
-
-?>

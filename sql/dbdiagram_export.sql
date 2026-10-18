@@ -3,17 +3,21 @@ CREATE TABLE `users` (
   `username` varchar(255) UNIQUE NOT NULL,
   `email` varchar(255) UNIQUE NOT NULL,
   `profession` varchar(255),
-  `password_hash` varchar(255) NOT NULL
+  `role_id` integer,
+  `password_hash` varchar(255) NOT NULL,
+  `accountant_id` integer COMMENT 'ucetni prirazeny osvc',
+  `accountant_key` varchar(255) COMMENT 'pozvanka pro ucetni',
+  `accountant_key_expires` datetime,
+  `is_blocked` boolean DEFAULT false
 );
 
-CREATE TABLE `expense_categories` (
-  `id` tinyint PRIMARY KEY AUTO_INCREMENT,
-  `name` varchar(255) UNIQUE
+CREATE TABLE `roles` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `role` varchar(255) NOT NULL COMMENT 'admin, osvc, ucetni'
 );
 
 CREATE TABLE `expenses` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `expense_category_id` tinyint,
   `user_id` integer NOT NULL,
   `total_amount` decimal(10,2),
   `expense_date` datetime NOT NULL COMMENT 'oproti navrzenemu schematu zmena, protoze dava smysl vedet kdy vydaje byly',
@@ -22,7 +26,7 @@ CREATE TABLE `expenses` (
 
 CREATE TABLE `client_types` (
   `id` tinyint PRIMARY KEY AUTO_INCREMENT,
-  `name` varchar(255) UNIQUE
+  `name` varchar(255) UNIQUE COMMENT 'firma/fyzicka osoba/...'
 );
 
 CREATE TABLE `clients` (
@@ -71,8 +75,6 @@ CREATE TABLE `invoice_payment` (
   PRIMARY KEY (`invoice_id`, `payment_id`)
 );
 
-ALTER TABLE `expenses` ADD FOREIGN KEY (`expense_category_id`) REFERENCES `expense_categories` (`id`) ON DELETE SET NULL;
-
 ALTER TABLE `expenses` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `clients` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
@@ -86,3 +88,5 @@ ALTER TABLE `invoice_items` ADD FOREIGN KEY (`invoice_id`) REFERENCES `invoices`
 ALTER TABLE `invoice_payment` ADD FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `invoice_payment` ADD FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `users` ADD FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL;
