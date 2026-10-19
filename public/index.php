@@ -9,14 +9,15 @@ use Src\Controllers\HomeController;
 use Src\Core\Database;
 use Src\Core\Router;
 
-/** @var Database $database */
-$database = Database::getInstance();
+$database = new Database();
 $db = $database->getConnection();
 
 $router = new Router();
 
 // route registrations
 $router->get('/', HomeController::class, 'index');
+$router->get('/about', HomeController::class, 'about');
+$router->get('/features', HomeController::class, 'features');
 
 $router->dispatch($db);
 

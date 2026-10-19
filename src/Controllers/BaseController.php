@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace Src\Controllers;
 
 use PDO;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
 abstract class BaseController {
     protected PDO $db;
-    protected Environment $twig;
+    private Environment $twig;
 
     /**
      * The constructor.
@@ -25,16 +28,18 @@ abstract class BaseController {
         $this->twig = new Environment($loader);
     }
 
-    protected function render(string $view, array &$params = []): void
+    /**
+     * Helper render method to render twig with csrf token included
+     *
+     * @param string $view - twig file
+     * @param array $params - parameters to be passed to twig file
+     * @return void
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    protected function render(string $view, array $params = [])
     {
-        $viewFile = __DIR__ . "/../Views/" . $view . ".php";
-
-        if (!is_file($viewFile))
-        {
-            // TODO: ErrorController static call error 500
-            echo "Error 500";
-        }
-
         if (!isset($params['csrf_token']))
         {
             // TODO: CSRF
@@ -50,8 +55,13 @@ abstract class BaseController {
             $params['csrf_field'] = bin2hex(random_bytes(32));
         }
 
-        extract($params, EXTR_SKIP);
-        require $viewFile;
-
+        try
+        {
+            echo $this->twig->render($view, $params);
+        }
+        catch (LoaderError|RuntimeError|SyntaxError $e)
+        {
+            echo "An unexpected error has occurred.";
+        }
     }
 }

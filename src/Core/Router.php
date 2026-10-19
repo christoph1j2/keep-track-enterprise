@@ -3,6 +3,10 @@
 namespace Src\Core;
 
 use PDO;
+use Src\Controllers\ErrorController;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 final class Router
 {
@@ -64,6 +68,11 @@ final class Router
             ];
     }
 
+    /**
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws LoaderError
+     */
     public function dispatch(PDO $db): void
     {
         $method = $_SERVER['REQUEST_METHOD'];
@@ -92,8 +101,8 @@ final class Router
             }
         }
 
-        http_response_code(404);
-        // TODO: redirect to page error 404
-        echo "Error 404: NOT FOUND";
+        // if nothing is found throw 404
+        $err = new ErrorController($db);
+        $err->notFoundAction();
     }
 }

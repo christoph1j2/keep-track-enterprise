@@ -6,16 +6,13 @@ use PDO;
 
 final class Database
 {
-    // Single instance (Singleton)
-    private static ?Database $instance = null;
-
     // PDO object
     private ?PDO $connection;
 
     /**
-     * Private constructor to prevent external instantiation
+     * The  constructor.
      */
-    private function __construct()
+    public function __construct()
     {
         $host = getenv('DB_HOST');
         $db = getenv('DB_NAME');
@@ -39,24 +36,6 @@ final class Database
         {
             throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Getter for database singleton instance
-     *
-     * @return Database|null - The Database instance.
-     */
-    public static function getInstance(): ?Database
-    {
-        // if not instantiated
-        if (self::$instance === null)
-        {
-            // instantiate
-            self::$instance = new Database();
-        }
-
-        // return
-        return self::$instance;
     }
 
     /**

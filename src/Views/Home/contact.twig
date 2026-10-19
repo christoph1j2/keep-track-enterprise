@@ -1,0 +1,60 @@
+{% extends "layout.twig" %}
+
+{% block title %}Kontakt | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-4">Kontaktujte nás</h1>
+            <p class="lead text-muted">Máte dotaz nebo potřebujete poradit? Neváhejte se na nás obrátit.</p>
+            <hr class="my-4">
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Kontaktní údaje</h5>
+                            <p class="card-text mb-1"><strong>E-mail:</strong> info@keeptrack.local</p>
+                            <p class="card-text mb-1"><strong>Telefon:</strong> +420 123 456 789</p>
+                            <p class="card-text mb-1"><strong>Podpora:</strong> Po–Pá: 9:00 – 17:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Sídlo společnosti</h5>
+                            <p class="card-text mb-1">KeepTrack Enterprise s.r.o.</p>
+                            <p class="card-text mb-1">Inovační 123/4</p>
+                            <p class="card-text mb-1">110 00 Praha 1, Česká republika</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-3">Napište nám</h4>
+                    <form onsubmit="return false;">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Jméno a příjmení</label>
+                            <input type="text" class="form-control" id="name" placeholder="Jan Novák">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mailová adresa</label>
+                            <input type="email" class="form-control" id="email" placeholder="jan.novak@example.cz">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Zpráva</label>
+                            <textarea class="form-control" id="message" rows="4" placeholder="Lorem ipsum dolor sit amet..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Odeslat zprávu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
