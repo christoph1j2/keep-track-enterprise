@@ -22,10 +22,10 @@ $router->dispatch($db);
 
 // TEMPORARY
 
-echo "<h1>Cigi Nigi</h1>";
-var_dump($database);
-echo "<br/>";
-var_dump($db);
-
-phpInfo();
+//echo "<h1>Cigi Nigi</h1>";
+//var_dump($database);
+//echo "<br/>";
+//var_dump($db);
+//
+//phpInfo();
 

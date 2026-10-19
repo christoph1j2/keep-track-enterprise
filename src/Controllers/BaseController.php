@@ -21,7 +21,7 @@ abstract class BaseController {
         $this->db = $db;
 
         // Prepare twig for all child controllers
-        $loader = new FilesystemLoader(__DIR__ . "/../Templates");
+        $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
     }
 
