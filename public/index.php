@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Src\Controllers\HomeController;
 use Src\Core\Database;
 use Src\Core\Router;
 
@@ -15,7 +16,7 @@ $db = $database->getConnection();
 $router = new Router();
 
 // route registrations
-// ...
+$router->get('/', HomeController::class, 'index');
 
 $router->dispatch($db);
 

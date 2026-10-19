@@ -47,7 +47,7 @@ final class Router
      * @param string $action - action to be taken
      * @return void
      */
-    private function addRoute(string $method, string $path, string $controller, string $action)
+    private function addRoute(string $method, string $path, string $controller, string $action): void
     {
         $regex = preg_replace(
             '/\{([a-zA-Z0-9_]+)\}/', // replaces text in curly brackets (eg. {id}, {slug}, ...)

@@ -24,7 +24,6 @@ abstract class BaseModel {
         'payments',
         'invoice_payment',
         'expenses',
-        'expense_categories',
     ];
 
     /**
@@ -56,9 +55,9 @@ abstract class BaseModel {
      * Fetches a specific entry by using ID.
      *
      * @param $id - Unique identifier
-     * @return void
+     * @return array|false - array if found, else false
      */
-    public function getById($id)
+    public function getById($id): false|array
     {
         if (!in_array($this->table, $this->allowedTables, true))
         {
@@ -77,7 +76,7 @@ abstract class BaseModel {
      * @param $id - Unique identifier
      * @return bool
      */
-    public function delete($id)
+    public function delete($id): bool
     {
         if (!in_array($this->table, $this->allowedTables, true))
         {
