@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Src\Controllers;
 
+use PDO;
+
 class ErrorController extends BaseController
 {
     /**

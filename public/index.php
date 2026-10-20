@@ -23,6 +23,8 @@ $router->get('/features', HomeController::class, 'features');
 
 $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');
+$router->get('/login', AuthController::class, 'loginFormAction');
+$router->post('/login', AuthController::class, 'loginSubmitAction');
 
 $router->dispatch($db);
 
