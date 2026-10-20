@@ -5,11 +5,6 @@ namespace Src\Controllers;
 
 class ErrorController extends BaseController
 {
-    public function __construct($db)
-    {
-        parent::__construct($db);
-    }
-
     /**
      * Method for displaying the 403 HTTP error.
      */

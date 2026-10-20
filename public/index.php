@@ -1,10 +1,12 @@
 <?php 
 declare(strict_types=1);
 
-// TODO: session and cookie init
-
 require __DIR__ . '/../vendor/autoload.php';
 
+// TODO: session and cookie init
+session_start();
+
+use Src\Controllers\AuthController;
 use Src\Controllers\HomeController;
 use Src\Core\Database;
 use Src\Core\Router;
@@ -18,6 +20,9 @@ $router = new Router();
 $router->get('/', HomeController::class, 'index');
 $router->get('/about', HomeController::class, 'about');
 $router->get('/features', HomeController::class, 'features');
+
+$router->get('/register', AuthController::class, 'registerFormAction');
+$router->post('/register', AuthController::class, 'registerSubmitAction');
 
 $router->dispatch($db);
 
