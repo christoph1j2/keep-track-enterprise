@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Src\Controllers;
 
-use Src\Controllers\BaseController;
 use Src\Models\UserModel;
+use Src\Validators\RegisterValidator;
 
 class AuthController extends BaseController
 {
@@ -42,9 +42,10 @@ class AuthController extends BaseController
         $password = $_POST['password'] ?? null;
         $password_confirm = $_POST['password_confirm'] ?? null;
 
-        // TODO: Validator
+        $validator = new RegisterValidator($_POST, $this->db);
+        $validator->validate();
 
-        if (true /*validator is valid*/)
+        if ($validator->isValid())
         {
             $model = new UserModel($this->db);
             $password_hash = password_hash($password, PASSWORD_BCRYPT);
@@ -61,7 +62,7 @@ class AuthController extends BaseController
             exit;
         }
 
-        $this->registerFormAction($_POST, [] /*TODO: validator get errors - empty array for now*/);
+        $this->registerFormAction($_POST, $validator->getErrors());
     }
 
     /**

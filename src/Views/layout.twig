@@ -33,6 +33,15 @@
                             <a class="nav-link" href="/features">Funkce</a>
                         </li>
                     </ul>
+                    {% if session.user_id != null %}
+                        <p>{{ session.username }}</p>
+                        <!-- TODO: logout -->
+                    {% else %}
+                        <div class="d-flex gap-1">
+                            <a href="/register" class="btn btn-primary btn-sm">Registrovat</a>
+                            <a href="/login" class="btn btn-outline-secondary btn-sm">Přihlásit se</a>
+                        </div>
+                    {% endif %}
                 </div>
             </dialog>
         </div>

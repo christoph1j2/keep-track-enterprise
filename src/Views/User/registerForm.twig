@@ -1,0 +1,14 @@
+{% extends "layout.twig" %}
+
+{% block title %}Registrace | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <form method="POST" action="/register">
+        <div class="d-flex gap-2">
+            <input type="text" name="username" value="{{ jmeno }}"/>
+        </div>
+
+    </form>
+
+{% endblock %}
