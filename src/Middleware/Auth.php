@@ -7,7 +7,7 @@ use Src\Controllers\ErrorController;
 
 final class Auth
 {
-    public static function check()
+    public static function check(): void
     {
         if (!isset($_SESSION['user_id']))
         {
@@ -16,7 +16,7 @@ final class Auth
         }
     }
 
-    public static function role(string $role, PDO $db)
+    public static function role(string $role, \PDO $db): void
     {
         self::check();
 
