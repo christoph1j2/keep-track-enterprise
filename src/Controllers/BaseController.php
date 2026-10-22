@@ -63,6 +63,8 @@ abstract class BaseController {
         catch (LoaderError|RuntimeError|SyntaxError $e)
         {
             echo "An unexpected error has occurred.";
+            echo "<br/>";
+            echo $e->getMessage();
         }
     }
 }

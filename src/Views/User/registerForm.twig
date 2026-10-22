@@ -5,8 +5,42 @@
 {% block content %}
 
     <form method="POST" action="/register">
-        <div class="d-flex gap-2">
-            <input type="text" name="username" value="{{ jmeno }}"/>
+        <div class="d-flex flex-column gap-2">
+            <label>
+                Uživatelské jméno
+                <input type="text" name="username" value="{{ data.username }}"
+                        style="{% if (errors.username) %} border:1px solid red {% endif %}"/>
+                {% if (errors.username) %}
+                    <p style="color:red">{{ errors.username }}</p>
+                {% endif %}
+            </label>
+
+            <label>
+                E-Mail
+                <input type="email" name="email" value="{{ data.email }}"
+                       style="{% if (errors.email) %} border:1px solid red {% endif %}"/>
+                {% if (errors.email) %}
+                    <p style="color:red">{{ errors.email }}</p>
+                {% endif %}
+            </label>
+            <label>
+                Heslo
+                <input type="password" name="password" value="{{ data.password }}"
+                       style="{% if (errors.password) %} border:1px solid red {% endif %}"/>
+                {% if (errors.password) %}
+                    <p style="color:red">{{ errors.password }}</p>
+                {% endif %}
+            </label>
+            <label>
+                Potvrdit heslo
+                <input type="password" name="password_confirm" value="{{ data.password_confirm }}"
+                       style="{% if (errors.password_confirm) %} border:1px solid red {% endif %}"/>
+                {% if (errors.password_confirm) %}
+                    <p style="color:red">{{ errors.password_confirm }}</p>
+                {% endif %}
+            </label>
+
+            <input type="submit" />
         </div>
 
     </form>

@@ -17,7 +17,7 @@ class AuthController extends BaseController
      */
     public function registerFormAction(array $data = [], array $errors = [])
     {
-        $this->render('registerForm.twig', [
+        $this->render('User/registerForm.twig', [
             'data' => $data,
             'errors' => $errors
         ]);

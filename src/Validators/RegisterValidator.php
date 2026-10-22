@@ -12,26 +12,30 @@ class RegisterValidator extends BaseValidator
      */
     public function validate(): static
     {
-        $this->required('email', 'E-Mail is missing!')
-            ->unique('email', 'users', 'email', null, 'An account with this E-Mail address already exists!')
+        $this->required('email', 'E-Mail je povinný!')
+            ->unique('email', 'users', 'email', null, 'Účet s touto e-mailovou adresou již existuje!')
             ->isEmail('email');
 
-        $this->required('username', 'Username is missing!')
-            ->unique('username', 'users', 'username', null, 'A user with this username already exists!')
-            ->min('username', 5, 'Username must be at least 5 characters long!')
-            ->max('username', 20, 'Username must be at most 20 characters long!');
+        $this->required('username', 'Uživatelské jméno je povinné!')
+            ->unique('username', 'users', 'username', null, 'Uživatel s tímto uživatelským jménem již existuje!')
+            ->min('username', 5, 'Uživatelské jméno musí mít alespoň 5 znaků!')
+            ->max('username', 20, 'Uživatelské jméno může mít nejvýše 20 znaků!');
 
-        $this->required('password', 'Password is missing!')
-            ->min('password', 8, 'Password must be at least 8 characters long!')
-            ->match('password', 'password_confirm', 'Passwords do not match!');
+        $this->required('password', 'Heslo je povinné!')
+            ->min('password', 8, 'Heslo musí mít alespoň 8 znaků!')
+            ->match('password', 'password_confirm', 'Hesla se neshodují!');
+
+        $this->required('password_confirm', 'Heslo je povinné!')
+            ->min('password_confirm', 8, 'Heslo musí mít alespoň 8 znaků!')
+            ->match('password_confirm', 'password', 'Hesla se neshodují!');
 
         return $this;
     }
 
-    public function isEmail(string $field, string $msg = "Invalid E-Mail"): static
+    public function isEmail(string $field, string $msg = "Neplatný e-mail"): static
     {
         if (!filter_var($this->getValue($field), FILTER_VALIDATE_EMAIL))
-            $this->errors[$field] = $msg ?? "Invalid E-Mail";
+            $this->errors[$field] = $msg ?? "Neplatný e-mail";
 
         return $this;
     }
