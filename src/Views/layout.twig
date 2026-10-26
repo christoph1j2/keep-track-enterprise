@@ -34,8 +34,13 @@
                         </li>
                     </ul>
                     {% if session.user_id != null %}
-                        <p>{{ session.username }}</p>
-                        <!-- TODO: logout -->
+                        <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">
+                            <a>{{ session.username }}</a>
+                            <form action="/logout" method="POST">
+                                <input type="submit" value="logout" />
+                            </form>
+                        </span>
+
                     {% else %}
                         <div class="d-flex gap-1">
                             <a href="/register" class="btn btn-primary btn-sm">Registrovat</a>

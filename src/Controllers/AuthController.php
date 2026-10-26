@@ -58,8 +58,7 @@ class AuthController extends BaseController
             /* $_SESSION['role'] = ... */
             $_SESSION['username'] = $username;
 
-            header('Location: /'); // TODO: rework
-            exit;
+            $this->redirect('/');
         }
 
         $this->registerFormAction($_POST, $validator->getErrors());
@@ -74,7 +73,7 @@ class AuthController extends BaseController
      */
     public function loginFormAction(array $data = [], array $errors = [])
     {
-        $this->render('loginForm.twig', [
+        $this->render('User/loginForm.twig', [
             'data' => $data,
             'errors' => $errors
         ]);
@@ -101,10 +100,16 @@ class AuthController extends BaseController
         $password = $_POST['password'];
 
         // fetch user
+        if ($email == null)
+        {
+            $errors = ['email' => 'Prosím vyplňte své údaje.'];
+            $this->loginFormAction($_POST, $errors);
+            return;
+        }
         $user = $model->findByEmail($email);
         if (!$user)
         {
-            $errors = ['Your email or password is wrong.'];
+            $errors = ['email' => 'Vaše přihlašovací údaje jsou chybné.'];
             $this->loginFormAction($_POST, $errors);
             return;
         }
@@ -117,11 +122,35 @@ class AuthController extends BaseController
             // $_SESSION['role'] = $user['role'];
             $_SESSION['username'] = $user['username'];
 
-            header('Location: /'); // TODO: rework
-            exit;
+            $this->redirect('/');
         }
 
-        $errors = ['password' => 'Your email or password is wrong.'];
+        $errors = ['password' => 'Vaše přihlašovací údaje jsou chybné.'];
         $this->loginFormAction($_POST, $errors);
     }
+
+    /**
+     * Logs the user out
+     * @return void
+     */
+    public function logoutAction()
+    {
+        session_unset();
+        session_destroy();
+
+        setcookie(session_name(), '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+
+        $this->redirect('/');
+    }
+
+    // TODO (probably after the semester project):
+    // - forgotPasswordFormAction()
+    // - forgotPasswordSubmitAction()
+    // - resetPasswordFormAction()
+    // - resetPasswordSubmitAction()
 }

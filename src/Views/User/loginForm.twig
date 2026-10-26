@@ -1,0 +1,31 @@
+{% extends "layout.twig" %}
+
+{% block title %}Přihlášení | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <form method="POST" action="/login">
+        <div class="d-flex flex-column gap-2">
+            <label>
+                E-Mail
+                <input type="email" name="email" value="{{ data.email }}"
+                       style="{% if (errors.email) %} border:1px solid red {% endif %}"/>
+                {% if (errors.email) %}
+                    <p style="color:red">{{ errors.email }}</p>
+                {% endif %}
+            </label>
+            <label>
+                Heslo
+                <input type="password" name="password"
+                       style="{% if (errors.password) %} border:1px solid red {% endif %}"/>
+                {% if (errors.password) %}
+                    <p style="color:red">{{ errors.password }}</p>
+                {% endif %}
+            </label>
+
+            <input type="submit" value="Přihlásit se"/>
+        </div>
+
+    </form>
+
+{% endblock %}

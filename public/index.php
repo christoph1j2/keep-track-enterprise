@@ -3,8 +3,27 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// TODO: session and cookie init
+$sessionLifetime = (int) (getenv('SESSION_LIFETIME') ?: 1800);
+ini_set('session.gc_maxlifetime', $sessionLifetime);
+session_set_cookie_params([
+    'lifetime' => $sessionLifetime,
+    'path' => '/',
+    'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+    'samesite' => 'Strict',
+]);
 session_start();
+
+// sliding expiratoin
+if (isset($_COOKIE[session_name()]) && session_id())
+{
+    setcookie(session_name(), session_id(), [
+        'expires' => time() + $sessionLifetime,
+        'path' => '/',
+        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httpOnly' => true,
+        'samesite' => 'Strict',
+    ]);
+}
 
 use Src\Controllers\AuthController;
 use Src\Controllers\HomeController;
@@ -25,6 +44,7 @@ $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');
 $router->get('/login', AuthController::class, 'loginFormAction');
 $router->post('/login', AuthController::class, 'loginSubmitAction');
+$router->post('/logout', AuthController::class, 'logoutAction');
 
 $router->dispatch($db);
 

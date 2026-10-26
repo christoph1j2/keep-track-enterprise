@@ -67,4 +67,16 @@ abstract class BaseController {
             echo $e->getMessage();
         }
     }
+
+    /**
+     * Redirects to specified url.
+     *
+     * @param string $url - url to redirect to
+     * @return void
+     */
+    protected function redirect(string $url)
+    {
+        header("Location: $url");
+        exit;
+    }
 }
