@@ -8,7 +8,7 @@ class HomeController extends BaseController
     /**
      * Method for loading the '/' index route of the application.
      */
-    public function index(): void
+    public function indexAction(): void
     {
         echo $this->render("Home/home.twig");
     }
@@ -16,7 +16,7 @@ class HomeController extends BaseController
     /**
      * Method for loading the '/about' route of the application.
      */
-    public function about(): void
+    public function aboutAction(): void
     {
         echo $this->render("Home/about.twig");
     }
@@ -24,7 +24,7 @@ class HomeController extends BaseController
     /**
      * Method for loading the '/features' route of the application.
      */
-    public function features(): void
+    public function featuresAction(): void
     {
         echo $this->render("Home/features.twig");
     }

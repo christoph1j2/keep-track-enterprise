@@ -36,9 +36,9 @@ $db = $database->getConnection();
 $router = new Router();
 
 // route registrations
-$router->get('/', HomeController::class, 'index');
-$router->get('/about', HomeController::class, 'about');
-$router->get('/features', HomeController::class, 'features');
+$router->get('/', HomeController::class, 'indexAction');
+$router->get('/about', HomeController::class, 'aboutAction');
+$router->get('/features', HomeController::class, 'featuresAction');
 
 $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');
