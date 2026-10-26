@@ -10,7 +10,7 @@ class HomeController extends BaseController
      */
     public function indexAction(): void
     {
-        echo $this->render("Home/home.twig");
+        $this->render("Home/home.twig");
     }
 
     /**
@@ -18,7 +18,7 @@ class HomeController extends BaseController
      */
     public function aboutAction(): void
     {
-        echo $this->render("Home/about.twig");
+        $this->render("Home/about.twig");
     }
 
     /**
@@ -26,7 +26,7 @@ class HomeController extends BaseController
      */
     public function featuresAction(): void
     {
-        echo $this->render("Home/features.twig");
+        $this->render("Home/features.twig");
     }
 
 }

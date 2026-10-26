@@ -16,9 +16,9 @@ class ClientController extends BaseController
      */
     public function indexAction(): void
     {
-        $model = new ClientModel();
+        $model = new ClientModel($this->db);
         $clients = $model->getAllClients();
 
-        echo $this->render('Client/clients.twig', ['clients' => $clients]);
+        $this->render('Client/clients.twig', ['clients' => $clients]);
     }
 }
