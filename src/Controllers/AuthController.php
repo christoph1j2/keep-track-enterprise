@@ -58,7 +58,7 @@ class AuthController extends BaseController
             /* $_SESSION['role'] = ... */
             $_SESSION['username'] = $username;
 
-            $this->redirect('/');
+            $this->redirect('/dashboard');
         }
 
         $this->registerFormAction($_POST, $validator->getErrors());
@@ -122,7 +122,7 @@ class AuthController extends BaseController
             // $_SESSION['role'] = $user['role'];
             $_SESSION['username'] = $user['username'];
 
-            $this->redirect('/');
+            $this->redirect('/dashboard');
         }
 
         $errors = ['password' => 'Vaše přihlašovací údaje jsou chybné.'];

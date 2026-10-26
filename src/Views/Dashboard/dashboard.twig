@@ -1,0 +1,13 @@
+{% extends "layout.twig" %}
+
+{% block title %}Dashboard | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <h1>Dashboard</h1>
+        <p>Přihlášen jako {{ session.user_id }}</p>
+        {% include "Client/clients.twig" %}
+    </div>
+
+{% endblock %}
