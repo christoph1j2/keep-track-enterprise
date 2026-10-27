@@ -6,6 +6,7 @@
     },
     "require": {
         "twig/twig": "^3.30",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+      "ext-json": "*"
     }
 }

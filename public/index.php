@@ -43,7 +43,9 @@ $router->get('/about', HomeController::class, 'aboutAction');
 $router->get('/features', HomeController::class, 'featuresAction');
 
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
+
 $router->get('/clients', ClientController::class, 'clientsAction');
+$router->post('/clients/add', ClientController::class, 'addClientAction');
 
 $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');

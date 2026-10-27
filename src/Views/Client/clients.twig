@@ -1,22 +1,89 @@
 {% extends "layout.twig" %}
 
-{% block title %}Úvodní stránka | KeepTrack Enterprise{% endblock %}
+{% block title %}Evidence Klientů | KeepTrack Enterprise{% endblock %}
 
 {% block content %}
 
-    <div class="row g-4">
+    <div class="d-flex justify-content-between">
         <h1>Evidence Klientů</h1>
+        <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addClientDialog">
+            Přidat nového klienta
+        </button>
     </div>
-    <table>
+
+    <div class="card h-100 p-10 my-5">
         {% if clients|length == 0 %}
-            <p>Neevidujete žádné klienty.</p>
+            <p class="m-auto fg-3"><em>Neevidujete žádné klienty.</em></p>
         {% else %}
-            {% for client in clients %}
-                <tr>
-                    <td>{{ client.email }}</td>
-                </tr>
-            {% endfor %}
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Jméno</th>
+                        <th>E-Mail</th>
+                        <th>Telefon</th>
+                        <th>IČO</th>
+                        <th>DIČ</th>
+                        <th>Popis</th>
+                        <th>Typ</th>
+                    </tr>
+                {% for client in clients %}
+                    <tr>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.contact_email }}</td>
+                        <td>{{ client.contact_phone }}</td>
+                        <td>{{ client.ico }}</td>
+                        <td>{{ client.dic }}</td>
+                        <td>{{ client.description }}</td>
+                        <td>{{ client.type_id }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         {% endif %}
-    </table>
+    </div>
+
+    <!-- dialog for client add -->
+    <dialog class="dialog" id="addClientDialog">
+        <form id="addClientForm" data-bs-validate>
+            <div class="dialog-header">
+                <h5 class="dialog-title">Nový klient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+            </div>
+            <div class="dialog-body">
+                <label class="form-label" for="contactEmail">Kontaktní E-mail</label>
+                <input type="email" id="contactEmail" name="contact_email" class="form-control" required>
+            </div>
+            <div class="dialog-footer">
+                <button type="submit" class="btn-solid theme-secondary">Uložit klienta</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        document.getElementById('addClientForm').addEventListener('submit', function(event)
+        {
+            event.preventDefault(); // prevent reload
+            const formData = new FormData(this); // pack data
+
+            fetch('/clients/add', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success')
+                    {
+                        // quick and dirty
+                        window.location.reload();
+                    } else
+                    {
+                        alert('Nastala chyba ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Chyba komunikace se serverem:", error)
+                })
+        })
+    </script>
 
 {% endblock %}
