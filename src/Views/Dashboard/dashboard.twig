@@ -4,10 +4,94 @@
 
 {% block content %}
 
-    <div class="row">
-        <h1>Dashboard</h1>
-        <p>Přihlášen jako {{ session.user_id }}</p>
-        {% include "Client/clients.twig" %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- kpi cards -->
+    <div class="row g-4">
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-muted fs-6 text-uppercase">Celkem klientů</h5>
+                    <h2 class="display-4 fw-bold text-primary">{{ stats.clients }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-muted fs-6 text-uppercase">Celkem fakturováno</h5>
+                    <h2 class="display-4 fw-bold text-primary">{{ stats.invoices }} Kč</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-muted fs-6 text-uppercase">Celkem výdělek</h5>
+                    <h2 class="display-4 fw-bold text-primary">{{ stats.income }} Kč</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-muted fs-6 text-uppercase">Celkem výdaje</h5>
+                    <h2 class="display-4 fw-bold text-primary">-{{ stats.expenses }} Kč</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row g-4">
+        <!-- clients card -->
+        <div class="col-12 md:col-6 lg:col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Klienti</h5>
+                    <p class="card-text">Správa evidovaných klientů, kontaktních údajů a přehledů.</p>
+                    <a href="/clients" class="btn btn-primary">Přejít na přehled klientů</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- invoice card -->
+        <div class="col-12 md:col-6 lg:col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Faktury</h5>
+                    <p class="card-text">Přehled faktur, jak splacených, tak nesplacených.</p>
+                    <a href="/invoices" class="btn btn-primary">Přejít na přehled faktur</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- payments card -->
+        <div class="col-12 md:col-6 lg:col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Platby</h5>
+                    <p class="card-text">Přehled plateb a jejich napojení na klienty a faktury.</p>
+                    <a href="/payments" class="btn btn-primary">Přejít na přehled plateb</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- expenses card -->
+        <div class="col-12 md:col-6 lg:col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Výdaje</h5>
+                    <p class="card-text">Přehled Vašich výdajů.</p>
+                    <a href="/expenses" class="btn btn-primary">Přejít na přehled výdajů</a>
+                </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

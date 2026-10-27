@@ -26,6 +26,7 @@ if (isset($_COOKIE[session_name()]) && session_id())
 }
 
 use Src\Controllers\AuthController;
+use Src\Controllers\ClientController;
 use Src\Controllers\DashboardController;
 use Src\Controllers\HomeController;
 use Src\Core\Database;
@@ -42,6 +43,7 @@ $router->get('/about', HomeController::class, 'aboutAction');
 $router->get('/features', HomeController::class, 'featuresAction');
 
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
+$router->get('/clients', ClientController::class, 'clientsAction');
 
 $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');

@@ -14,7 +14,7 @@ class ClientController extends BaseController
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function indexAction(): void
+    public function clientsAction(): void
     {
         $model = new ClientModel($this->db);
         $clients = $model->getAllClients();

@@ -1,11 +1,22 @@
-<table>
-    {% if clients|length == 0 %}
-        <p>Neevidujete žádné klienty.</p>
-    {% else %}
-        {% for client in clients %}
-        <tr>
-            <td>{{ client.email }}</td>
-        </tr>
-        {% endfor %}
-    {% endif %}
-</table>
+{% extends "layout.twig" %}
+
+{% block title %}Úvodní stránka | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <div class="row g-4">
+        <h1>Evidence Klientů</h1>
+    </div>
+    <table>
+        {% if clients|length == 0 %}
+            <p>Neevidujete žádné klienty.</p>
+        {% else %}
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.email }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
+
+{% endblock %}
