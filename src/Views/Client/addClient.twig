@@ -1,0 +1,66 @@
+<!-- dialog for client add -->
+<dialog class="dialog" id="addClientDialog">
+    <form id="addClientForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Nový klient</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <label class="form-label" for="name">Jméno Klienta<span class="fg-danger">*</span></label>
+            <input type="text" id="name" name="name" class="form-control" required>
+
+            <label class="form-label mt-1" for="contactEmail">Kontaktní E-mail</label>
+            <input type="email" id="contactEmail" name="contact_email" class="form-control">
+
+            <label class="form-label mt-1" for="contactPhone">Telefonní Číslo</label>
+            <input type="tel" id="contactPhone" name="contact_phone" class="form-control" >
+
+            <label class="form-label mt-1" for="ico">IČO</label>
+            <input type="text" inputmode="numeric" pattern="\d{8}" id="ico" name="ico" class="form-control">
+
+            <label class="form-label mt-1" for="dic">DIČ</label>
+            <input type="text" id="dic" name="dic" class="form-control">
+
+            <label class="form-label mt-1" for="description">Popisek</label>
+            <input type="text" id="description" name="description" class="form-control">
+
+            <label class="form-label mt-1" for="clientType">Typ Klienta</label>
+            <select id="clientType" name="client_type" class="form-control">
+                <option value="">- Vyberte -</option>
+                {% for type in clientTypes %}
+                    <option value="{{ type.id }}">{{ type.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Uložit klienta</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    document.getElementById('addClientForm').addEventListener('submit', function(event)
+    {
+        event.preventDefault(); // prevent reload
+        const formData = new FormData(this); // pack data
+
+        fetch('/clients/add', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success')
+                {
+                    // quick and dirty
+                    window.location.reload();
+                } else
+                {
+                    alert('Nastala chyba ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Chyba komunikace se serverem.", error);
+            })
+    })
+</script>

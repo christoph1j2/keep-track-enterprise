@@ -38,14 +38,10 @@ $db = $database->getConnection();
 $router = new Router();
 
 // route registrations
+// public routes
 $router->get('/', HomeController::class, 'indexAction');
 $router->get('/about', HomeController::class, 'aboutAction');
 $router->get('/features', HomeController::class, 'featuresAction');
-
-$router->get('/dashboard', DashboardController::class, 'dashboardAction');
-
-$router->get('/clients', ClientController::class, 'clientsAction');
-$router->post('/clients/add', ClientController::class, 'addClientAction');
 
 $router->get('/register', AuthController::class, 'registerFormAction');
 $router->post('/register', AuthController::class, 'registerSubmitAction');
@@ -53,14 +49,11 @@ $router->get('/login', AuthController::class, 'loginFormAction');
 $router->post('/login', AuthController::class, 'loginSubmitAction');
 $router->post('/logout', AuthController::class, 'logoutAction');
 
+// private routes (authed only)
+$router->get('/dashboard', DashboardController::class, 'dashboardAction');
+$router->get('/clients', ClientController::class, 'clientsAction');
+$router->post('/clients/add', ClientController::class, 'addClientAction');
+
+
 $router->dispatch($db);
-
-// TEMPORARY
-
-//echo "<h1>Cigi Nigi</h1>";
-//var_dump($database);
-//echo "<br/>";
-//var_dump($db);
-//
-//phpInfo();
 

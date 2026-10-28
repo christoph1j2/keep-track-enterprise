@@ -18,21 +18,53 @@ class ClientController extends BaseController
     {
         $model = new ClientModel($this->db);
         $clients = $model->getAllClients();
+        $clientTypes = $model->getAllClientTypes();
 
-        $this->render('Client/clients.twig', ['clients' => $clients]);
+        $this->render('Client/clients.twig', [
+            'clients' => $clients,
+            'clientTypes' => $clientTypes
+        ]);
     }
 
+    /**
+     * Loads data from form and tries to save to DB.
+     *
+     * @return void
+     */
     public function addClientAction(): void
     {
-        // we get data from form (demonstration purposes only)
-        $email = $_POST['contact_email'] ?? '';
+        // we get data from form
+        $name = $_POST['name'];
+        $email = $_POST['contact_email'] ?? null;
+        $phone = $_POST['contact_phone'] ?? null;
+        $ico  = $_POST['ico'] ?? null;
+        $dic  = $_POST['dic'] ?? null;
+        $description = $_POST['description'] ?? null;
 
-        // TODO: model call, save client to db - FINISH THE AJAX BS
-//        $model = new ClientModel($this->db);
-//        $model->addClient($email);
+        $client_type =
+            empty($_POST['client_type'])
+                ? null
+                : (int) $_POST['client_type'];
 
-        // prep res
-        $response = ['status' => 'success', 'message' => 'Klient úspěšně přidán.'];
+        $model = new ClientModel($this->db);
+        // check if client_type is valid
+        if ($client_type !== null)
+        {
+            $exists = $model->getClientTypeById($client_type);
+            if (!$exists)
+            {
+                $response = ['status' => 'error', 'message' => 'Neplatný typ klienta'];
+            }
+            else {
+                $model->addClient($name, $email, $phone, $ico, $dic, $description, $client_type);
+                $response = ['status' => 'success', 'message' => 'Klient úspěšně přidán.'];
+            }
+        }
+        else
+        {
+            $model->addClient($name, $email, $phone, $ico, $dic, $description, null);
+            $response = ['status' => 'success', 'message' => 'Klient úspěšně přidán.'];
+        }
 
         // send header and json res
         header('Content-Type: application/json');

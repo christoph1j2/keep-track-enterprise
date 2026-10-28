@@ -34,56 +34,15 @@
                         <td>{{ client.ico }}</td>
                         <td>{{ client.dic }}</td>
                         <td>{{ client.description }}</td>
-                        <td>{{ client.type_id }}</td>
+                        <td>{{ client.type_name|default('-') }}</td>
                     </tr>
                 {% endfor %}
+                <!-- TODO: add delete and edit cells(+form) -->
                 </tbody>
             </table>
         {% endif %}
     </div>
 
-    <!-- dialog for client add -->
-    <dialog class="dialog" id="addClientDialog">
-        <form id="addClientForm" data-bs-validate>
-            <div class="dialog-header">
-                <h5 class="dialog-title">Nový klient</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
-            </div>
-            <div class="dialog-body">
-                <label class="form-label" for="contactEmail">Kontaktní E-mail</label>
-                <input type="email" id="contactEmail" name="contact_email" class="form-control" required>
-            </div>
-            <div class="dialog-footer">
-                <button type="submit" class="btn-solid theme-secondary">Uložit klienta</button>
-            </div>
-        </form>
-    </dialog>
-
-    <script>
-        document.getElementById('addClientForm').addEventListener('submit', function(event)
-        {
-            event.preventDefault(); // prevent reload
-            const formData = new FormData(this); // pack data
-
-            fetch('/clients/add', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success')
-                    {
-                        // quick and dirty
-                        window.location.reload();
-                    } else
-                    {
-                        alert('Nastala chyba ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Chyba komunikace se serverem:", error)
-                })
-        })
-    </script>
+    {% include "Client/addClient.twig" %}
 
 {% endblock %}
