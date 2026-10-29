@@ -72,6 +72,19 @@ class ClientController extends BaseController
     }
 
     /**
+     * Gets client by ID
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getClientByIdAction(int $id): array
+    {
+        $model = new ClientModel($this->db);
+        $client = $model->getClientById($id);
+        return $client;
+    }
+
+    /**
      * Handles the delete client action.
      *
      * @return void

@@ -1,0 +1,89 @@
+<!-- dialog for client edit -->
+<dialog class="dialog" id="editClientDialog">
+    <form id="editClientForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Upravit klienta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <input type="hidden" name="id" id="editClientId" />
+
+            <label class="form-label" for="editName">Jméno Klienta<span class="fg-danger">*</span></label>
+            <input type="text" id="editName" name="name" class="form-control" required>
+
+            <label class="form-label mt-1" for="editContactEmail">Kontaktní E-mail</label>
+            <input type="email" id="editContactEmail" name="contact_email" class="form-control">
+
+            <label class="form-label mt-1" for="editContactPhone">Telefonní Číslo</label>
+            <input type="tel" id="editContactPhone" name="contact_phone" class="form-control">
+
+            <label class="form-label mt-1" for="editIco">IČO <sub class="fg-secondary"><em>8 znaků</em></sub></label>
+            <input type="text" inputmode="numeric" pattern="\d{8}" id="editIco" name="ico" class="form-control">
+
+            <label class="form-label mt-1" for="editDic">DIČ</label>
+            <input type="text" id="editDic" name="dic" class="form-control">
+
+            <label class="form-label mt-1" for="editDescription">Popisek</label>
+            <input type="text" id="editDescription" name="description" class="form-control">
+
+            <label class="form-label mt-1" for="editClientType">Typ Klienta</label>
+            <select id="editClientType" name="client_type" class="form-control">
+                <option value="">- Vyberte -</option>
+                {% for type in clientTypes %}
+                    <option value="{{ type.id }}">{{ type.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Uložit změny</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    const editDialog = document.getElementById('editClientDialog');
+    const editForm = document.getElementById('editClientForm');
+
+    // click event listener
+    table.addEventListener('click', function(event) {
+        const editBtn = event.target.closest('.edit-btn');
+        if (!editBtn) return;
+
+        // save id to the hidden field
+        document.getElementById('editClientId').value = editBtn.dataset.id;
+
+        // fill remaining fields
+        console.log(editBtn.dataset);
+        document.getElementById('editName').value = editBtn.dataset.name;
+        document.getElementById('editContactEmail').value = editBtn.dataset.contact_email;
+        document.getElementById('editContactPhone').value = editBtn.dataset.contact_phone;
+        document.getElementById('editIco').value = editBtn.dataset.ico;
+        document.getElementById('editDic').value = editBtn.dataset.dic;
+        document.getElementById('editDescription').value = editBtn.dataset.description;
+        document.getElementById('editClientType').value = editBtn.dataset.client_type;
+
+        editDialog.showModal();
+    });
+
+    // submit event listener
+    editForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('/clients/edit', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                }
+                else{
+                    alert('Nastala chyba: '+data.message);
+                }
+            })
+            .catch(error => console.log(error));
+    })
+</script>

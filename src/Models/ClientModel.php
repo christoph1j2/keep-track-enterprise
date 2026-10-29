@@ -28,6 +28,38 @@ class ClientModel extends BaseModel
         return $stmt->fetchAll();
     }
 
+    /**
+     * Returns user with specific ID
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getClientById(int $id): array
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return [];
+
+        $sql = 'SELECT c.*, ct.name AS type_name
+                FROM '. $this->table .' c
+                LEFT JOIN '. $this->table_types .' ct ON ct.id = c.type_id
+                WHERE c.id = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch();
+    }
+
+    /**
+     * Adds a client with all params
+     *
+     * @param string $name
+     * @param string|null $email
+     * @param string|null $phone
+     * @param string|null $ico
+     * @param string|null $dic
+     * @param string|null $description
+     * @param int|null $type
+     * @return bool
+     */
     public function addClient(
         string $name,
         ?string $email,
