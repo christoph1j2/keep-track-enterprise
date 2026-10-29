@@ -49,20 +49,40 @@
         const editBtn = event.target.closest('.edit-btn');
         if (!editBtn) return;
 
-        // save id to the hidden field
-        document.getElementById('editClientId').value = editBtn.dataset.id;
+        const clientId = editBtn.dataset.id;
 
         // fill remaining fields
-        console.log(editBtn.dataset);
-        document.getElementById('editName').value = editBtn.dataset.name;
-        document.getElementById('editContactEmail').value = editBtn.dataset.contact_email;
-        document.getElementById('editContactPhone').value = editBtn.dataset.contact_phone;
-        document.getElementById('editIco').value = editBtn.dataset.ico;
-        document.getElementById('editDic').value = editBtn.dataset.dic;
-        document.getElementById('editDescription').value = editBtn.dataset.description;
-        document.getElementById('editClientType').value = editBtn.dataset.client_type;
+        fetch('/clients/get', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ id:clientId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const client = data.client;
 
-        editDialog.showModal();
+                document.getElementById('editClientId').value = client.id;
+                document.getElementById('editName').value = client.name || '';
+                document.getElementById('editContactEmail').value = client.contact_email || '';
+                document.getElementById('editContactPhone').value = client.contact_phone || '';
+                document.getElementById('editIco').value = client.ico || '';
+                document.getElementById('editDic').value = client.dic || '';
+                document.getElementById('editDescription').value = client.description || '';
+                document.getElementById('editClientType').value = client.client_type || '';
+
+                editDialog.showModal();
+            }
+            else {
+                alert('Nastala chyba.'+data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        })
+
     });
 
     // submit event listener

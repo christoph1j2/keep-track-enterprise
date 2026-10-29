@@ -77,11 +77,20 @@ class ClientController extends BaseController
      * @param int $id
      * @return array
      */
-    public function getClientByIdAction(int $id): array
+    public function getClientByIdAction(int $id): void
     {
         $model = new ClientModel($this->db);
         $client = $model->getClientById($id);
-        return $client;
+        header('Content-Type: application/json');
+        if ($client)
+        {
+            $response = ['status' => 'success', 'client' => $client];
+        }
+        else
+        {
+            $response = ['status' => 'error', 'message' => 'Klient nenalezen.'];
+        }
+        echo json_encode($response);
     }
 
     /**
