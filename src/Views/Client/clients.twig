@@ -2,21 +2,25 @@
 
 {% block title %}Evidence Klientů | KeepTrack Enterprise{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/clients.css">
+{% endblock %}
+
 {% block content %}
 
-    <div class="d-flex justify-content-between">
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
         <h1>Evidence Klientů</h1>
         <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addClientDialog">
             Přidat nového klienta
         </button>
     </div>
 
-    <div class="card h-100 p-10 my-5">
+    <div class="card h-100 p-3 p-md-5 my-5">
         {% if clients|length == 0 %}
             <p class="m-auto fg-3"><em>Neevidujete žádné klienty.</em></p>
         {% else %}
-            <table class="table">
-                <tbody>
+            <table class="table table-striped table-stack">
+                <thead>
                     <tr>
                         <th>Jméno</th>
                         <th>E-Mail</th>
@@ -25,24 +29,53 @@
                         <th>DIČ</th>
                         <th>Popis</th>
                         <th>Typ</th>
+                        <th class="text-end">Akce</th>
                     </tr>
+                </thead>
+                <tbody>
                 {% for client in clients %}
                     <tr>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.contact_email }}</td>
-                        <td>{{ client.contact_phone }}</td>
-                        <td>{{ client.ico }}</td>
-                        <td>{{ client.dic }}</td>
-                        <td>{{ client.description }}</td>
-                        <td>{{ client.type_name|default('-') }}</td>
+                        <td data-label="Jméno"
+                            class="align-middle">
+                            {{ client.name }}</td>
+                        <td data-label="E-Mail"
+                            class="align-middle">
+                            {{ client.contact_email|default('-') }}</td>
+                        <td data-label="Telefon"
+                            class="align-middle">
+                            {{ client.contact_phone|default('-') }}</td>
+                        <td data-label="IČO"
+                            class="align-middle">
+                            {{ client.ico|default('-') }}</td>
+                        <td data-label="DIČ"
+                            class="align-middle">
+                            {{ client.dic|default('-') }}</td>
+                        <td data-label="Popis"
+                            class="align-middle">
+                            {{ client.description|default('-') }}</td>
+                        <td data-label="Typ"
+                            class="align-middle">
+                            {{ client.type_name|default('-') }}</td>
+                        <td class="text-end align-middle text-nowrap">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-primary edit-btn"
+                                    data-id="{{ client.id }}">
+                                ✏️
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-danger delete-btn"
+                                    data-id="{{ client.id }}">
+                                🗑️
+                            </button>
+                        </td>
                     </tr>
                 {% endfor %}
-                <!-- TODO: add delete and edit cells(+form) -->
                 </tbody>
             </table>
         {% endif %}
     </div>
 
     {% include "Client/addClient.twig" %}
+    {% include "Client/delClient.twig" %}
 
 {% endblock %}

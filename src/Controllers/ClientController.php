@@ -70,4 +70,30 @@ class ClientController extends BaseController
         header('Content-Type: application/json');
         echo json_encode($response);
     }
+
+    /**
+     * Handles the delete client action.
+     *
+     * @return void
+     */
+    public function deleteClientAction(): void
+    {
+        $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
+
+        if (!$clientId)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Chybí ID klienta.']);
+            return;
+        }
+
+        $model = new ClientModel($this->db);
+        $deleted = $model->deleteClient($clientId);
+
+        header('Content-Type: application/json');
+        if ($deleted)
+            echo json_encode(['status' => 'success', 'message' => 'Klient byl úspěšně smazán.']);
+        else
+            echo json_encode(['status' => 'error', 'message' => 'Klienta se nepodařilo smazat.']);
+    }
 }

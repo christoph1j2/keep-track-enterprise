@@ -53,6 +53,7 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/clients', ClientController::class, 'clientsAction');
 $router->post('/clients/add', ClientController::class, 'addClientAction');
+$router->post('/clients/delete', ClientController::class, 'deleteClientAction');
 
 
 $router->dispatch($db);

@@ -15,7 +15,7 @@ abstract class BaseController {
     private Environment $twig;
 
     /** @var array|string[] array of public routes, which can be accessed without auth */
-    private array $publicRoutes = [
+    private array $publicRoutes = [ // TODO: implement dynamic public routes in the future
         '/',
         '/about',
         '/features',

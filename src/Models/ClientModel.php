@@ -57,6 +57,21 @@ class ClientModel extends BaseModel
         ]);
     }
 
+    /**
+     * Deletes a client from DB
+     *
+     * @param int $id - id of the client entry
+     * @return bool
+     */
+    public function deleteClient(int $id): bool
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return false;
+
+        $stmt = $this->db->prepare("DELETE FROM " . $this->table . " WHERE id = :id AND user_id = :user_id");
+        return $stmt->execute([':id' => $id, ':user_id' => $userId]);
+    }
+
     // --- CLIENT TYPE LOGIC ---
     /**
      * Gets all client types from database.
