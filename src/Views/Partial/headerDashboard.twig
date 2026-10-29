@@ -1,3 +1,6 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/dashboard.css" >
+{% endblock %}
 <!-- Header Partial for User Dashboard -->
 <div class="container">
     <a href="/dashboard" class="navbar-brand" style="font-size: 1.1em">KeepTrack <sub style="color: blueviolet;">Enterprise</sub></a>
@@ -14,13 +17,24 @@
         <div class="drawer-body">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                    <a class="nav-link
+                       {{ current_path starts with '/dashboard' ? 'active' : '' }}"
+                       href="/dashboard">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/clients">Klienti</a>
+                    <a class="nav-link
+                        {{ current_path starts with '/clients' ? 'active' : '' }}"
+                       href="/clients">Klienti</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/...">Lorem</a>
+                    <a class="nav-link
+                       {{ current_path starts with '/invoices' ? 'active' : '' }}"
+                       href="/...">Faktury a Platby</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link
+                       {{ current_path starts with '/expenses' ? 'active' : '' }}"
+                       href="/...">Výdaje</a>
                 </li>
             </ul>
             <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">

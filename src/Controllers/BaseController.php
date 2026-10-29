@@ -44,6 +44,9 @@ abstract class BaseController {
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
         $this->twig->addGlobal('session', $_SESSION); // global injection of SESSION
+
+        $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $this->twig->addGlobal('current_path', $request); // global injection of currpath
     }
 
     /**
