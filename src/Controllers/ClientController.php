@@ -77,13 +77,15 @@ class ClientController extends BaseController
      * @param int $id
      * @return array
      */
-    public function getClientByIdAction(int $id): void
+    public function getClientByIdAjaxAction(): void
     {
-        $model = new ClientModel($this->db);
-        $client = $model->getClientById($id);
         header('Content-Type: application/json');
-        if ($client)
+        // Gets ID from AJAX request
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        if ($id) // if exists, then return user
         {
+            $model = new ClientModel($this->db);
+            $client = $model->getClientById($id);
             $response = ['status' => 'success', 'client' => $client];
         }
         else
@@ -117,5 +119,57 @@ class ClientController extends BaseController
             echo json_encode(['status' => 'success', 'message' => 'Klient byl úspěšně smazán.']);
         else
             echo json_encode(['status' => 'error', 'message' => 'Klienta se nepodařilo smazat.']);
+    }
+
+    /**
+     * Loads data from form and tries to save updates params to DB.
+     *
+     * @return void
+     */
+    public function editClientAction(): void
+    {
+        $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
+
+        if (!$clientId)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Chybí ID klienta.']);
+            return;
+        }
+
+        $model = new ClientModel($this->db);
+        $name = $_POST['name'];
+        $email = $_POST['contact_email'] ?? null;
+        $phone = $_POST['contact_phone'] ?? null;
+        $ico = $_POST['ico'] ?? null;
+        $dic = $_POST['dic'] ?? null;
+        $description = $_POST['description'] ?? null;
+        $client_type =
+            empty($_POST['client_type'])
+                ? null
+                : (int) $_POST['client_type'];
+
+        // check if client type is valid
+        if ($client_type !== null)
+        {
+            $exists = $model->getClientTypeById($client_type);
+            if (!$exists)
+            {
+                $response = ['status' => 'error', 'message' => 'Neplatný typ klienta.'];
+            }
+            else {
+                $model->editClient($clientId, $name, $email, $phone, $ico, $dic, $description, $client_type);
+                $response = ['status' => 'success', 'message' => 'Klient úspěšně upraven.'];
+            }
+        }
+        else
+        {
+            $model->editClient($clientId, $name, $email, $phone, $ico, $dic, $description, null);
+            $response = ['status' => 'success', 'message' => 'Klient úspěšně upraven.'];
+        }
+
+        // send header and json res
+        header('Content-Type: application/json');
+        echo json_encode($response);
     }
 }

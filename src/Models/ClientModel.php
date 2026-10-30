@@ -104,7 +104,56 @@ class ClientModel extends BaseModel
         return $stmt->execute([':id' => $id, ':user_id' => $userId]);
     }
 
-    // --- CLIENT TYPE LOGIC ---
+    /**
+     * Saves a client with a specific ID with updates parameters
+     *
+     * @param int $id
+     * @param string $name
+     * @param string|null $email
+     * @param string|null $phone
+     * @param string|null $ico
+     * @param string|null $dic
+     * @param string|null $description
+     * @param int|null $type
+     * @return bool
+     */
+    public function editClient(
+        int $id,
+        string $name,
+        ?string $email,
+        ?string $phone,
+        ?string $ico,
+        ?string $dic,
+        ?string $description,
+        ?int $type): bool
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return false;
+
+        $stmt = $this->db->prepare("UPDATE " . $this->table . "
+                            SET name = :name,
+                                contact_email = :email,
+                                contact_phone = :phone,
+                                description = :description,
+                                ico = :ico,
+                                dic = :dic,
+                                type_id = :type_id
+                            WHERE id = :id AND user_id = :user_id");
+
+        return $stmt->execute([
+            ':name' => $name,
+            ':email' => $email,
+            ':phone' => $phone,
+            ':description' => $description,
+            ':ico' => $ico,
+            ':dic' => $dic,
+            ':type_id' => $type,
+            ':id' => $id,
+            ':user_id' => $userId
+        ]);
+    }
+
+    //? --- CLIENT TYPE LOGIC ---
     /**
      * Gets all client types from database.
      *

@@ -52,9 +52,10 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 // private routes (authed only)
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/clients', ClientController::class, 'clientsAction');
-$router->get('/clients/{id}', ClientController::class, 'getClientByIdAction');
+$router->post('/clients/get', ClientController::class, 'getClientByIdAjaxAction');
 $router->post('/clients/add', ClientController::class, 'addClientAction');
 $router->post('/clients/delete', ClientController::class, 'deleteClientAction');
+$router->post('/clients/edit', ClientController::class, 'editClientAction');
 
 
 $router->dispatch($db);
