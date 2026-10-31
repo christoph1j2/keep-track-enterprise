@@ -32,18 +32,22 @@
         // Global Interceptor for AJAX fetch
         (function()
         {
+            // store native fetch reference
             const originalFetch = window.fetch;
 
+            // override global fetch
             window.fetch = async function(...args)
             {
                 let [resource, config] = args;
                 config = config || {};
 
+                // ensure headers object exists
                 if (!config.headers)
                 {
                     config.headers = {};
                 }
 
+                // attach AJAX identification header for backend (BaseController::isAjax)
                 if (config.headers instanceof Headers)
                 {
                     config.headers.append('X-Requested-With', 'XMLHttpRequest');
@@ -53,8 +57,10 @@
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
                 }
 
+                // execute actual request
                 const res = await originalFetch(resource, config);
 
+                // session expired - redirect unauthorized user back to login
                 if (res.status === 401)
                 {
                     window.location.href = '/login';

@@ -29,12 +29,17 @@
                 <li class="nav-item">
                     <a class="nav-link
                        {{ current_path starts with '/invoices' ? 'active' : '' }}"
-                       href="/...">Faktury a Platby</a>
+                       href="/invoices">Faktury</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link
+                       {{ current_path starts with '/payments' ? 'active' : '' }}"
+                       href="/payments">Platby</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link
                        {{ current_path starts with '/expenses' ? 'active' : '' }}"
-                       href="/...">Výdaje</a>
+                       href="/expenses">Výdaje</a>
                 </li>
             </ul>
             <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">

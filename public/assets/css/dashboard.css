@@ -1,6 +1,6 @@
 .nav-link.active {
     font-weight: 600;
     color: blueviolet;
-    border-left: 3px solid blueviolet;
+    border-bottom: 2px dotted blueviolet;
     padding-left: .75rem;
 }
