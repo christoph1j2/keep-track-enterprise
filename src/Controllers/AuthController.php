@@ -15,11 +15,24 @@ class AuthController extends BaseController
      * @param array $errors
      * @return void
      */
-    public function registerFormAction(array $data = [], array $errors = [])
+    public function registerFormAction(array $data = [], array $errors = [], string $modeArg = null)
     {
+        /** @var string|null $modeParam - Gets the mode as query param */
+        $modeParam = ($modeArg == null) ? $_GET['mode'] ?? null : $modeArg;
+
+        /** @var string $mode - Parses the register mode into registerForm view (accountant has an extra key field) */
+        $mode = ($modeParam !== null)
+            ? (($modeParam == 'accountant')
+                ? 'accountant'
+                : 'osvc')
+            : 'osvc';
+
+        var_dump($mode, $modeParam, $modeArg); // TODO: REMOVE
+
         $this->render('User/registerForm.twig', [
             'data' => $data,
-            'errors' => $errors
+            'errors' => $errors,
+            'mode' => $mode
         ]);
     }
 
@@ -30,6 +43,9 @@ class AuthController extends BaseController
      */
     public function registerSubmitAction()
     {
+        /** @var string $mode - Uses the mode from POST to redirect correctly and save the user correctly */
+        $mode = $_POST['mode'] ?? 'osvc';
+
         // sanity check
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
         {
@@ -61,7 +77,7 @@ class AuthController extends BaseController
             $this->redirect('/dashboard');
         }
 
-        $this->registerFormAction($_POST, $validator->getErrors());
+        $this->registerFormAction($_POST, $validator->getErrors(), $mode);
     }
 
     /**
