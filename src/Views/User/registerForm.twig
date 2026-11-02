@@ -4,45 +4,68 @@
 
 {% block content %}
 
-    <form method="POST" action="/register">
-        <div class="d-flex flex-column gap-2">
-            <label>
-                Uživatelské jméno
-                <input type="text" name="username" value="{{ data.username }}"
-                        style="{% if (errors.username) %} border:1px solid red {% endif %}"/>
-                {% if (errors.username) %}
-                    <p style="color:red">{{ errors.username }}</p>
-                {% endif %}
-            </label>
+<div class="row justify-content-center mt-5">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
 
-            <label>
-                E-Mail
-                <input type="email" name="email" value="{{ data.email }}"
-                       style="{% if (errors.email) %} border:1px solid red {% endif %}"/>
-                {% if (errors.email) %}
-                    <p style="color:red">{{ errors.email }}</p>
-                {% endif %}
-            </label>
-            <label>
-                Heslo
-                <input type="password" name="password"
-                       style="{% if (errors.password) %} border:1px solid red {% endif %}"/>
-                {% if (errors.password) %}
-                    <p style="color:red">{{ errors.password }}</p>
-                {% endif %}
-            </label>
-            <label>
-                Potvrdit heslo
-                <input type="password" name="password_confirm"
-                       style="{% if (errors.password_confirm) %} border:1px solid red {% endif %}"/>
-                {% if (errors.password_confirm) %}
-                    <p style="color:red">{{ errors.password_confirm }}</p>
-                {% endif %}
-            </label>
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
 
-            <input type="submit" value="Registrovat se"/>
+                <h3 class="card-title mb-1">Registrace</h3>
+
+                <form method="POST" action="/register">
+
+                    {# Username #}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Uživatelské Jméno</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value="{{ data.username }}"
+                            class="form-control {{ (errors.username) ? 'is-invalid' : '' }}"
+                        />
+                        {% if (errors.username) %}
+                            <div class="invalid-feedback">{{ errors.username }}</div>
+                        {% endif %}
+
+                        <label for="email" class="form-label">E-mail</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value="{{ data.email }}"
+                            class="form-control {{ (errors.email) ? 'is_invalid' : '' }}"
+                        />
+                        {% if (errors.email) %}
+                            <div class="invalid-feedback">{{ errors.email }}</div>
+                        {% endif %}
+
+                        <label for="password" class="form-label">Heslo</label>
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control {{ (errors.password) ? 'is-invalid' : '' }}"
+                        />
+                        {% if (errors.password) %}
+                            <div class="invalid-feedback">{{ errors.password }}</div>
+                        {% endif %}
+
+                        <label for="password_confirm" class="form-label">Potvrdit heslo</label>
+                        <input
+                            type="password"
+                            name="password_confirm"
+                            class="form-control {{ (errors.password) ? 'is-invalid' : '' }}"/>
+                        {% if (errors.password_confirm) %}
+                            <div class="invalid-feedback">{{ errors.password_confirm }}</div>
+                        {% endif %}
+
+                        <input type="submit" value="Registrovat se"/>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
 
-    </form>
+    </div>
+</div>
 
 {% endblock %}

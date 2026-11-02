@@ -32,7 +32,7 @@
             ] %}
         {% else %}
             {% set nav_links = [
-                { label: 'Úvod',    href: '/'          },
+                { label: 'Úvod',    href: '/', exact: true },
                 { label: 'O aplikaci', href: '/about'  },
                 { label: 'Funkce',  href: '/features'  }
             ] %}

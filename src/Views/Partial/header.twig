@@ -1,3 +1,7 @@
+{% block stylesheets %}
+<link rel="stylesheet" href="/assets/css/header.css" />
+{% endblock %}
+
 <!-- Header Partial for Homepage -->
 <div class="container">
     <a href="/" class="navbar-brand" style="font-size: 1.1em">KeepTrack <sub style="color: blueviolet;">Enterprise</sub></a>
@@ -15,7 +19,11 @@
             <ul class="navbar-nav me-auto">
                 {% for link in nav_links %}
                     <li class="nav-item">
-                        <a class="nav-link {{ current_path starts with link.href ? 'active' : '' }}"
+                        {% set is_active = (link.exact ?? false)
+                            ? current_path == link.href
+                            : current_path starts with link.href %}
+
+                        <a class="nav-link {{ is_active ? 'active' : '' }}"
                            href="{{ link.href }}">{{ link.label }}</a>
                     </li>
                 {% endfor %}
