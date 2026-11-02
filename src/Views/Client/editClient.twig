@@ -98,7 +98,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    window.location.reload();
+                    updateDom(formData);
                 }
                 else{
                     alert('Nastala chyba: '+data.message);
@@ -106,4 +106,34 @@
             })
             .catch(error => console.log(error));
     })
+
+
+    /**
+     * Updates the DOM with new data.
+     * @param formData
+     */
+    function updateDom(formData)
+    {
+        const row = table.querySelector(`tr[data-id='${formData.get('id')}']`);
+
+        const typeSel = document.getElementById('editClientType'); // ?
+        const typeName = typeSel.value ? typeSel.selectedOptions[0].textContent : '-';
+
+        const values = {
+            name:          formData.get('name'),
+            contact_email: formData.get('contact_email'),
+            contact_phone: formData.get('contact_phone'),
+            ico:           formData.get('ico'),
+            dic:           formData.get('dic'),
+            description:   formData.get('description'),
+            type_name:     typeName,
+        };
+
+        for (const [field, value] of Object.entries(values)) {
+            const cell = row.querySelector(`[data-field="${field}"]`);
+            if (cell) cell.textContent = value;
+        }
+
+        addDialog.close();
+    }
 </script>

@@ -13,15 +13,12 @@
         </div>
         <div class="drawer-body">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Úvod</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about">O aplikaci</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/features">Funkce</a>
-                </li>
+                {% for link in nav_links %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ current_path starts with link.href ? 'active' : '' }}"
+                           href="{{ link.href }}">{{ link.label }}</a>
+                    </li>
+                {% endfor %}
             </ul>
             {% if session.user_id != null %}
                 <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">

@@ -34,26 +34,33 @@
                 </thead>
                 <tbody>
                 {% for client in clients %}
-                    <tr>
+                    <tr data-id="{{ client.id }}">
                         <td data-label="Jméno"
+                            data-field="name"
                             class="align-middle">
                             {{ client.name }}</td>
                         <td data-label="E-Mail"
+                            data-field="contact_email"
                             class="align-middle">
                             {{ client.contact_email|default('-') }}</td>
                         <td data-label="Telefon"
+                            data-field="contact_phone"
                             class="align-middle">
                             {{ client.contact_phone|default('-') }}</td>
                         <td data-label="IČO"
+                            data-field="ico"
                             class="align-middle">
                             {{ client.ico|default('-') }}</td>
                         <td data-label="DIČ"
+                            data-field="dic"
                             class="align-middle">
                             {{ client.dic|default('-') }}</td>
                         <td data-label="Popis"
+                            data-field="description"
                             class="align-middle">
                             {{ client.description|default('-') }}</td>
                         <td data-label="Typ"
+                            data-field="type_name"
                             class="align-middle">
                             {{ client.type_name|default('-') }}</td>
                         <td class="text-end align-middle text-nowrap">

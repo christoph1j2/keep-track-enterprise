@@ -39,6 +39,8 @@
 </dialog>
 
 <script>
+    const addDialog = document.getElementById('addClientDialog');
+
     document.getElementById('addClientForm').addEventListener('submit', function(event)
     {
         event.preventDefault(); // prevent reload
@@ -52,8 +54,7 @@
             .then(data => {
                 if (data.status === 'success')
                 {
-                    // quick and dirty
-                    window.location.reload();
+                    window.location.reload(); // refreshes page with new data
                 } else
                 {
                     alert('Nastala chyba ' + data.message);

@@ -21,7 +21,10 @@ CREATE TABLE `expenses` (
   `user_id` integer NOT NULL,
   `total_amount` decimal(10,2),
   `expense_date` datetime NOT NULL COMMENT 'oproti navrzenemu schematu zmena, protoze dava smysl vedet kdy vydaje byly',
-  `note` text
+  `note` text,
+  `receipt_filename` varchar(255) DEFAULT NULL,
+  `receipt_original_name` varchar(255) DEFAULT NULL,
+  `receipt_mime` varchar(255) DEFAULT NULL
 );
 
 CREATE TABLE `client_types` (

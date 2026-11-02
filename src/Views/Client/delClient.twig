@@ -7,6 +7,8 @@
         if (deleteBtn) {
             // we get clientid
             const clientId = deleteBtn.dataset.id;
+            // we get row
+            const row = deleteBtn.closest('tr');
 
             // confirm
             if (confirm(`Opravdu chcete smazat tohoto klienta (ID: ${clientId})?`)) {
@@ -21,7 +23,10 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === 'success')
-                            window.location.reload();
+                        {
+                            row.remove();
+                            if (!table.querySelector('tbody tr')) window.location.reload();
+                        }
                         else
                             alert('Chyba: ' + data.message);
                     })

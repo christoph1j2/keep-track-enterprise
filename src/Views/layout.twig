@@ -11,15 +11,33 @@
 <body>
 
     <nav class="navbar md:navbar-expand border-bottom mb-4" data-bs-theme="dark">
-        {% if session.user_id %}
-            {% if session.role == 'admin' %}
-                <!-- TODO: include admin header -->
-            {% else %}
-                {% include "Partial/headerDashboard.twig" %}
-            {% endif %}
+        {# TODO: only for testing atm, rework actual pages! (add more, modify, ...) #}
+        {% if session.role == 'admin' %}
+            {% set nav_links = [
+                { label: 'Uživatelé', href: '/admin/users' },
+                { label: 'Přehled', href: '/admin/overview' }
+            ] %}
+        {% elseif session.role == 'ucetni' %}
+            {% set nav_links = [
+                { label: 'Klienti', href: '/clients' },
+                { label: 'Faktury', href: '/invoices'}
+            ] %}
+        {% elseif session.user_id %}
+            {% set nav_links = [
+                { label: 'Dashboard',  href: '/dashboard' },
+                { label: 'Klienti',    href: '/clients'   },
+                { label: 'Faktury',    href: '/invoices'  },
+                { label: 'Platby',     href: '/payments'  },
+                { label: 'Výdaje',     href: '/expenses'  }
+            ] %}
         {% else %}
-            {% include "Partial/headerHome.twig" %}
+            {% set nav_links = [
+                { label: 'Úvod',    href: '/'          },
+                { label: 'O aplikaci', href: '/about'  },
+                { label: 'Funkce',  href: '/features'  }
+            ] %}
         {% endif %}
+        {% include "Partial/header.twig" with { nav_links: nav_links } %}
     </nav>
 
     <main class="container">

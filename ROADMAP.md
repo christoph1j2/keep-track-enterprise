@@ -48,10 +48,10 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 
 ### Fáze 1: Databáze a základní model (Hotovo / Rychlá úprava)
 - [x] Základní schéma z DB1 (`users`, `clients`, `client_types`, `invoices`, `invoice_items`, `payments`, `invoice_payment`).
-- [ ] Doplnit tabulku `expense_categories (id, name)` a propojit vazbou do `expenses.category_id`.
-- [ ] Rozšířit `expenses` o sloupce pro upload účtenek: `receipt_filename`, `receipt_original_name`, `receipt_mime`.
-- [ ] Vložit výchozí role do `roles`: `superadmin`, `admin`, `osvc`, `accountant`.
-- [ ] Vytvořit ucelený instalační a seed skript `sql/install.sql` obsahující ukázková data pro všechny role a scénáře.
+~~- [ ] Doplnit tabulku `expense_categories (id, name)` a propojit vazbou do `expenses.category_id`.~~
+- [x] Rozšířit `expenses` o sloupce pro upload účtenek: `receipt_filename`, `receipt_original_name`, `receipt_mime`.
+- [x] Vložit výchozí role do `roles`: `superadmin`, `admin`, `osvc`, `accountant`.
+- [x] Vytvořit ucelený instalační a seed skript `sql/install.sql` obsahující ukázková data pro všechny role a scénáře.
 
 ### Fáze 2: Autentizace, role a SuperAdmin
 - [ ] Registrace:
