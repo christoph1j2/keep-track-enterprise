@@ -10,7 +10,7 @@ class RegisterValidator extends BaseValidator
     /**
      * @inheritDoc
      */
-    public function validate(): static
+    public function validate(string $mode): static
     {
         $this->required('email', 'E-Mail je povinný!')
             ->unique('email', 'users', 'email', null, 'Účet s touto e-mailovou adresou již existuje!')
@@ -28,6 +28,11 @@ class RegisterValidator extends BaseValidator
         $this->required('password_confirm', 'Heslo je povinné!')
             ->min('password_confirm', 8, 'Heslo musí mít alespoň 8 znaků!')
             ->match('password_confirm', 'password', 'Hesla se neshodují!');
+
+        if ($mode == 'accountant')
+        {
+            // TODO: accountant_key validation
+        }
 
         return $this;
     }

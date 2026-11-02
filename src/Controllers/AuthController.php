@@ -53,13 +53,18 @@ class AuthController extends BaseController
             $err->methodNotAllowedAction();
         }
 
+        // All modes field check
         $username = $_POST['username'] ?? null;
         $email = filter_var($_POST['email'] ?? null, FILTER_VALIDATE_EMAIL);
         $password = $_POST['password'] ?? null;
         $password_confirm = $_POST['password_confirm'] ?? null;
 
+        // Accountant mode only field check
+        if ($mode == 'accountant') $accountant_key = $_POST['accountant_key'] ?? null;
+
+        // Validate
         $validator = new RegisterValidator($_POST, $this->db);
-        $validator->validate();
+        $validator->validate($mode);
 
         if ($validator->isValid())
         {
