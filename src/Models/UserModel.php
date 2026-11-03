@@ -16,15 +16,41 @@ class UserModel extends BaseModel
      */
     public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key): bool
     {
-        // TODO: conditional logic if acc_key != null
-        $stmt = $this->db->prepare("
-            INSERT INTO ". $this->table ." (username, email, password_hash) 
-            VALUES (:username, :email, :password_hash)");
-        return $stmt->execute([
-            ":username" => $username,
-            ":email" => $email,
-            ":password_hash" => $password_hash
-        ]);
+        if ($accountant_key === null)
+        {
+            // insert user into db
+            $stmt = $this->db->prepare("
+                INSERT INTO ". $this->table ." (username, email, password_hash, role_id) 
+                VALUES (:username, :email, :password_hash, :role_id)");
+            return $stmt->execute([
+                ":username" => $username,
+                ":email" => $email,
+                ":password_hash" => $password_hash,
+                ":role_id" => 3
+            ]);
+        }
+        else
+        {
+            // insert accountant into db
+            $stmt = $this->db->prepare("
+                INSERT INTO ". $this->table ." (username, email, password_hash, role_id)
+                VALUES (:username, :email, :password_hash, :role_id)");
+            $stmt->execute([
+                ":username" => $username,
+                ":email" => $email,
+                ":password_hash" => $password_hash,
+                ":role_id" => 4
+            ]);
+
+            // update linked user with accountant id
+            $stmt = $this->db->prepare("
+                UPDATE ". $this->table ." 
+                SET accountant_id :acc_id 
+                WHERE user_id = :user_id"
+            );
+            $accountant_id = $this->db->lastInsertId();
+            // TODO FINISH
+        }
     }
 
     /**
