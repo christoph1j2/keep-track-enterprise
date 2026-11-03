@@ -60,7 +60,7 @@ class AuthController extends BaseController
         $password_confirm = $_POST['password_confirm'] ?? null;
 
         // Accountant mode only field check
-        if ($mode == 'accountant') $accountant_key = $_POST['accountant_key'] ?? null;
+        $accountant_key = ($mode === 'accountant') ? ($_POST['accountant_key'] ?? null) : null;
 
         // Validate
         $validator = new RegisterValidator($_POST, $this->db);
@@ -71,17 +71,18 @@ class AuthController extends BaseController
             $model = new UserModel($this->db);
             $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
-            $model->createUser($username, $email, $password_hash, $accountant_key);
+            $userId = $model->createUser($username, $email, $password_hash, $accountant_key);
 
             // automatically login after register
-            session_regenerate_id(true); // protect against session fixation
-            $_SESSION['user_id'] = $this->db->lastInsertId();
-            /* $_SESSION['role'] = ... */
-            $_SESSION['username'] = $username;
-
-            $this->redirect('/dashboard');
+            if ($userId)
+            {
+                session_regenerate_id(true); // protect against session fixation
+                $_SESSION['user_id'] = $userId;
+                $_SESSION['role'] = ($mode === 'accountant') ? 'ucetni' : 'osvc';
+                $_SESSION['username'] = $username;
+               $this->redirect('/dashboard');
+            }
         }
-
         $this->registerFormAction($_POST, $validator->getErrors(), $mode);
     }
 
@@ -138,10 +139,17 @@ class AuthController extends BaseController
         // check password correctness
         if (password_verify($password, $user['password_hash']))
         {
+            if (!empty($user['is_blocked']))
+            {
+                $errors = ['email' => 'Váš účet byl zablokován správcem.'];
+                $this->loginFormAction($_POST, $errors);
+                return;
+            }
+
             session_regenerate_id(true);
             $_SESSION['user_id'] = $user['id'];
-            // $_SESSION['role'] = $user['role'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role_name'];
 
             $this->redirect('/dashboard');
         }

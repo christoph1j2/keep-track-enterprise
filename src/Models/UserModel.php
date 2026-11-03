@@ -14,42 +14,60 @@ class UserModel extends BaseModel
      * @param string $password_hash - hashed password
      * @return bool
      */
-    public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key): bool
+    public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key): int|false
     {
-        if ($accountant_key === null)
-        {
-            // insert user into db
+        try {
+            $this->db->beginTransaction();
+
+            $roleId = ($accountant_key !== null) ? 4 : 3; // 4 = acc; 3 = osvc
+
+            // insert new user
             $stmt = $this->db->prepare("
-                INSERT INTO ". $this->table ." (username, email, password_hash, role_id) 
-                VALUES (:username, :email, :password_hash, :role_id)");
-            return $stmt->execute([
-                ":username" => $username,
-                ":email" => $email,
-                ":password_hash" => $password_hash,
-                ":role_id" => 3
-            ]);
-        }
-        else
-        {
-            // insert accountant into db
-            $stmt = $this->db->prepare("
-                INSERT INTO ". $this->table ." (username, email, password_hash, role_id)
-                VALUES (:username, :email, :password_hash, :role_id)");
+                INSERT INTO " . $this->table . " (username, email, password_hash, role_id)
+                VALUES (:username, :email, :password_hash, :role_id)
+            ");
             $stmt->execute([
-                ":username" => $username,
-                ":email" => $email,
-                ":password_hash" => $password_hash,
-                ":role_id" => 4
+                ':username' => $username,
+                ':email' => $email,
+                ':password_hash' => $password_hash,
+                ':role_id' => $roleId
             ]);
 
-            // update linked user with accountant id
-            $stmt = $this->db->prepare("
-                UPDATE ". $this->table ." 
-                SET accountant_id :acc_id 
-                WHERE user_id = :user_id"
-            );
-            $accountant_id = $this->db->lastInsertId();
-            // TODO FINISH
+            $newUserId = (int) $this->db->lastInsertId();
+
+            // if we're adding an accountant, find corresponding user and connect them
+            // via the accountant_id column in user table
+            if ($accountant_key !== null)
+            {
+                $stmt = $this->db->prepare("
+                    UPDATE ".$this->table." 
+                    SET accountant_id = :accountant_id,
+                        accountant_key = NULL,
+                        accountant_key_expires = NULL
+                    WHERE accountant_key = :key
+                        AND accountant_key_expires > NOW()
+                ");
+                $stmt->execute([
+                    ':accountant_id' => $newUserId,
+                    ':key' => $accountant_key
+                ]);
+
+                // if key expired during transaction or wasnt found then rollback
+                if ($stmt->rowCount() === 0)
+                {
+                    $this->db->rollBack();
+                    return false;
+                }
+            }
+
+            $this->db->commit();
+            return $newUserId;
+        }
+        catch (\PDOException $e)
+        {
+            if ($this->db->inTransaction())
+                $this->db->rollBack();
+            return false;
         }
     }
 
@@ -61,7 +79,12 @@ class UserModel extends BaseModel
      */
     public function findByEmail(string $email)
     {
-        $stmt = $this->db->prepare("SELECT * FROM ". $this->table ." WHERE email = :email");
+        $stmt = $this->db->prepare("
+            SELECT u.*, r.role AS role_Name
+            FROM ". $this->table ." u
+            LEFT JOIN roles r ON u.role_id = r.id 
+            WHERE u.email = :email
+        ");
         $stmt->execute([':email' => $email]);
 
         return $stmt->fetch();

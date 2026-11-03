@@ -54,7 +54,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [x] Vytvořit ucelený instalační a seed skript `sql/install.sql` obsahující ukázková data pro všechny role a scénáře.
 
 ### Fáze 2: Autentizace, role a SuperAdmin
-- [ ] Registrace:
+- [x] Registrace:
   - Varianta A: OSVČ (standardní registrace).
   - Varianta B: Účetní (vyžaduje platný `accountant_key`).
 - [ ] Profil OSVČ:
