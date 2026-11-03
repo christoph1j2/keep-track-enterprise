@@ -31,7 +31,8 @@ class RegisterValidator extends BaseValidator
 
         if ($mode == 'accountant')
         {
-            // TODO: accountant_key validation
+            $this->required('accountant_key', 'Klíč je povinný!')
+                ->accountantKeyValid('accountant_key');
         }
 
         return $this;
@@ -41,6 +42,33 @@ class RegisterValidator extends BaseValidator
     {
         if (!filter_var($this->getValue($field), FILTER_VALIDATE_EMAIL))
             $this->errors[$field] = $msg ?? "Neplatný e-mail";
+
+        return $this;
+    }
+
+    public function accountantKeyValid(string $field, string $msg = "Zadaný klíč je neplatný nebo již vypršel."): static
+    {
+        // Gets the key the user input
+        $inputKey = $this->getValue($field);
+
+        // Sanity check
+        if ($inputKey == null || $inputKey == '')
+        {
+            $this->errors[$field] = $msg;
+            return $this;
+        }
+
+        // Tries to get key from DB
+        $stmt = $this->db->prepare("
+            SELECT 1 FROM users 
+            WHERE accountant_key = :key AND accountant_key_expires > NOW()
+        ");
+        $stmt->execute([':key' => $inputKey]);
+        $dbKey = $stmt->fetchColumn();
+
+        // Check
+        if (!$dbKey)
+            $this->errors[$field] = $msg;
 
         return $this;
     }

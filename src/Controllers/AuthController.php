@@ -71,7 +71,7 @@ class AuthController extends BaseController
             $model = new UserModel($this->db);
             $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
-            $model->createUser($username, $email, $password_hash);
+            $model->createUser($username, $email, $password_hash, $accountant_key);
 
             // automatically login after register
             session_regenerate_id(true); // protect against session fixation

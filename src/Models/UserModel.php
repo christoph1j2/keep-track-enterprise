@@ -14,8 +14,9 @@ class UserModel extends BaseModel
      * @param string $password_hash - hashed password
      * @return bool
      */
-    public function createUser(string $username, string $email, string $password_hash): bool
+    public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key): bool
     {
+        // TODO: conditional logic if acc_key != null
         $stmt = $this->db->prepare("
             INSERT INTO ". $this->table ." (username, email, password_hash) 
             VALUES (:username, :email, :password_hash)");

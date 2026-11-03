@@ -27,7 +27,7 @@ abstract class BaseValidator
      * Determines if field value is valid by chaining validation methods together
      *
      */
-    abstract public function validate(): static;
+    abstract public function validate(...$params): static;
 
     /**
      * Returns string containing trimmed value of form field
