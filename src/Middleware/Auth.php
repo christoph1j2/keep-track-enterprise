@@ -11,7 +11,7 @@ final class Auth
     {
         if (!isset($_SESSION['user_id']))
         {
-            header('Location: /user/login');
+            header('Location: /login');
             exit;
         }
     }

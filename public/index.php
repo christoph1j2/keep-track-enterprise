@@ -1,5 +1,6 @@
 <?php 
 declare(strict_types=1);
+date_default_timezone_set('Europe/Prague');
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -54,6 +55,7 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/profile', UserController::class, 'profileAction');
 $router->post('/profile/generate-accountant-key', UserController::class, 'generateAccountantKeyAction');
+$router->post('/profile/unlink-accountant', UserController::class, 'unlinkAccountantAction');
 $router->get('/clients', ClientController::class, 'clientsAction');
 $router->post('/clients/get', ClientController::class, 'getClientByIdAjaxAction');
 $router->post('/clients/add', ClientController::class, 'addClientAction');

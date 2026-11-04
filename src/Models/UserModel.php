@@ -123,4 +123,53 @@ class UserModel extends BaseModel
 
         return $stmt->fetch();
     }
+
+    /**
+     * Generates a key for linking a user with an accountant
+     *
+     * @param int $id
+     * @return string
+     * @throws \Random\RandomException
+     */
+    public function generateAccountantKey(int $id): string
+    {
+        // generate key
+        $key = bin2hex(random_bytes(8));
+        // set expiry
+        $expiration = date('Y-m-d H:i:s', strtotime('+60 minutes'));
+
+        // update user
+        $stmt = $this->db->prepare("
+            UPDATE " . $this->table . "
+            SET accountant_key = :key, accountant_key_expires = :expiration
+            WHERE id = :id"
+        );
+        $stmt->execute([
+            ':id' => $id,
+            ':key' => $key,
+            ':expiration' => $expiration
+        ]);
+
+        return $key;
+    }
+
+    /**
+     * Unlinks the accountant with user with specified id
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function unlinkAccountant(int $id): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE " . $this->table . "
+            SET accountant_id = NULL
+            WHERE id = :id"
+        );
+        $stmt->execute([
+            ':id' => $id,
+        ]);
+
+        return $stmt->rowCount();
+    }
 }

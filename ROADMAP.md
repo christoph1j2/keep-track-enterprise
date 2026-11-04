@@ -57,7 +57,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [x] Registrace:
   - Varianta A: OSVČ (standardní registrace).
   - Varianta B: Účetní (vyžaduje platný `accountant_key`).
-- [ ] Profil OSVČ:
+- [x] Profil OSVČ:
   - Generování klíče pro účetního (`bin2hex(random_bytes(8))`) s časovou expirací.
   - Zobrazení aktuálně přiřazeného účetního a možnost odebrání přístupu.
 - [ ] Řízení přístupu (RBAC):

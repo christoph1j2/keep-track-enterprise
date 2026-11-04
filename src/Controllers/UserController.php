@@ -3,6 +3,7 @@
 namespace Src\Controllers;
 
 use Src\Controllers\BaseController;
+use Src\Middleware\Auth;
 use Src\Models\UserModel;
 
 class UserController extends BaseController
@@ -15,7 +16,7 @@ class UserController extends BaseController
     public function profileAction()
     {
         // sanity check
-        if (!$_SESSION['user_id']) $this->redirect('/');
+        Auth::check();
 
         // get user to parse into view
         $model = new UserModel($this->db);
@@ -37,15 +38,27 @@ class UserController extends BaseController
      *
      * @return void
      */
-    public function generateAccountantKeyAction()
+    public function generateAccountantKeyAction(): void
     {
         // sanity check
-        if (!$_SESSION['user_id']) $this->redirect('/');
+        Auth::check();
 
         // generate the key
         $model = new UserModel($this->db);
-        $accountant_key = $model->generateAccountantKey();
+        $model->generateAccountantKey($_SESSION['user_id']);
 
-        $this->profileAction();
+        $this->redirect('/profile');
+    }
+
+    public function unlinkAccountantAction()
+    {
+        // sanity check
+        Auth::check();
+
+        // delete all references between user and accountant
+        $model = new UserModel($this->db);
+        $model->unlinkAccountant($_SESSION['user_id']);
+
+        $this->redirect('/profile');
     }
 }
