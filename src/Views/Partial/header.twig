@@ -30,7 +30,7 @@
             </ul>
             {% if session.user_id != null %}
                 <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">
-                    <a>{{ session.username }}</a>
+                    <a href="/profile">{{ session.username }}</a>
                     <form action="/dashboard" method="GET">
                         <input type="submit" value="Dashboard" />
                     </form>

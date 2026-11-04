@@ -29,6 +29,7 @@ use Src\Controllers\AuthController;
 use Src\Controllers\ClientController;
 use Src\Controllers\DashboardController;
 use Src\Controllers\HomeController;
+use Src\Controllers\UserController;
 use Src\Core\Database;
 use Src\Core\Router;
 
@@ -51,6 +52,7 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 
 // private routes (authed only)
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
+$router->get('/profile', UserController::class, 'profileAction');
 $router->get('/clients', ClientController::class, 'clientsAction');
 $router->post('/clients/get', ClientController::class, 'getClientByIdAjaxAction');
 $router->post('/clients/add', ClientController::class, 'addClientAction');

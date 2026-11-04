@@ -1,0 +1,13 @@
+{% extends "layout.twig" %}
+
+{% block title %}Profil | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <p>cigi</p>
+
+    <p>{{ user|join('\n ... ') }}</p>
+    <p>{{ user.email }}</p>
+    <p>{{ user.firstName }} {{ user.lastName }}</p>
+
+{% endblock %}

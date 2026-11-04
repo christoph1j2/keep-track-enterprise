@@ -80,7 +80,7 @@ class UserModel extends BaseModel
     public function findByEmail(string $email)
     {
         $stmt = $this->db->prepare("
-            SELECT u.*, r.role AS role_Name
+            SELECT u.*, r.role AS role_name
             FROM ". $this->table ." u
             LEFT JOIN roles r ON u.role_id = r.id 
             WHERE u.email = :email
@@ -98,8 +98,26 @@ class UserModel extends BaseModel
      */
     public function findByUsername(string $username)
     {
-        $stmt = $this->db->prepare("SELECT * FROM ". $this->table ." WHERE username = :username");
+        $stmt = $this->db->prepare("
+            SELECT * FROM ". $this->table ." 
+            WHERE username = :username");
         $stmt->execute([':username' => $username]);
+
+        return $stmt->fetch();
+    }
+
+    /**
+     * Fetches specific user using id
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function findById(int $id): mixed
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM ". $this->table ."
+            WHERE id = :id");
+        $stmt->execute([':id' => $id]);
 
         return $stmt->fetch();
     }
