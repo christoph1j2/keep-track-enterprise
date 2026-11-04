@@ -107,7 +107,7 @@ class UserModel extends BaseModel
     }
 
     /**
-     * Fetches specific user using id
+     * Fetches specific user using id, including the role name
      *
      * @param int $id
      * @return mixed
@@ -115,8 +115,10 @@ class UserModel extends BaseModel
     public function findById(int $id): mixed
     {
         $stmt = $this->db->prepare("
-            SELECT * FROM ". $this->table ."
-            WHERE id = :id");
+            SELECT u.*, r.role as role_name 
+            FROM ". $this->table ." u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = :id");
         $stmt->execute([':id' => $id]);
 
         return $stmt->fetch();

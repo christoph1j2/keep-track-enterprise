@@ -4,10 +4,54 @@
 
 {% block content %}
 
-    <p>cigi</p>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Profil</h1>
+        </div>
+    </div>
 
-    <p>{{ user|join('\n ... ') }}</p>
-    <p>{{ user.email }}</p>
-    <p>{{ user.firstName }} {{ user.lastName }}</p>
+    <div class="row mb-4">
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Uživatelské Údaje</h4>
+                    <table>
+                        <tr>
+                            <td>Uživatelské jméno:</td>
+                            <td class="fst-italic">{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <td>E-Mail:</td>
+                            <td class="fst-italic">{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            {# TODO: make it possible to edit #}
+                            <td>Profese:</td>
+                            <td class="fst-italic">{{ user.profession ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Role:</td>
+                            <td class="fst-italic">{{ user.role_name ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Připojený účetní:</td>
+                            <td class="fst-italic">{{ accountant_name }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Pozvat účetního</h4>
+                    {# TODO generate accountant_key on button click and make it appear incl. the expiration #}
+                    <form method="post" action="/profile/generate-accountant-key">
+                        <input type="submit" value="Vygenerovat Klíč" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

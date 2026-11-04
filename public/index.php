@@ -53,6 +53,7 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 // private routes (authed only)
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/profile', UserController::class, 'profileAction');
+$router->post('/profile/generate-accountant-key', UserController::class, 'generateAccountantKeyAction');
 $router->get('/clients', ClientController::class, 'clientsAction');
 $router->post('/clients/get', ClientController::class, 'getClientByIdAjaxAction');
 $router->post('/clients/add', ClientController::class, 'addClientAction');
