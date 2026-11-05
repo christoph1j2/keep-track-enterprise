@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Src\Controllers;
 
 use PDO;
+use Src\Middleware\Auth;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -47,6 +48,17 @@ abstract class BaseController {
 
         $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->twig->addGlobal('current_path', $request); // global injection of currpath
+    }
+
+    /**
+     * Helper method that calls the roles check from Auth middleware.
+     *
+     * @param array|string $roles - array of acceptable roles
+     * @return void
+     */
+    protected function requireRole(array|string $roles): void
+    {
+        Auth::roles($roles, $this->db);
     }
 
     /**

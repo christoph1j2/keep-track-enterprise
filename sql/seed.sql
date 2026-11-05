@@ -128,7 +128,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Roles (required for the application to function)
 INSERT IGNORE INTO `roles` (`id`, `role`) VALUES
-  (1, 'superadmin')
+  (1, 'superadmin'),
   (2, 'admin'),
   (3, 'osvc'),
   (4, 'ucetni');

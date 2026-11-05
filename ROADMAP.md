@@ -60,9 +60,9 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [x] Profil OSVČ:
   - Generování klíče pro účetního (`bin2hex(random_bytes(8))`) s časovou expirací.
   - Zobrazení aktuálně přiřazeného účetního a možnost odebrání přístupu.
-- [ ] Řízení přístupu (RBAC):
+- [x] Řízení přístupu (RBAC):
   - Pomocná metoda v `BaseController`: `requireRole(array $roles)`.
-  - SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.
+  ~~- SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.~~
 
 ### Fáze 3: Jádro aplikace (OSVČ CRUD & Byznys logika)
 - [ ] **Klienti:**
@@ -95,6 +95,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 
 ### Fáze 5: Administrace a číselníky
 - [ ] Přehled uživatelů v systému s možností blokace (`is_blocked`) a smazání.
+- [ ] SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.
 - [ ] Správa číselníků: CRUD pro `expense_categories` a `client_types`.
 
 ### Fáze 6: Volitelná technologická rozšíření (Maximalizace bodů)
