@@ -1,12 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Src\Validators;
 
-use Src\Validators\BaseValidator;
-
 class RegisterValidator extends BaseValidator
 {
-
     /**
      * @inheritDoc
      */

@@ -65,7 +65,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
   ~~- SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.~~
 
 ### Fáze 3: Jádro aplikace (OSVČ CRUD & Byznys logika)
-- [ ] **Klienti:**
+- [x] **Klienti:**
   - Dokončení `ClientController` a šablon (vytvoření, úprava, smazání).
   - AJAX načítání detailu a mazání s potvrzením.
 - [ ] **Faktury a položky (Master-Detail):**

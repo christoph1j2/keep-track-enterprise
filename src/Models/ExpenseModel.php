@@ -1,8 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace Src\Models;
-
-use Src\Models\BaseModel;
 
 class ExpenseModel extends BaseModel
 {

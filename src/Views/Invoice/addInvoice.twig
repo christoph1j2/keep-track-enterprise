@@ -1,0 +1,157 @@
+<!-- dialog for invoice add -->
+<dialog class="dialog" id="addInvoiceDialog">
+    <form id="addClientForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Nová faktura</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <label for="clientSelect" class="form-label">
+                Klient / Odběratel<span class="fg-danger">*</span>
+            </label>
+            <select name="client_id" id="clientSelect" class="form-control" required>
+                <option value="">Vyberte klienta</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="invNumber" class="form-label mt-2">
+                Číslo faktury <span class="fg-danger">*</span>
+            </label>
+            <input type="text" id="invNumber" name="invoice_number" class="form-control" placeholder="např. 2026001" required>
+
+            <label for="invName" class="form-label mt-2">Název / Popis</label>
+            <input type="text" id="invName" name="name" class="form-control" placeholder="např. Výroba skříně">
+
+            <div class="row g-2 mt-1">
+                <div class="col-6">
+                    <label for="dateIssued" class="form-label">
+                        Datum vystavení <span class="fg-danger">*</span>
+                    </label>
+                    <input type="date" id="dateIssued" name="date_issued" class="form-control" required>
+                </div>
+                <div class="col-6">
+                    <label for="dateDue" class="form-label">Datum splatnosti</label>
+                    <input type="date" id="dateDue" name="date_due" class="form-control">
+                </div>
+            </div>
+
+            <hr class="my-3">
+
+            <!-- dynamic items -->
+            <h6>Položky faktury</h6>
+            <table class="table table-sm" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Název</th>
+                        <th style="width: 90px">Počet</th>
+                        <th style="width: 120px">Cena / ks</th>
+                        <th style="width: 110px" class="text-end">Celkem</th>
+                        <th style="width: 40px"></th>
+                    </tr>
+                </thead>
+                <tbody id="itemsContainer">
+                    <!-- insert rows here via js -->
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-sm btn-outline theme-primary" id="addItemBtn">+ Přidat položku</button>
+                <div class="fw-bold">
+                    Celkem: <span id="totalDisplay">0.00</span> Kč
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Vystavit fakturu</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    // -- Submit logic --
+    const addDialog = document.getElementById('addInvoiceDialog');
+    document.getElementById('addClientForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // prevent reload
+        const formData = new FormData(this); // pack date
+
+        fetch('/invoices/add', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success')
+                {
+                    window.location.reload(); // refreshes page with new data
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    })
+
+    //-- Invoice item logic --
+    const itemsContainer = document.getElementById('itemsContainer');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const totalDisplay = document.getElementById('totalDisplay');
+    let itemIdx = 0;
+
+    // add one row (item)
+    function addItemRow() {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" name="items[${itemIdx}][name]" class="form-control form-control-sm" required></td>
+            <td><input type="number" name="items[${itemIdx}][quantity]" class="form-control form-control-sm quantity-input" value="1" min="1" required></td>
+            <td><input type="number" name="items[${itemIdx}][unit_price]" class="form-control form-control-sm price-input" value="0" min="0" step="0.01" required></td>
+            <td class="text-end align-middle fw-bold row-total">0.00 Kč</td>
+            <td class="text-center align-middle">
+                <button type="button" class="btn btn-sm text-danger remove-item-btn">✕</button>
+            </td>
+        `;
+        itemsContainer.appendChild(tr);
+        itemIdx++;
+        updateTotal();
+    }
+
+    // calculate sum
+    function updateTotal() {
+        let sum = 0;
+        itemsContainer.querySelectorAll('tr').forEach(row => {
+            const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
+            const price = parseFloat(row.querySelector('.price-input').value) || 0;
+
+            const rowSum = quantity * price;
+            row.querySelector('.row-total').textContent = rowSum.toFixed(2) + ' Kč';
+            sum += rowSum;
+        });
+        totalDisplay.textContent = sum.toFixed(2);
+    }
+
+    addItemBtn.addEventListener('click', addItemRow);
+
+    // remove row
+    itemsContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-item-btn')) {
+            if (itemsContainer.querySelectorAll('tr').length <= 1)
+            {
+                alert('Faktura musí mít aspoň jednu položku');
+                return;
+            }
+            e.target.closest('tr').remove();
+            updateTotal();
+        }
+    });
+
+    // recalc during typing
+    itemsContainer.addEventListener('input', e => {
+        if (e.target.classList.contains('quantity-input') || e.target.classList.contains('price-input')) {
+            updateTotal();
+        }
+    });
+
+    // default row & date
+    document.getElementById('dateIssued').valueAsDate = new Date();
+    addItemRow();
+</script>

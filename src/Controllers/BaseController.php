@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Src\Controllers;
 
+use JetBrains\PhpStorm\NoReturn;
 use PDO;
+use Random\RandomException;
 use Src\Middleware\Auth;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -69,9 +71,9 @@ abstract class BaseController {
      * @return void
      * @throws LoaderError
      * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws SyntaxError|RandomException
      */
-    protected function render(string $view, array $params = [])
+    protected function render(string $view, array $params = []): void
     {
         if (!isset($params['csrf_token']))
         {
@@ -106,7 +108,8 @@ abstract class BaseController {
      * @param string $url - url to redirect to
      * @return void
      */
-    protected function redirect(string $url)
+    #[NoReturn]
+    protected function redirect(string $url): void
     {
         header("Location: $url");
         exit;

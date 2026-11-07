@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Src\Controllers;
 
+use Src\Middleware\Auth;
 use Src\Models\ClientModel;
 
 class ClientController extends BaseController
@@ -16,6 +18,9 @@ class ClientController extends BaseController
      */
     public function clientsAction(): void
     {
+        // sanity check
+        Auth::check();
+
         $model = new ClientModel($this->db);
         $clients = $model->getAllClients();
         $clientTypes = $model->getAllClientTypes();
@@ -33,6 +38,10 @@ class ClientController extends BaseController
      */
     public function addClientAction(): void
     {
+        // sanity check
+        Auth::check();
+        header('Content-Type: application/json');
+
         // we get data from form
         $name = $_POST['name'];
         $email = $_POST['contact_email'] ?? null;
@@ -45,6 +54,14 @@ class ClientController extends BaseController
             empty($_POST['client_type'])
                 ? null
                 : (int) $_POST['client_type'];
+
+        // validate (todo: move to validator?)
+        if (!$name)
+        {
+            $response = ['status' => 'error', 'message' => 'Nebyla zadána všechna povinná pole'];
+            echo json_encode($response);
+            return;
+        }
 
         $model = new ClientModel($this->db);
         // check if client_type is valid
@@ -67,7 +84,6 @@ class ClientController extends BaseController
         }
 
         // send header and json res
-        header('Content-Type: application/json');
         echo json_encode($response);
     }
 
@@ -79,19 +95,33 @@ class ClientController extends BaseController
      */
     public function getClientByIdAjaxAction(): void
     {
+        // sanity check
+        Auth::check();
+
         header('Content-Type: application/json');
         // Gets ID from AJAX request
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        if ($id) // if exists, then return user
+        if (!$id)
         {
-            $model = new ClientModel($this->db);
-            $client = $model->getClientById($id);
-            $response = ['status' => 'success', 'client' => $client];
+            $response = ['status' => 'error', 'message' => 'Nevalidní ID klienta'];
+            echo json_encode($response);
+            return;
         }
-        else
+
+        // get client from model
+        $model = new ClientModel($this->db);
+        $client = $model->getClientById($id);
+
+        // check if client exists
+        if (!$client)
         {
-            $response = ['status' => 'error', 'message' => 'Klient nenalezen.'];
+            $response = ['status' => 'error', 'message' => 'Nevalidní ID klienta'];
+            echo json_encode($response);
+            return;
         }
+
+        // json res
+        $response = ['status' => 'success', 'client' => $client];
         echo json_encode($response);
     }
 
@@ -102,6 +132,9 @@ class ClientController extends BaseController
      */
     public function deleteClientAction(): void
     {
+        // sanity check
+        Auth::check();
+
         $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$clientId)
@@ -128,6 +161,9 @@ class ClientController extends BaseController
      */
     public function editClientAction(): void
     {
+        // sanity check
+        Auth::check();
+
         $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$clientId)
@@ -148,6 +184,14 @@ class ClientController extends BaseController
             empty($_POST['client_type'])
                 ? null
                 : (int) $_POST['client_type'];
+
+        // validate (todo: move to validator?)
+        if (!$name)
+        {
+            $response = ['status' => 'error', 'message' => 'Nebyla zadána všechna povinná pole'];
+            echo json_encode($response);
+            return;
+        }
 
         // check if client type is valid
         if ($client_type !== null)

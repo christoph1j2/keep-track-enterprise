@@ -1,0 +1,93 @@
+{% extends "layout.twig" %}
+
+{% block title %}Evidence Faktur | KeepTrack Enterprise{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/invoices.css">
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <h1>Evidence Faktur</h1>
+        <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addInvoiceDialog">
+            Vystavit novou fakturu
+        </button>
+    </div>
+
+    <div class="card h-100 p-3 p-md-5 my-5">
+        {% if invoices|length == 0 %}
+            <p class="m-auto fg-3"><em>Neevidujete žádné faktury.</em></p>
+        {% else %}
+        <table class="table table-striped table-stack">
+            <thead>
+                <tr>
+                    <th>Číslo faktury</th>
+                    <th>Odběratel</th>
+                    <th>Název / Popis</th>
+                    <th>Datum vystavení</th>
+                    <th>Datum splatnosti</th>
+                    <th>Částka</th>
+                    <th>Stav</th>
+                    <th class="text-end">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for invoice in invoices %}
+                <tr data-id="{{ invoice.id }}">
+                    <td data-label="Číslo faktury" class="align-middle fw-bold">
+                        {{ invoice.invoice_number }}
+                    </td>
+                    <td data-label="Odběratel" class="align-middle">
+                        {{ invoice.client_name|default('-') }}
+                    </td>
+                    <td data-label="Popis" class="align-middle">
+                        {{ invoice.name|default('-') }}
+                    </td>
+                    <td data-label="Vystaveno" class="align-middle">
+                        {{ invoice.date_issued|date("d. m. Y") }}
+                    </td>
+                    <td data-label="Splatnost" class="align-middle">
+                        {{ invoice.date_due ? invoice.date_due|date("d. m. Y") : '-' }}
+                    </td>
+                    <td data-label="Částka" class="align-middle fw-bold text-nowrap">
+                        {{ invoice.total_amount|number_format(2, ',', ' ') }} Kč
+                    </td>
+                    <td data-label="Stav" class="align-middle">
+                        {% if invoice.paid %}
+                            <span class="badge text-bg-success">Uhrazeno</span>
+                        {% else %}
+                            <span class="badge text-bg-warning">Neuhrazeno</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end align-middle text-nowrap">
+                        <button type="button"
+                                class="btn btn-sm btn-outline theme-primary detail-btn"
+                                data-id="{{ invoice.id }}"
+                                title="Zobrazit detail faktury">
+                            👁️
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline theme-danger delete-btn"
+                                data-id="{{ invoice.id }}"
+                                data-number="{{ invoice.invoice_number }}"
+                                title="Smazat fakturu">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+
+<script>
+    const table = document.querySelector('table');
+</script>
+{% include "Invoice/addInvoice.twig" %}
+{% include "Invoice/detInvoice.twig" %}
+{% include "Invoice/delInvoice.twig" %}
+
+{% endblock %}

@@ -1,0 +1,87 @@
+<dialog class="dialog" id="detInvoiceDialog">
+    <div class="dialog-header">
+        <h5 class="dialog-title">Detail faktury <span id="detInvoiceNumber"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+    </div>
+    <div class="dialog-body">
+        <p><strong>Klient:</strong> <span id="detClientName"></span></p>
+        <p><strong>Popis:</strong> <span id="detName"></span></p>
+        <p>
+            <strong>Vystaveno:</strong> <span id="detDateIssued"></span>
+            |
+            <strong>Splatnost:</strong> <span id="detDateDue"></span>
+        </p>
+
+        <h6>Položky:</h6>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Název</th>
+                    <th>Počet</th>
+                    <th>Cena / ks</th>
+                    <th class="text-end">Celkem</th>
+                </tr>
+            </thead>
+            <tbody id="detItemsTbody">
+                <!-- dynamically filled via js -->
+            </tbody>
+        </table>
+        <div class="text-end fw-bold">
+            Celková částka: <span id="detTotal"></span> Kč
+        </div>
+    </div>
+</dialog>
+
+<script>
+    const detDialog = document.getElementById('detInvoiceDialog');
+
+    table.addEventListener('click', function(event) {
+        const detBtn = event.target.closest('.detail-btn');
+        if (!detBtn) return;
+
+        const invoiceId = detBtn.dataset.id;
+
+        fetch('/invoices/get-detail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                id: invoiceId
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const inv = data.invoice;
+                    const items = data.items;
+
+                    document.getElementById('detInvoiceNumber').textContent = inv.invoice_number;
+                    document.getElementById('detClientName').textContent = inv.client_name || '-';
+                    document.getElementById('detName').textContent = inv.name || '-';
+                    document.getElementById('detDateIssued').textContent = inv.date_issued;
+                    document.getElementById('detDateDue').textContent = inv.date_due || '-';
+                    document.getElementById('detTotal').textContent = inv.total_amount;
+
+                    const tbody = document.getElementById('detItemsTbody');
+                    tbody.innerHTML = '';
+                    items.forEach(item => {
+                        const row = document.createElement('tr');
+                        const total = (item.quantity * item.unit_price).toFixed(2);
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.unit_price}</td>
+                            <td class="text-end">${total}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    detDialog.showModal();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>

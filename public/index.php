@@ -30,6 +30,7 @@ use Src\Controllers\AuthController;
 use Src\Controllers\ClientController;
 use Src\Controllers\DashboardController;
 use Src\Controllers\HomeController;
+use Src\Controllers\InvoiceController;
 use Src\Controllers\UserController;
 use Src\Core\Database;
 use Src\Core\Router;
@@ -61,6 +62,10 @@ $router->post('/clients/get', ClientController::class, 'getClientByIdAjaxAction'
 $router->post('/clients/add', ClientController::class, 'addClientAction');
 $router->post('/clients/delete', ClientController::class, 'deleteClientAction');
 $router->post('/clients/edit', ClientController::class, 'editClientAction');
+$router->get('/invoices', InvoiceController::class, 'invoicesAction');
+$router->post('/invoices/add', InvoiceController::class, 'addInvoiceAction');
+$router->post('/invoices/delete', InvoiceController::class, 'deleteInvoiceAction');
+$router->post('/invoices/get-detail', InvoiceController::class, 'getInvoiceDetailAjaxAction');
 
 
 $router->dispatch($db);
