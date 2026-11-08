@@ -1,0 +1,86 @@
+<dialog class="dialog" id="detPaymentDialog">
+    <div class="dialog-header">
+        <h5 class="dialog-title">Detail platby <span id="detPaymentSymbol"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+    </div>
+    <div class="dialog-body">
+        <p><strong>Datum platby:</strong> <span id="detPaymentDate"></span></p>
+        <p><strong>Poznámka:</strong> <span id="detPaymentNote"></span></p>
+
+        <h6 class="mt-3">Spárované faktury:</h6>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Číslo faktury</th>
+                    <th>Celková částka faktury</th>
+                    <th class="text-end">Uhrazeno touto platbou</th>
+                </tr>
+            </thead>
+            <tbody id="detPairingsTbody">
+                <!-- dynamically filled via JS -->
+            </tbody>
+        </table>
+        <div class="text-end fw-bold mt-2">
+            Celková částka platby: <span id="detPaymentAmount"></span> Kč
+        </div>
+    </div>
+</dialog>
+
+<script>
+    /** @type {HTMLDialogElement} */
+    const detDialog = document.getElementById('detPaymentDialog');
+
+    if (table) {
+        table.addEventListener('click', function(event) {
+        const detBtn = event.target.closest('.detail-btn');
+        if (!detBtn) return;
+
+        const paymentId = detBtn.dataset.id;
+
+        fetch('/payments/get-detail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                id: paymentId
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const payment = data.payment;
+                    const pairings = data.pairings;
+
+                    document.getElementById('detPaymentSymbol').textContent = payment.specific_symbol ? `(#${payment.specific_symbol})` : '';
+                    document.getElementById('detPaymentDate').textContent = payment.date_paid;
+                    document.getElementById('detPaymentNote').textContent = payment.note || '-';
+                    document.getElementById('detPaymentAmount').textContent = parseFloat(payment.amount).toFixed(2);
+
+                    const tbody = document.getElementById('detPairingsTbody');
+                    tbody.innerHTML = '';
+
+                    if (!pairings || pairings.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Žádné spárované faktury.</td></tr>';
+                    } else {
+                        pairings.forEach(p => {
+                            const row = document.createElement('tr');
+                            const totalAmount = parseFloat(p.total_amount).toFixed(2);
+                            const assignedAmount = parseFloat(p.amount_assigned).toFixed(2);
+                            row.innerHTML = `
+                                <td><strong>#${p.invoice_number}</strong></td>
+                                <td>${totalAmount} Kč</td>
+                                <td class="text-end fw-bold text-success">${assignedAmount} Kč</td>
+                                `;
+                            tbody.appendChild(row);
+                        });
+                    }
+
+                    detDialog.showModal();
+                } else
+                    alert(data.message);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+</script>

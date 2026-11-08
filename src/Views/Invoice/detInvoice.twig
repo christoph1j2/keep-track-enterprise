@@ -33,55 +33,59 @@
 </dialog>
 
 <script>
+    /** @type {HTMLDialogElement} */
     const detDialog = document.getElementById('detInvoiceDialog');
 
-    table.addEventListener('click', function(event) {
-        const detBtn = event.target.closest('.detail-btn');
-        if (!detBtn) return;
+    if (table) {
+        table.addEventListener('click', function (event) {
+            const detBtn = event.target.closest('.detail-btn');
+            if (!detBtn) return;
 
-        const invoiceId = detBtn.dataset.id;
+            const invoiceId = detBtn.dataset.id;
 
-        fetch('/invoices/get-detail', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                id: invoiceId
+            fetch('/invoices/get-detail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    id: invoiceId
+                })
             })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const inv = data.invoice;
-                    const items = data.items;
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const inv = data.invoice;
+                        const items = data.items;
 
-                    document.getElementById('detInvoiceNumber').textContent = inv.invoice_number;
-                    document.getElementById('detClientName').textContent = inv.client_name || '-';
-                    document.getElementById('detName').textContent = inv.name || '-';
-                    document.getElementById('detDateIssued').textContent = inv.date_issued;
-                    document.getElementById('detDateDue').textContent = inv.date_due || '-';
-                    document.getElementById('detTotal').textContent = inv.total_amount;
+                        document.getElementById('detInvoiceNumber').textContent = inv.invoice_number;
+                        document.getElementById('detClientName').textContent = inv.client_name || '-';
+                        document.getElementById('detName').textContent = inv.name || '-';
+                        document.getElementById('detDateIssued').textContent = inv.date_issued;
+                        document.getElementById('detDateDue').textContent = inv.date_due || '-';
+                        document.getElementById('detTotal').textContent = inv.total_amount;
 
-                    const tbody = document.getElementById('detItemsTbody');
-                    tbody.innerHTML = '';
-                    items.forEach(item => {
-                        const row = document.createElement('tr');
-                        const total = (item.quantity * item.unit_price).toFixed(2);
-                        row.innerHTML = `
+                        const tbody = document.getElementById('detItemsTbody');
+                        tbody.innerHTML = '';
+                        items.forEach(item => {
+                            const row = document.createElement('tr');
+                            const total = (item.quantity * item.unit_price).toFixed(2);
+                            row.innerHTML = `
                             <td>${item.name}</td>
                             <td>${item.quantity}</td>
                             <td>${item.unit_price}</td>
                             <td class="text-end">${total}</td>
                         `;
-                        tbody.appendChild(row);
-                    });
+                            tbody.appendChild(row);
+                        });
 
-                    detDialog.showModal();
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
+                        detDialog.showModal();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+        });
+    }
 </script>

@@ -31,6 +31,7 @@ use Src\Controllers\ClientController;
 use Src\Controllers\DashboardController;
 use Src\Controllers\HomeController;
 use Src\Controllers\InvoiceController;
+use Src\Controllers\PaymentController;
 use Src\Controllers\UserController;
 use Src\Core\Database;
 use Src\Core\Router;
@@ -66,6 +67,10 @@ $router->get('/invoices', InvoiceController::class, 'invoicesAction');
 $router->post('/invoices/add', InvoiceController::class, 'addInvoiceAction');
 $router->post('/invoices/delete', InvoiceController::class, 'deleteInvoiceAction');
 $router->post('/invoices/get-detail', InvoiceController::class, 'getInvoiceDetailAjaxAction');
+$router->get('/payments', PaymentController::class, 'paymentsAction');
+$router->post('/payments/add', PaymentController::class, 'addPaymentAction');
+$router->post('/payments/delete', PaymentController::class, 'deletePaymentAction');
+$router->post('/payments/get-detail', PaymentController::class, 'getPaymentDetailAjaxAction');
 
 
 $router->dispatch($db);

@@ -1,0 +1,184 @@
+<!-- dialog for payment add -->
+<dialog class="dialog" id="addPaymentDialog">
+    <form id="addPaymentForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Nová platba</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <label for="specSymb" class="form-label">
+                Specifický symbol<span class="fg-danger">*</span>
+            </label>
+            <input type="text" id="specSymb" name="specific_symbol" class="form-control" placeholder="např. 794631" required>
+
+            <label for="amount" class="form-label mt-2">
+                Částka<span class="fg-danger">*</span>
+            </label>
+            <input type="number" id="amount" name="amount" class="form-control" required>
+
+            <label for="date_paid" class="form-label mt-2">
+                Datum platby<span class="fg-danger">*</span>
+            </label>
+            <input type="date" id="date_paid" name="date_paid" class="form-control" required>
+
+            <label for="note" class="form-label mt-2">
+                Poznámka
+            </label>
+            <input type="text" id="note" name="note" class="form-control" placeholder="např. Platba 1">
+
+            <!-- unpaid invoices combobox -->
+            <label for="invoiceSelect" class="form-label mt-2 mt-2">Přidat fakturu k úhradě</label>
+            <div class="d-flex gap-2">
+                <select id="invoiceSelect" class="form-control">
+                    <option value="">-- Vyberte fakturu k úhradě --</option>
+                    {% for invoice in unpaidInvoices %}
+                        <option value="{{ invoice.invoice_id }}"
+                                data-number="{{ invoice.invoice_number }}"
+                                data-remaining="{{ invoice.remaining_amount }}">
+                            Faktura #{{ invoice.invoice_number }} (zbývá uhradit: {{ invoice.remaining_amount|number_format(2, ',', ' ') }} Kč)
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-outline theme-primary text-nowrap" id="addInvoiceBtn">
+                    + Přidat do platby
+                </button>
+            </div>
+        </div>
+
+        <hr class="my-3">
+
+        <!-- dynamic invoices -->
+        <h6>Vybrané faktury a rozdělení částky</h6>
+        <table class="table table-sm" id="invoiceTable">
+            <thead>
+            <tr>
+                <th>Číslo faktury</th>
+                <th>Zbývá doplatit</th>
+                <th style="width: 150px">Uhradit z platby (Kč)</th>
+                <th style="width: 40px"></th>
+            </tr>
+            </thead>
+            <tbody id="invoiceContainer">
+                <!-- insert rows here via js -->
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-end align-items-center mb-3">
+            <div class="fw-bold">
+                Celkem rozděleno do faktur: <span id="allocatedDisplay">0.00</span> Kč
+            </div>
+        </div>
+
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Založit platbu</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    // -- Submit Logic --
+    const paymentForm = document.getElementById('addPaymentForm');
+    const invoiceContainer = document.getElementById('invoiceContainer');
+
+    paymentForm.addEventListener('submit', function (event) {
+       event.preventDefault();
+
+       if (invoiceContainer.querySelectorAll('tr').length === 0) {
+           alert('K platbě musíte přiřadit aspoň jednu fakturu.');
+           return;
+       }
+
+       const formData = new FormData(this);
+
+       fetch('/payments/add', {
+           method: 'POST',
+           body: formData
+       })
+           .then(res => res.json())
+           .then(data => {
+               if (data.status === 'success')
+                   window.location.reload();
+               else
+                   alert(data.message);
+           })
+           .catch(err => console.error('Error:', err));
+    });
+
+    // default date to current day
+    document.getElementById('date_paid').valueAsDate = new Date();
+
+    // -- Unpaid Invoice Logic --
+    const invoiceSelect = document.getElementById('invoiceSelect');
+    const addInvoiceBtn = document.getElementById('addInvoiceBtn');
+    const allocatedDisplay = document.getElementById('allocatedDisplay');
+    let invIdx = 0;
+
+    // add invoice to table
+    addInvoiceBtn.addEventListener('click', () => {
+        const selectedOption = invoiceSelect.options[invoiceSelect.selectedIndex];
+        if (!selectedOption || !selectedOption.value) {
+            alert('Vyberte prosím fakturu ze seznamu');
+            return;
+        }
+
+        const invoiceId = selectedOption.value;
+        const invoiceNumber = selectedOption.dataset.number;
+        const remaining = parseFloat(selectedOption.dataset.remaining);
+
+        // check if invoice not already in table
+        if (invoiceContainer.querySelector(`input[value="${invoiceId}"]`)) {
+            alert('Tato faktura už je v seznamu přidána.');
+            return;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="align-middle">
+                <strong>#${invoiceNumber}</strong>
+                <input type="hidden" name="pairings[${invIdx}][invoice_id]" value="${invoiceId}">
+            </td>
+            <td class="align-middle">${remaining.toFixed(2)} Kč</td>
+            <td>
+                <input type="number"
+                       name="pairings[${invIdx}][amount_assigned]"
+                       class="form-control form-control-sm assigned-amount-input"
+                       value="${remaining}"
+                       min="0.01"
+                       max="${remaining}"
+                       step="0.01"
+                       required>
+            </td>
+            <td class="text-center align-middle">
+                <button type="button" class="btn btn-sm text-danger remove-invoice-btn">✕</button>
+            </td>
+        `;
+
+        invoiceContainer.appendChild(tr);
+        invIdx++;
+        updateAllocatedTotal();
+    });
+
+    // remove invoice from table
+    invoiceContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-invoice-btn')) {
+            e.target.closest('tr').remove();
+            updateAllocatedTotal();
+        }
+    });
+
+    // recalculate total split amount
+    function updateAllocatedTotal() {
+        let sum = 0;
+        invoiceContainer.querySelectorAll('.assigned-amount-input').forEach(input => {
+            sum += parseFloat(input.value) || 0;
+        });
+        allocatedDisplay.textContent = sum.toFixed(2);
+    }
+
+    invoiceContainer.addEventListener('input', e => {
+        if (e.target.classList.contains('assigned-amount-input')) {
+            updateAllocatedTotal();
+        }
+    });
+
+</script>

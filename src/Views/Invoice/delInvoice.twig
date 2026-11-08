@@ -1,38 +1,40 @@
 <script>
     // connect event listener for the table
-    table.addEventListener('click', function(event) {
-        const deleteBtn = event.target.closest('.delete-btn');
+    if (table) {
+        table.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-btn');
 
-        // if deleteBtn was clicked
-        if (deleteBtn) {
-            // we get invoiceid and number
-            const invoiceId = deleteBtn.dataset.id;
-            const invoiceNumber = deleteBtn.dataset.number || invoiceId;
-            // we get row
-            const row = deleteBtn.closest('tr');
+            // if deleteBtn was clicked
+            if (deleteBtn) {
+                // we get invoiceid and number
+                const invoiceId = deleteBtn.dataset.id;
+                const invoiceNumber = deleteBtn.dataset.number || invoiceId;
+                // we get row
+                const row = deleteBtn.closest('tr');
 
-            //confirm
-            if (confirm(`Opravdu chcete smazat fakturu č. ${invoiceNumber}?`)) {
-                fetch('/invoices/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({ id: invoiceId },
-                    )
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            row.remove();
-                            if (!table.querySelector('tbody tr')) window.location.reload();
-                        }
-                        else {
-                            alert('Chyba: '+data.message);
-                        }
+                //confirm
+                if (confirm(`Opravdu chcete smazat fakturu č. ${invoiceNumber}?`)) {
+                    fetch('/invoices/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({ id: invoiceId },
+                        )
                     })
-                    .catch(err => console.error('Error:', err));
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                row.remove();
+                                if (!table.querySelector('tbody tr')) window.location.reload();
+                            }
+                            else {
+                                alert('Chyba: '+data.message);
+                            }
+                        })
+                        .catch(err => console.error('Error:', err));
+                }
             }
-        }
-    });
+        });
+    }
 </script>

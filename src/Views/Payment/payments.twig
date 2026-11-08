@@ -1,0 +1,82 @@
+{% extends "layout.twig" %}
+
+{% block title %}Evidence Plateb | KeepTrack Enterprise{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/payments.css">
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <h1>Evidence Plateb</h1>
+        <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addPaymentDialog">
+            Zaznamenat novou platbu
+        </button>
+    </div>
+
+    <div class="card h-100 p-3 p-md-5 my-5">
+        {% if payments|length == 0 %}
+            <p class="m-auto fg-3"><em>Neevidujete žádné platby.</em></p>
+        {% else %}
+            <table class="table table-striped table-stack">
+                <thead>
+                <tr>
+                    <th>Specifický symbol</th>
+                    <th>Datum platby</th>
+                    <th>Částka</th>
+                    <th>Spárované faktury</th>
+                    <th>Poznámka</th>
+                    <th class="text-end">Akce</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for payment in payments %}
+                    <tr data-id="{{ payment.id }}">
+                        <td data-label="Specifický symbol" class="align-middle fw-bold">
+                            {{ payment.specific_symbol }}
+                        </td>
+                        <td data-label="Datum platby" class="align-middle fw-bold">
+                            {{ payment.date_paid }}
+                        </td>
+                        <td data-label="Částka" class="align-middle fw-bold">
+                            {{ payment.amount }}
+                        </td>
+                        <td data-label="Spárované faktury" class="align-middle fw-bold">
+                            {{ payment.invoice_numbers }}
+                        </td>
+                        <td data-label="Poznámka" class="align-middle fw-bold">
+                            {{ payment.note }}
+                        </td>
+
+                        <td class="text-end align-middle text-nowrap">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-primary detail-btn"
+                                    data-id="{{ payment.id }}"
+                                    title="Zobrazit detail platby">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-danger delete-btn"
+                                    data-id="{{ payment.id }}"
+                                    data-number="{{ payment.specific_symbol }}"
+                                    title="Smazat platbu">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+
+    <script>
+        const table = document.querySelector('table');
+    </script>
+    {% include "Payment/addPayment.twig" %}
+    {% include "Payment/detPayment.twig" %}
+    {% include "Payment/delPayment.twig" %}
+
+{% endblock %}

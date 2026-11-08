@@ -22,7 +22,7 @@ class InvoiceModel extends BaseModel
         // we have to join through clients
         $sql = "SELECT i.*, c.name AS client_name
                 FROM ". $this->table ." i
-                INNER JOIN clients c ON i.client_id = c.id
+                LEFT JOIN clients c ON i.client_id = c.id
                 WHERE c.user_id = :id
                 ORDER BY i.date_issued DESC";
         $stmt = $this->db->prepare($sql);
@@ -85,7 +85,11 @@ class InvoiceModel extends BaseModel
         {
             // create invoice
             $invoiceId = $this->createInvoice($invoiceData);
-            if (!$invoiceId) return false;
+            if (!$invoiceId)
+            {
+                $this->db->rollBack();
+                return false;
+            }
 
             // create invoice items
             foreach ($items as $item) {
@@ -139,6 +143,12 @@ class InvoiceModel extends BaseModel
         ]);
     }
 
+    /**
+     * Deletes an invoice record
+     *
+     * @param int $invoiceId
+     * @return bool
+     */
     public function deleteInvoice(int $invoiceId): bool
     {
         $userId = $_SESSION['user_id'];

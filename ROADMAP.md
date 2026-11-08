@@ -68,7 +68,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [x] **Klienti:**
   - Dokončení `ClientController` a šablon (vytvoření, úprava, smazání).
   - AJAX načítání detailu a mazání s potvrzením.
-- [ ] **Faktury a položky (Master-Detail):**
+- [x] **Faktury a položky (Master-Detail):**
   - Vystavení faktury s dynamickým přidáváním/odebíráním položek přes JavaScript.
   - Zápis do DB v jedné atomické transakci (`$db->beginTransaction()`).
   - Výpočet celkové částky z položek faktury.
@@ -113,7 +113,8 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
   - Asynchronní operace s feedbackem přes Bootstrap toast / alert.
   - Potvrzovací modaly před smazáním záznamů.
 
-### Fáze 7: Finální kontrola a příprava na obhajobu
+### Fáze 7: Finální cleanup kontrola a příprava na obhajobu
+- [ ] Až bude hotová všechny backend funkcionalita, tak projít veškerý frontend a udělat jej hezčím :-)
 - [ ] Validace všech HTML stránek přes W3C validátor.
 - [ ] Test spuštění přes čistý `docker compose up --build`.
 - [ ] Kontrola PHP chybových hlášení při zapnutém `E_ALL`.

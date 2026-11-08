@@ -55,9 +55,9 @@
                     </td>
                     <td data-label="Stav" class="align-middle">
                         {% if invoice.paid %}
-                            <span class="badge text-bg-success">Uhrazeno</span>
+                            <span class="badge bg-success">Uhrazeno</span>
                         {% else %}
-                            <span class="badge text-bg-warning">Neuhrazeno</span>
+                            <span class="badge bg-danger">Neuhrazeno</span>
                         {% endif %}
                     </td>
                     <td class="text-end align-middle text-nowrap">
@@ -65,14 +65,14 @@
                                 class="btn btn-sm btn-outline theme-primary detail-btn"
                                 data-id="{{ invoice.id }}"
                                 title="Zobrazit detail faktury">
-                            👁️
+                            <i class="bi bi-eye-fill"></i>
                         </button>
                         <button type="button"
                                 class="btn btn-sm btn-outline theme-danger delete-btn"
                                 data-id="{{ invoice.id }}"
                                 data-number="{{ invoice.invoice_number }}"
                                 title="Smazat fakturu">
-                            🗑️
+                            <i class="bi bi-trash-fill"></i>
                         </button>
                     </td>
                 </tr>
