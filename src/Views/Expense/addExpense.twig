@@ -1,0 +1,74 @@
+<!-- dialog for expense add -->
+<dialog class="dialog" id="addExpenseDialog">
+    <form id="addExpenseForm" data-bs-validate enctype="multipart/form-data">
+        <div class="dialog-header">
+            <h5 class="dialog-title">Nový výdaj</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <label for="name" class="form-label">
+                Název<span class="fg-danger">*</span>
+            </label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Cestovné">
+
+            <label for="total_amount" class="form-label mt-2">
+                Částka<span class="fg-danger">*</span>
+            </label>
+            <input type="number" id="total_amount" name="total_amount" class="form-control" required>
+
+            <label for="expense_date" class="form-label mt-2">
+                Datum výdaje<span class="fg-danger">*</span>
+            </label>
+            <input type="date" id="expense_date" name="expense_date" class="form-control" required>
+
+            <label for="note" class="form-label mt-2">
+                Poznámka
+            </label>
+            <input type="text" id="note" name="note" class="form-control">
+
+            <!-- file upload -->
+            <label for="receipt" class="form-label mt-2">
+                Účtenka (.pdf/.jpg/.png)
+            </label>
+            <input type="file" id="receipt" name="receipt" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+
+        {# TODO: add loading indicator when file is uploading #}
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Zadat výdaj</button>
+        </div>
+    </form>
+</dialog>
+
+
+<script>
+    // -- Submit Logic --
+    const expenseForm = document.getElementById('addExpenseForm');
+
+    expenseForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        const res = await fetch('/expenses/add', {
+            method: 'POST',
+            body: formData,
+            headers: {'Accept': 'application/json'},
+        });
+
+        // const text = await res.text();
+        // console.log(res.status, res.redirected, text);
+        const json = await res.json();
+        if (!res.ok)
+        {
+            alert(json.message);
+            return;
+        }
+
+        window.location.reload();
+    });
+
+    // default date to current day
+    document.getElementById('expense_date').valueAsDate = new Date();
+
+</script>

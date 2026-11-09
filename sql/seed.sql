@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 CREATE TABLE IF NOT EXISTS `expenses` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `user_id` integer NOT NULL,
+  `name` varchar(255) NOT NULL,
   `total_amount` decimal(10,2),
   `expense_date` datetime NOT NULL COMMENT 'oproti navrzenemu schematu zmena, protoze dava smysl vedet kdy vydaje byly',
   `note` text,
@@ -104,21 +105,21 @@ CREATE TABLE IF NOT EXISTS `invoice_payment` (
 -- FOREIGN KEYS
 -- =============================================================================
 
-ALTER TABLE `expenses` ADD CONSTRAINT IF NOT EXISTS `fk_expenses_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `expenses` ADD CONSTRAINT `fk_expenses_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `clients` ADD CONSTRAINT IF NOT EXISTS `fk_clients_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `clients` ADD CONSTRAINT `fk_clients_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `clients` ADD CONSTRAINT IF NOT EXISTS `fk_clients_type` FOREIGN KEY (`type_id`) REFERENCES `client_types` (`id`) ON DELETE SET NULL;
+ALTER TABLE `clients` ADD CONSTRAINT `fk_clients_type` FOREIGN KEY (`type_id`) REFERENCES `client_types` (`id`) ON DELETE SET NULL;
 
-ALTER TABLE `invoices` ADD CONSTRAINT IF NOT EXISTS `fk_invoices_client` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL;
+ALTER TABLE `invoices` ADD CONSTRAINT `fk_invoices_client` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL;
 
-ALTER TABLE `invoice_items` ADD CONSTRAINT IF NOT EXISTS `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
+ALTER TABLE `invoice_items` ADD CONSTRAINT `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `invoice_payment` ADD CONSTRAINT IF NOT EXISTS `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
+ALTER TABLE `invoice_payment` ADD CONSTRAINT `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `invoice_payment` ADD CONSTRAINT IF NOT EXISTS `fk_invoice_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`) ON DELETE CASCADE;
+ALTER TABLE `invoice_payment` ADD CONSTRAINT `fk_invoice_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `users` ADD CONSTRAINT IF NOT EXISTS `fk_users_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL;
+ALTER TABLE `users` ADD CONSTRAINT `fk_users_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL;
 
 SET FOREIGN_KEY_CHECKS = 1;
 

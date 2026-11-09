@@ -1,0 +1,40 @@
+<script>
+    // connect event listener for the table
+    if (table) {
+        table.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-btn');
+
+            // if deleteBtn was clicked
+            if (deleteBtn) {
+                // we get expense id
+                const expenseId = deleteBtn.dataset.id;
+                const expenseName = deleteBtn.dataset.name || expenseId;
+                // we get row
+                const row = deleteBtn.closest('tr');
+
+                //confirm
+                if (confirm(`Opravdu chcete smazat výdaj ${expenseName}?`)) {
+                    fetch('/expenses/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({ id: expenseId },
+                        )
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                row.remove();
+                                if (!table.querySelector('tbody tr')) window.location.reload();
+                            }
+                            else {
+                                alert('Chyba: '+data.message);
+                            }
+                        })
+                        .catch(err => console.error('Error:', err));
+                }
+            }
+        });
+    }
+</script>

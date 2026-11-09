@@ -1,0 +1,94 @@
+{% extends "layout.twig" %}
+
+{% block title %}Evidence Výdajů | KeepTrakc Enterprise{% endblock %}
+
+{% block stylesheets %}
+    {# TODO CSS #}
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <h1>Evidence Výdajů</h1>
+        <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addExpenseDialog">
+            Zaznamenat nový výdaj
+        </button>
+    </div>
+
+    <div class="card h-100 p-3 p-md-5 my-5">
+        {% if expenses|length == 0 %}
+            <p class="m-auto fg-3"><em>Neevidujete žádné výdaje.</em></p>
+        {% else %}
+            {# TODO: add pagination #}
+            <table class="table table-striped table-stack">
+                <thead>
+                <tr>
+                    <th>Název</th>
+                    <th>Částka</th>
+                    <th>Datum výdaje</th>
+                    <th>Poznámka</th>
+                    <th>Účtenka</th>
+                    <th class="text-end">Akce</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for expense in expenses %}
+                    <tr data-id="{{ expense.id }}">
+                        <td data-label="Název" class="align-middle fw-bold">
+                            {{ expense.name }}
+                        </td>
+                        <td data-label="Částka" class="align-middle fw-bold">
+                            {{ expense.total_amount }}
+                        </td>
+                        <td data-label="Datum výdaje" class="align-middle fw-bold">
+                            {{ expense.expense_date }}
+                        </td>
+                        <td data-label="Poznámka" class="align-middle fw-bold">
+                            {{ expense.note }}
+                        </td>
+                        <td data-label="Účtenka" class="align-middle fw-bold">
+                            {% if expense.receipt_filename %}
+                                <a href="/expenses/receipt?id={{ expense.id }}"
+                                   target="_blank" rel="noopener"
+                                   class="btn btn-sm btn-outline theme-secondary"
+                                   title="Zobrazit účtenku">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end align-middle text-nowrap">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-primary detail-btn"
+                                    data-id="{{ expense.id }}"
+                                    title="Zobrazit detail výdaje">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-danger delete-btn"
+                                    data-id="{{ expense.id }}"
+                                    data-name="{{ expense.name }}"
+                                    title="Smazat výdaj">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <script>
+        const table = document.querySelector('table');
+
+
+    </script>
+    {% include "Expense/addExpense.twig" %}
+    {% include "Expense/editExpense.twig" %}
+    {% include "Expense/detExpense.twig" %}
+    {% include "Expense/delExpense.twig" %}
+
+{% endblock %}

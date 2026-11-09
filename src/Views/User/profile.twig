@@ -34,6 +34,7 @@
                             <td class="fst-italic">{{ user.role_name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
+                            {# TODO: accountant should see this #}
                             <td>Připojený účetní:</td>
                             <td class="fst-italic d-flex align-items-center gap-2">
                                 <span>{{ accountant_name }}</span>
@@ -51,6 +52,7 @@
         <div class="col-6">
             <div class="card h-100">
                 <div class="card-body">
+                    {# TODO: accountant shouldnt be able to add accountant #}
                     <h4 class="card-title">Pozvat účetního</h4>
                     <form method="post" action="/profile/generate-accountant-key">
                         <input type="submit" value="Vygenerovat Klíč" />

@@ -9,6 +9,7 @@ services:
       - "${WEB_PORT:-8080}:80"
     volumes:
       - ./:/var/www/html
+      - receipts:/var/www/html/storage
     env_file:
       - .env
     environment:
@@ -53,6 +54,7 @@ services:
 
 volumes:
   mariadb_data:
+  receipts:
 
 networks:
   kiv-web:

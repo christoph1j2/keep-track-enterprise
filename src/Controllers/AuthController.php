@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Src\Controllers;
 
+use JetBrains\PhpStorm\NoReturn;
 use Src\Models\UserModel;
 use Src\Validators\RegisterValidator;
 
@@ -15,12 +16,11 @@ class AuthController extends BaseController
      * @param array $errors
      * @return void
      */
-    public function registerFormAction(array $data = [], array $errors = [], string $modeArg = null)
+    public function registerFormAction(array $data = [], array $errors = [], string $modeArg = null): void
     {
         /** @var string|null $modeParam - Gets the mode as query param */
         $modeParam = ($modeArg == null) ? $_GET['mode'] ?? null : $modeArg;
 
-        /** @var string $mode - Parses the register mode into registerForm view (accountant has an extra key field) */
         $mode = ($modeParam !== null)
             ? (($modeParam == 'accountant')
                 ? 'accountant'
@@ -41,7 +41,7 @@ class AuthController extends BaseController
      *
      * @return void
      */
-    public function registerSubmitAction()
+    public function registerSubmitAction(): void
     {
         /** @var string $mode - Uses the mode from POST to redirect correctly and save the user correctly */
         $mode = $_POST['mode'] ?? 'osvc';
@@ -93,7 +93,7 @@ class AuthController extends BaseController
      * @param array $errors
      * @return void
      */
-    public function loginFormAction(array $data = [], array $errors = [])
+    public function loginFormAction(array $data = [], array $errors = []): void
     {
         $this->render('User/loginForm.twig', [
             'data' => $data,
@@ -106,7 +106,7 @@ class AuthController extends BaseController
      *
      * @return void
      */
-    public function loginSubmitAction()
+    public function loginSubmitAction(): void
     {
         // sanity check
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
@@ -151,7 +151,7 @@ class AuthController extends BaseController
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role_name'];
 
-            $this->redirect('/dashboard');
+            $this->redirect('/dashboard'); // TODO: if admin then redirect to /admin
         }
 
         $errors = ['password' => 'Vaše přihlašovací údaje jsou chybné.'];
@@ -162,7 +162,8 @@ class AuthController extends BaseController
      * Logs the user out
      * @return void
      */
-    public function logoutAction()
+    #[NoReturn]
+    public function logoutAction(): void
     {
         session_unset();
         session_destroy();

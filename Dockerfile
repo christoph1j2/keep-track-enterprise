@@ -15,5 +15,15 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Set working dir
 WORKDIR /var/www/html
 
+RUN { \
+    echo 'upload_max_filesize=6M'; \
+    echo 'post_max_size=8M'; \
+} > /usr/local/etc/php/conf.d/uploads.ini
+
 # Copy project code into container
 COPY . /var/www/html
+
+# Storage for uploaded receipts
+RUN mkdir -p /var/www/html/storage/receipts \
+    && chown -R www-data:www-data /var/www/html/storage \
+    && chmod -R 750 /var/www/html/storage
