@@ -154,6 +154,22 @@ class ClientModel extends BaseModel
         ]);
     }
 
+    /**
+     * Gets a total count of all rows in a db table. (KPI purposes)
+     *
+     * @return int
+     */
+    public function totalCount(): int
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return -1;
+
+        $sql = "SELECT COUNT(*) AS total FROM " . $this->table . " WHERE user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetch()['total'];
+    }
+
     //? --- CLIENT TYPE LOGIC ---
     /**
      * Gets all client types from database.

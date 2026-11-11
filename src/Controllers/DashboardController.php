@@ -4,6 +4,10 @@ declare(strict_types=1);
 namespace Src\Controllers;
 
 use PDO;
+use Src\Models\ClientModel;
+use Src\Models\ExpenseModel;
+use Src\Models\InvoiceModel;
+use Src\Models\PaymentModel;
 
 class DashboardController extends BaseController
 {
@@ -28,15 +32,30 @@ class DashboardController extends BaseController
      */
     public function dashboardAction(): void
     {
+        $role   = $_SESSION["role"];
+
+        $clientModel  = new ClientModel($this->db);
+        $invoiceModel = new InvoiceModel($this->db);
+        $paymentModel = new PaymentModel($this->db);
+        $expenseModel = new ExpenseModel($this->db);
+
+        $clientCount  = $clientModel->totalCount();
+        $invoiceSum   = $invoiceModel->totalSum();
+        $paymentSum   = $paymentModel->totalSum();
+        $expenseSum   = $expenseModel->totalSum();
+
         // TODO: fetch from models, hardcoded values for demonstration purposes
         $stats = [
-            "clients" => 1,
-            "invoices" => 123456,
-            "income" => 12345,
-            "expenses" => 12345,
+            "clients"  => $clientCount,
+            "invoices" => $invoiceSum,
+            "income"   => $paymentSum,
+            "expenses" => $expenseSum,
         ];
 
-        $this->render("Dashboard/dashboard.twig", ["stats" => $stats]);
+        $this->render("Dashboard/dashboard.twig", [
+            "stats" => $stats,
+            "role"  => $role,
+        ]);
     }
 
 }

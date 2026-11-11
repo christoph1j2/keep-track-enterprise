@@ -162,4 +162,19 @@ class InvoiceModel extends BaseModel
         $stmt->execute([':id' => $invoiceId, ':user_id' => $userId]);
         return $stmt->rowCount() > 0;
     }
+
+    public function totalSum(): float
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return -1;
+
+        // TODO FIX
+        $sql = "
+            SELECT COALESCE(SUM(total_amount), 0) AS total FROM " . $this->table . " i 
+            INNER JOIN clients c on i.client_id = c.id
+            WHERE c.user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetch()['total'];
+    }
 }
