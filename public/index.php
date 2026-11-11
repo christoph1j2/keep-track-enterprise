@@ -75,7 +75,6 @@ $router->post('/payments/get-detail', PaymentController::class, 'getPaymentDetai
 $router->get('/expenses', ExpenseController::class, 'expensesAction');
 $router->post('/expenses/add', ExpenseController::class, 'addExpenseAction');
 $router->post('/expenses/delete', ExpenseController::class, 'deleteExpenseAction');
-$router->post('/expenses/get-detail', ExpenseController::class, 'getExpenseDetailAjaxAction');
 $router->post('/expenses/edit', ExpenseController::class, 'editExpenseAction');
 $router->get('/expenses/receipt', ExpenseController::class, 'receiptAction');
 

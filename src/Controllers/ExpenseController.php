@@ -34,16 +34,18 @@ class ExpenseController extends BaseController
     public function receiptAction(): void
     {
         Auth::check();
-        //TODO: when you go to .../receipt?id=X where X is a non-existent id, then many PHP errors popup, which is BAD!!! FIX!!!
+        $err = new ErrorController($this->db);
         $id = (int)($_GET['id'] ?? 0);
+        if (!$id || $id < 1) $err->notFoundAction();
+
         $model = new ExpenseModel($this->db);
         $r = $model->findReceiptById($id);
 
-        $path = __DIR__ . '/../../storage/receipts/' . $r['receipt_filename'];
-        if (!is_file($path)) {
-            $err = new ErrorController($this->db);
+        if (!$r) $err->notFoundAction();
+
+        $path = realpath(__DIR__ . '/../../storage/receipts/' . $r['receipt_filename']);
+        if ($path === false || !is_file($path))
             $err->notFoundAction();
-        }
 
         header('Content-Type: ' . $r['receipt_mime']);
         header('Content-Length: ' . filesize($path));
@@ -51,19 +53,6 @@ class ExpenseController extends BaseController
         header('X-Content-Type-Options: nosniff');
         header('Cache-Control: private, no-store');
         readfile($path);
-    }
-
-    /**
-     * Handles an AJAX request for expense detail data
-     *
-     * @return void
-     */
-    public function getExpenseDatailAjaxAction(): void
-    {
-        // sanity check
-        Auth::check();
-
-        // TODO: Implement
     }
 
     /**
@@ -123,8 +112,51 @@ class ExpenseController extends BaseController
     {
         // sanity check
         Auth::check();
+        header('Content-Type: application/json');
 
-        // TODO: Implement
+        $id = (int)($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $total_amount = $_POST['total_amount'] ?? null;
+        $expense_date = $_POST['expense_date'] ?? null;
+        $note = trim($_POST['note'] ?? '');
+
+        // validate (todo: move to validator?)
+        if ($id < 1 || !is_numeric($total_amount) || (float)$total_amount <= 0 || $name === '' || $expense_date === '' || empty($expense_date))
+        {
+            $response = ['status' => 'error', 'message' => 'Povinná pole vyplněna chybně.'];
+            echo json_encode($response);
+            return;
+        }
+
+        try
+        {
+            $model = new ExpenseModel($this->db);
+            $ok = $model->updateExpense($id, [
+                'name' => $name,
+                'total_amount' => $total_amount,
+                'expense_date' => $expense_date,
+                'note' => $note,
+                'receipt' => $_FILES['file'] ?? null,
+                'remove_receipt' => isset($_POST['remove_receipt']),
+            ]);
+
+            if (!$ok)
+            {
+                $response = ['status' => 'error', 'message' => 'Výdaj nenalezen.'];
+                echo json_encode($response);
+                return;
+            }
+            $response = ['status' => 'success', 'message' => 'Výdaj nenalezen'];
+            echo json_encode($response);
+        }
+        catch (\RuntimeException $e) {
+            $response = ['status' => 'error', 'message' => $e->getMessage()];
+            echo json_encode($response);
+        } catch (\Throwable $e) {
+            $response = ['status' => 'error', 'message' => 'Nepodařilo se upravit výdaj.'];
+            echo json_encode($response);
+        }
+
     }
 
     /**

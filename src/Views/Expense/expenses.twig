@@ -61,10 +61,9 @@
 
                         <td class="text-end align-middle text-nowrap">
                             <button type="button"
-                                    class="btn btn-sm btn-outline theme-primary detail-btn"
-                                    data-id="{{ expense.id }}"
-                                    title="Zobrazit detail výdaje">
-                                <i class="bi bi-eye-fill"></i>
+                                    class="btn btn-sm btn-outline theme-success edit-btn"
+                                    data-id="{{ client.id }}">
+                                <i class="bi bi-pencil-fill"></i>
                             </button>
                             <button type="button"
                                     class="btn btn-sm btn-outline theme-danger delete-btn"
@@ -88,7 +87,6 @@
     </script>
     {% include "Expense/addExpense.twig" %}
     {% include "Expense/editExpense.twig" %}
-    {% include "Expense/detExpense.twig" %}
     {% include "Expense/delExpense.twig" %}
 
 {% endblock %}

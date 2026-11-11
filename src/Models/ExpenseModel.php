@@ -162,15 +162,95 @@ class ExpenseModel extends BaseModel
         return ['filename' => $name, 'original' => basename($f['name']), 'mime' => $mime];
     }
 
+    /**
+     * Updates an expense with new data, can remove old file and add new file
+     *
+     * @param int $id
+     * @param array $expenseData
+     * @return bool
+     * @throws RandomException
+     * @throws \Throwable
+     */
     public function updateExpense(int $id, array $expenseData): bool
     {
         $userId = $_SESSION['user_id'];
         if (!$userId) return false;
 
-        // TODO: Implement (+fileupload)
-        return false;
+        // current row
+        $current = $this->getExpenseById($id);
+        if (!$current) return false;
+
+        $oldFilename = $current['receipt_filename'];
+        $newReceipt = null; // only if we save new file
+        $file = $expenseData['receipt'] ?? null;
+
+        if ($file && $file['error'] !== UPLOAD_ERR_NO_FILE)
+        {
+            // 1) new file uploaded -> replace old file
+            $newReceipt = $this->saveFile($file);
+            $receipt = $newReceipt;
+        }
+        elseif (!empty($expenseData['remove_receipt']))
+        {
+            // 2) just remove the receipt
+            $receipt = ['filename' => null, 'original' => null, 'mime' => null];
+        }
+        else
+        {
+            // 3) keep what we have
+            $receipt = [
+                'filename' => $current['receipt_filename'],
+                'original' => $current['receipt_original_name'],
+                'mime' => $current['receipt_mime'],
+            ];
+        }
+
+        try
+        {
+            $sql = "UPDATE ".$this->table."
+                    SET name = :name,
+                        total_amount = :total_amount,
+                        expense_date = :expense_date,
+                        note = :note,
+                        receipt_filename = :receipt_filename,
+                        receipt_original_name = :receipt_original_name,
+                        receipt_mime = :receipt_mime
+                    WHERE id = :expense_id AND user_id = :user_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':name' => $expenseData['name'],
+                ':total_amount' => $expenseData['total_amount'],
+                ':expense_date' => $expenseData['expense_date'],
+                ':note' => $expenseData['note'] ?: null,
+                ':receipt_filename' => $receipt['filename'],
+                ':receipt_original_name' => $receipt['original'],
+                ':receipt_mime' => $receipt['mime'],
+                ':expense_id' => $id,
+                ':user_id' => $userId
+            ]);
+        } catch (\Throwable $e)
+        {
+            // update failed -> throw away the new file, old one still referenced
+            if ($newReceipt) @unlink(self::DIR . '/' . $newReceipt['filename']);
+            throw $e;
+        }
+
+        // DB is updated, now remove old file as it is no longer referenced
+        if ($oldFilename && $oldFilename !== $receipt['filename'])
+        {
+            $path = self::DIR . '/' . $oldFilename;
+            if (is_file($path)) @unlink($path);
+        }
+
+        return true;
     }
 
+    /**
+     * Delets an existing expense
+     *
+     * @param int $id
+     * @return bool
+     */
     public function deleteExpense(int $id): bool
     {
         $userId = $_SESSION['user_id'];
