@@ -19,10 +19,19 @@ class ExpenseController extends BaseController
         Auth::check();
 
         $expenseModel = new ExpenseModel($this->db);
-        $expenses = $expenseModel->getAllExpenses();
+
+        $perPage = 15;
+        $total   = $expenseModel->totalCount();
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $expenses = $expenseModel->getPaginated($page, $perPage);
 
         $this->render('Expense/expenses.twig', [
             'expenses' => $expenses,
+            'page'     => $page,
+            'pages'    => $pages,
+            'total'    => $total,
         ]);
     }
 

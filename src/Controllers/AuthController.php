@@ -27,7 +27,7 @@ class AuthController extends BaseController
                 : 'osvc')
             : 'osvc';
 
-        var_dump($mode, $modeParam, $modeArg); // TODO: REMOVE
+        //var_dump($mode, $modeParam, $modeArg); // TODO: REMOVE
 
         $this->render('User/registerForm.twig', [
             'data' => $data,

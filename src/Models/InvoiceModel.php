@@ -163,18 +163,66 @@ class InvoiceModel extends BaseModel
         return $stmt->rowCount() > 0;
     }
 
-    public function totalSum(): float
+    /**
+     * Returns paginated invoices for the current user
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     */
+    public function getPaginated(int $page, int $perPage): array
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return [];
+
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "SELECT i.*, c.name AS client_name
+                FROM ". $this->table ." i
+                LEFT JOIN clients c ON i.client_id = c.id
+                WHERE c.user_id = :user_id
+                ORDER BY i.date_issued DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId, ':limit' => $perPage, ':offset' => $offset]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Gets a total count of all invoices for the current user. (KPI / pagination purposes)
+     *
+     * @return int
+     */
+    public function totalCount(): int
     {
         $userId = $_SESSION['user_id'];
         if (!$userId) return -1;
 
-        // TODO FIX
+        $sql = "SELECT COUNT(*) AS total
+                FROM ". $this->table ." i
+                INNER JOIN ". $this->clientTable ." c ON i.client_id = c.id
+                WHERE c.user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Returns sum of all total_amount entries
+     *
+     * @return float
+     */
+    public function totalSum(): float
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return -1.0;
+
         $sql = "
             SELECT COALESCE(SUM(total_amount), 0) AS total FROM " . $this->table . " i 
-            INNER JOIN clients c on i.client_id = c.id
+            INNER JOIN ".$this->clientTable." c on i.client_id = c.id
             WHERE c.user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':user_id' => $userId]);
-        return $stmt->fetch()['total'];
+        return (float) $stmt->fetchColumn();
     }
 }

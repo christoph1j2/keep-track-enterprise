@@ -19,13 +19,22 @@ class PaymentController extends BaseController
         Auth::check();
 
         $paymentModel = new PaymentModel($this->db);
-        $payments = $paymentModel->getAllPayments();
+
+        $perPage = 15;
+        $total   = $paymentModel->totalCount();
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $payments = $paymentModel->getPaginated($page, $perPage);
 
         $unpaidInvoices = $paymentModel->getUnpaidInvoices();
 
         $this->render('Payment/payments.twig', [
-            'payments' => $payments,
+            'payments'       => $payments,
             'unpaidInvoices' => $unpaidInvoices,
+            'page'           => $page,
+            'pages'          => $pages,
+            'total'          => $total,
         ]);
     }
 

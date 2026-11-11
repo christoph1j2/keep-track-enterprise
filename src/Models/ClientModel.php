@@ -155,6 +155,27 @@ class ClientModel extends BaseModel
     }
 
     /**
+     * Returns paginated clients
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     */
+    public function getPaginated(int $page, int $perPage): array
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $sql = 'SELECT c.*, ct.name AS type_name
+                FROM '. $this->table .' c
+                LEFT JOIN '. $this->table_types .' ct ON ct.id = c.type_id
+                ORDER BY c.name
+                LIMIT :limit OFFSET :offset';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':limit' => $perPage, ':offset' => $offset]);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Gets a total count of all rows in a db table. (KPI purposes)
      *
      * @return int
@@ -167,7 +188,7 @@ class ClientModel extends BaseModel
         $sql = "SELECT COUNT(*) AS total FROM " . $this->table . " WHERE user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':user_id' => $userId]);
-        return $stmt->fetch()['total'];
+        return $stmt->fetchColumn();
     }
 
     //? --- CLIENT TYPE LOGIC ---
@@ -186,6 +207,6 @@ class ClientModel extends BaseModel
     {
         $stmt = $this->db->prepare("SELECT 1 FROM ". $this->table_types ." WHERE id = :id");
         $stmt->execute([':id' => $id]);
-        return $stmt->fetchColumn();
+        return (bool) $stmt->fetchColumn();
     }
 }

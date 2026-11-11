@@ -1,0 +1,17 @@
+{% if pages > 1 %}
+    <nav aria-label="Stránkování" class="d-flex justify-content-center gap-1 mt-4">
+        {% if page > 1 %}
+            <a class="btn btn-sm btn-outline" href="?page={{ page - 1 }}">&laquo;</a>
+        {% endif %}
+
+        {% for p in max(1, page - 2)..min(pages, page + 2) %}
+            <a class="btn btn-sm {{ p == page ? 'btn-solid' : 'btn-outline' }}"
+               href="?page={{ p }}"
+               {% if p == page %}aria-current="page"{% endif %}>{{ p }}</a>
+        {% endfor %}
+
+        {% if page < pages %}
+            <a class="btn btn-sm btn-outline" href="?page={{ page + 1 }}">&raquo;</a>
+        {% endif %}
+    </nav>
+{% endif %}

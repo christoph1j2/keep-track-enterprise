@@ -295,4 +295,75 @@ class PaymentModel extends BaseModel
 
         return $stmt->rowCount() > 0;
     }
+
+    /**
+     * Returns paginated payments for the current user
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     */
+    public function getPaginated(int $page, int $perPage): array
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return [];
+
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "SELECT
+                    p.*,
+                    GROUP_CONCAT(i.invoice_number SEPARATOR ', ') AS invoice_numbers
+                FROM ".$this->table." p
+                    INNER JOIN ".$this->helperTables['join']." ip ON p.id = ip.payment_id
+                    INNER JOIN ".$this->helperTables['invoice']." i ON ip.invoice_id = i.id
+                    INNER JOIN ".$this->helperTables['client']." c ON i.client_id = c.id
+                WHERE c.user_id = :user_id
+                GROUP BY p.id
+                ORDER BY p.date_paid DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId, ':limit' => $perPage, ':offset' => $offset]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Gets a total count of all payments for the current user. (KPI / pagination purposes)
+     *
+     * @return int
+     */
+    public function totalCount(): int
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return -1;
+
+        $sql = "SELECT COUNT(DISTINCT p.id) AS total
+                FROM ".$this->table." p
+                    INNER JOIN ".$this->helperTables['join']." ip ON p.id = ip.payment_id
+                    INNER JOIN ".$this->helperTables['invoice']." i ON ip.invoice_id = i.id
+                    INNER JOIN ".$this->helperTables['client']." c ON i.client_id = c.id
+                WHERE c.user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Returns sum of all total_amount entries
+     *
+     * @return float
+     */
+    public function totalSum(): float
+    {
+        $userId = $_SESSION['user_id'];
+        if (!$userId) return -1.0;
+
+        $sql = "SELECT COALESCE(SUM(amount_assigned), 0) FROM ".$this->table." p
+                INNER JOIN ".$this->helperTables['join']." pi ON p.id = pi.payment_id
+                INNER JOIN ".$this->helperTables['invoice']." i ON pi.invoice_id = i.id
+                INNER JOIN ".$this->helperTables['client']." c ON i.client_id = c.id
+                WHERE c.user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        return (float) $stmt->fetchColumn();
+    }
 }

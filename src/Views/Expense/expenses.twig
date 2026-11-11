@@ -19,7 +19,6 @@
         {% if expenses|length == 0 %}
             <p class="m-auto fg-3"><em>Neevidujete žádné výdaje.</em></p>
         {% else %}
-            {# TODO: add pagination #}
             <table class="table table-striped table-stack">
                 <thead>
                 <tr>
@@ -77,6 +76,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include "Partial/pagination.twig" %}
         {% endif %}
     </div>
 

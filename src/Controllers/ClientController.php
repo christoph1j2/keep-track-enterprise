@@ -22,12 +22,21 @@ class ClientController extends BaseController
         Auth::check();
 
         $model = new ClientModel($this->db);
-        $clients = $model->getAllClients();
         $clientTypes = $model->getAllClientTypes();
+
+        $perPage = 15;
+        $total   = $model->totalCount();
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $clients = $model->getPaginated($page, $perPage);
 
         $this->render('Client/clients.twig', [
             'clients' => $clients,
-            'clientTypes' => $clientTypes
+            'clientTypes' => $clientTypes,
+            'page'      => $page,
+            'pages'   => $pages,
+            'total'     => $total,
         ]);
     }
 

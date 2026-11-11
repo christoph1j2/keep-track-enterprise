@@ -20,14 +20,23 @@ class InvoiceController extends BaseController
         Auth::check();
 
         $invoiceModel = new InvoiceModel($this->db);
-        $invoices = $invoiceModel->getAllInvoices();
+
+        $perPage = 15;
+        $total   = $invoiceModel->totalCount();
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $invoices = $invoiceModel->getPaginated($page, $perPage);
 
         $clientModel = new ClientModel($this->db);
         $clients = $clientModel->getAllClients();
 
         $this->render('Invoice/invoices.twig', [
             'invoices' => $invoices,
-            'clients' => $clients,
+            'clients'  => $clients,
+            'page'     => $page,
+            'pages'    => $pages,
+            'total'    => $total,
         ]);
     }
 

@@ -86,7 +86,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [ ] **Dashboard OSVČ:**
   - KPI karty: Příjmy celkem, Výdaje celkem, Čistá bilance (zisk), Neuhrazené pohledávky.
   - Přehled nezaplacených faktur s termínem splatnosti.
-  - Vizuální ukazatel / graf procenta uhrazení a rozložení výdajů podle kategorií.
+  - Vizuální ukazatel / graf procenta uhrazení a ~~rozložení výdajů podle kategorií.~~
 - [ ] **Pohled Účetního:**
   - Přepínač mezi OSVČ, které účetnímu udělily přístup.
   - Read-only zobrazení faktur, plateb a výdajů dané OSVČ včetně nahraných účtenek.

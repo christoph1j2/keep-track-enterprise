@@ -15,6 +15,22 @@
         {#  kpi cards  #}
         {% include "Dashboard/OSVC/kpi.twig" %}
         <hr/>
+
+        {# TODO: unpaid invoices pretty table #}
+        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tbody>
+                {% for i in unpaidInvoices %}
+                    <tr style="background-color: blueviolet; color: white;">
+                        <td style="padding: 8px;">{{ i.invoice_number }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <hr/>
         {# action cards #}
         {% include "Dashboard/OSVC/action.twig" %}
     {# todo: rework for accountant #}

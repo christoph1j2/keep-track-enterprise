@@ -44,7 +44,8 @@ class DashboardController extends BaseController
         $paymentSum   = $paymentModel->totalSum();
         $expenseSum   = $expenseModel->totalSum();
 
-        // TODO: fetch from models, hardcoded values for demonstration purposes
+        $unpaidInvoices = $paymentModel->getUnpaidInvoices();
+
         $stats = [
             "clients"  => $clientCount,
             "invoices" => $invoiceSum,
@@ -55,6 +56,7 @@ class DashboardController extends BaseController
         $this->render("Dashboard/dashboard.twig", [
             "stats" => $stats,
             "role"  => $role,
+            "unpaidInvoices" => $unpaidInvoices,
         ]);
     }
 
