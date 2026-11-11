@@ -73,6 +73,7 @@ $router->post('/payments/add', PaymentController::class, 'addPaymentAction');
 $router->post('/payments/delete', PaymentController::class, 'deletePaymentAction');
 $router->post('/payments/get-detail', PaymentController::class, 'getPaymentDetailAjaxAction');
 $router->get('/expenses', ExpenseController::class, 'expensesAction');
+$router->post('/expenses/get', ExpenseController::class, 'getExpenseByIdAjaxAction');
 $router->post('/expenses/add', ExpenseController::class, 'addExpenseAction');
 $router->post('/expenses/delete', ExpenseController::class, 'deleteExpenseAction');
 $router->post('/expenses/edit', ExpenseController::class, 'editExpenseAction');

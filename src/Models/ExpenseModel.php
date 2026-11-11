@@ -145,9 +145,14 @@ class ExpenseModel extends BaseModel
     private function saveFile(array $f): array
     {
         // throw exception if upload_err_ok flag is not set
-        if ($f['error'] !== UPLOAD_ERR_OK) throw new \RuntimeException('Upload failed');
-        // throw exception if file_size > 5MB
-        if ($f['size']  > self::MAX_SIZE) throw new \RuntimeException('File too large');
+        if ($f['error'] !== UPLOAD_ERR_OK) {
+            throw new \RuntimeException(match ($f['error']) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Soubor je příliš velký (max 5 MB).',
+                UPLOAD_ERR_PARTIAL                        => 'Nahrávání bylo přerušeno, zkus to znovu.',
+                default                                   => 'Nahrání souboru selhalo.',
+            });
+        }        // throw exception if file_size > 5MB
+        if ($f['size']  > self::MAX_SIZE) throw new \RuntimeException('Soubor je příliš velký.');
 
         // get mime via finfo lib; throw exception if mime isnt in allowed array
         $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);

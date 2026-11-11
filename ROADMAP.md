@@ -75,7 +75,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [x] **Platby a párování s fakturami:**
   - Záznam platby s okamžitým přiřazením k jedné či více fakturám v jedné transakci (`invoice_payment`).
   - Automatická kontrola a nastavení `invoices.paid = 1`, pokud je faktura plně uhrazena.
-- [ ] **Výdaje a Upload dokladů:**
+- [x] **Výdaje a Upload dokladů:**
   - Evidence výdajů s přiřazením do kategorie.
   - Upload účtenky (PDF / JPG / PNG):
     - Validace velikosti a MIME typu.

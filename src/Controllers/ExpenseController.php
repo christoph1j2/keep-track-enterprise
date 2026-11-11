@@ -81,25 +81,72 @@ class ExpenseController extends BaseController
             return;
         }
 
-        // prep expense date
-        $expenseData = [
-            'name' => $name,
-            'total_amount' => $total_amount,
-            'expense_date' => $expense_date,
-            'note' => $note,
-            'receipt' => $receipt,
-        ];
+        try {
+            // prep expense date
+            $expenseData = [
+                'name' => $name,
+                'total_amount' => $total_amount,
+                'expense_date' => $expense_date,
+                'note' => $note,
+                'receipt' => $receipt,
+            ];
 
-        // save
+            // save
+            $model = new ExpenseModel($this->db);
+            $expenseId = $model->createExpense($expenseData);
+
+            // json res
+            if ($expenseId)
+                $response = ['status' => 'success', 'message' => 'Výdaj úspěšně vytvořen!'];
+            else
+                $response = ['status' => 'error', 'message' => 'Nepodařilo se vytvořit výdaj'];
+
+            echo json_encode($response);
+        } catch (\RuntimeException $e) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        } catch (\Throwable $e) {
+            error_log((string)$e);
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se vytvořit výdaj.']);
+        }
+    }
+
+    /**
+     * Gets expense by ID
+     *
+     * @return void
+     */
+    public function getExpenseByIdAjaxAction(): void
+    {
+        // sanity check
+        Auth::check();
+
+        header("Content-type: application/json");
+        // gets id from ajax request
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+        if (!$id)
+        {
+            $response = ['status' => 'error', 'message' => 'Nevalidní ID výdaje'];
+            echo json_encode($response);
+            return;
+        }
+
+        // get expense from model
         $model = new ExpenseModel($this->db);
-        $expenseId = $model->createExpense($expenseData);
+        $expense = $model->getExpenseById($id);
 
-        // json res
-        if ($expenseId)
-            $response = ['status' => 'success', 'message' => 'Výdaj úspěšně vytvořen!'];
-        else
-            $response = ['status' => 'error', 'message' => 'Nepodařilo se vytvořit výdaj'];
+        // check if expense exists
+        if (!$expense)
+        {
+            $response = ['status' => 'error', 'message' => 'Nevalidní ID výdaje'];
+            echo json_encode($response);
+            return;
+        }
 
+        //json res
+        $response = ['status'=>'success', 'expense' => $expense];
         echo json_encode($response);
     }
 
@@ -112,16 +159,24 @@ class ExpenseController extends BaseController
     {
         // sanity check
         Auth::check();
-        header('Content-Type: application/json');
 
-        $id = (int)($_POST['id'] ?? 0);
+        $expenseId = isset($_POST['id']) ? (int)$_POST['id'] : null;
+
+        if (!$expenseId)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Chybí ID výdaje']);
+            return;
+        }
+
+        $model = new ExpenseModel($this->db);
         $name = trim($_POST['name'] ?? '');
         $total_amount = $_POST['total_amount'] ?? null;
         $expense_date = $_POST['expense_date'] ?? null;
         $note = trim($_POST['note'] ?? '');
 
         // validate (todo: move to validator?)
-        if ($id < 1 || !is_numeric($total_amount) || (float)$total_amount <= 0 || $name === '' || $expense_date === '' || empty($expense_date))
+        if ($expenseId < 1 || !is_numeric($total_amount) || (float)$total_amount <= 0 || $name === '' || $expense_date === '' || empty($expense_date))
         {
             $response = ['status' => 'error', 'message' => 'Povinná pole vyplněna chybně.'];
             echo json_encode($response);
@@ -130,8 +185,7 @@ class ExpenseController extends BaseController
 
         try
         {
-            $model = new ExpenseModel($this->db);
-            $ok = $model->updateExpense($id, [
+            $ok = $model->updateExpense($expenseId, [
                 'name' => $name,
                 'total_amount' => $total_amount,
                 'expense_date' => $expense_date,
@@ -146,7 +200,8 @@ class ExpenseController extends BaseController
                 echo json_encode($response);
                 return;
             }
-            $response = ['status' => 'success', 'message' => 'Výdaj nenalezen'];
+            header('Content-Type: application/json');
+            $response = ['status' => 'success', 'message' => 'Výdaj nalezen!'];
             echo json_encode($response);
         }
         catch (\RuntimeException $e) {

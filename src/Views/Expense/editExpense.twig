@@ -82,15 +82,17 @@
                 document.getElementById('editExpenseDate').value   = (e.expense_date || '').slice(0, 10); // datetime -> yyyy-mm-dd
                 document.getElementById('editExpenseNote').value   = e.note || '';
 
+                const hasReceipt = e.receipt_original_name;
+
                 const current = document.getElementById('editReceiptCurrent');
                 const link    = document.getElementById('editReceiptLink');
-                current.hidden = !e.has_receipt;
-                if (e.has_receipt) {
+                current.hidden = !hasReceipt;
+                if (hasReceipt) {
                     link.textContent = e.receipt_original_name;
                     link.href = `/expenses/receipt?id=${e.id}`;
                 }
                 document.getElementById('editFileLabel').textContent =
-                    e.has_receipt ? 'Nahradit účtenku novým souborem' : 'Účtenka (.pdf/.jpg/.png)';
+                    hasReceipt ? 'Nahradit účtenku novým souborem (Max 5MB)' : 'Účtenka (.pdf/.jpg/.png) Max 5MB';
 
                 editExpenseDialog.showModal();
             } catch (err) {
@@ -107,6 +109,11 @@
     editExpenseForm.addEventListener('submit', async function (event) {
         event.preventDefault();
 
+        const btn = this.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Nahrávám';
+
         try {
             const res  = await fetch('/expenses/edit', {
                 method: 'POST',
@@ -121,6 +128,10 @@
             window.location.reload();
         } catch (err) {
             console.error(err);
+            alert('Nepodařilo se spojit se serverem.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
         }
     });
 </script>
