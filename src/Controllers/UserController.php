@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Src\Controllers;
 
-use Src\Controllers\BaseController;
+use JetBrains\PhpStorm\NoReturn;
+use Random\RandomException;
 use Src\Middleware\Auth;
 use Src\Models\UserModel;
 
@@ -14,7 +15,7 @@ class UserController extends BaseController
      *
      * @return void
      */
-    public function profileAction()
+    public function profileAction(): void
     {
         // sanity check
         Auth::check();
@@ -38,11 +39,12 @@ class UserController extends BaseController
      * Method for calling the accountant key gen
      *
      * @return void
+     * @throws RandomException
      */
+    #[NoReturn]
     public function generateAccountantKeyAction(): void
     {
-        // sanity check
-        Auth::check();
+        $this->requireRole('osvc');
 
         // generate the key
         $model = new UserModel($this->db);
@@ -56,10 +58,10 @@ class UserController extends BaseController
      *
      * @return void
      */
-    public function unlinkAccountantAction()
+    #[NoReturn]
+    public function unlinkAccountantAction(): void
     {
-        // sanity check
-        Auth::check();
+        $this->requireRole('osvc');
 
         // delete all references between user and accountant
         $model = new UserModel($this->db);
@@ -68,47 +70,4 @@ class UserController extends BaseController
         $this->redirect('/profile');
     }
 
-    /**
-     * Accountant only action
-     * Used to switch between multiple OSVC clients for 1 accountant
-     *
-     * @return void
-     */
-    public function switchClientAction(): void
-    {
-        $this->requireRole('ucetni');
-
-        $userId = $_SESSION['user_id'];
-        $osvcId = (int) ($_POST['osvc_id'] ?? 0);
-        $model = new UserModel($this->db);
-
-        // if accountant has osvc linked
-        if ($model->isClientOf($userId, $osvcId))
-            $_SESSION['active_osvc_id'] = $osvcId;
-
-        $this->redirect('/dashboard');
-    }
-
-    /**
-     * Accountant only action
-     * Used to redeem a key after accountant is already registered
-     * to connect to more clients (osvc)
-     *
-     * @return void
-     */
-    public function redeemKeyAction(): void
-    {
-        $this->requireRole('ucetni');
-
-        $userId = $_SESSION['user_id'];
-        $osvcId = (int) ($_POST['osvc_id'] ?? 0);
-
-        $key = trim($_POST['key'] ?? '');
-        $model = new UserModel($this->db);
-
-        $ok = $model->redeemKey($key, $userId);
-        // todo: throw invalid/expired key
-
-        $this->redirect('/accountant/clients');
-    }
 }

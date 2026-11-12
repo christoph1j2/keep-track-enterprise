@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace Src\Controllers\Dashboard;
 
 use PDO;
+use Src\Controllers\BaseController;
 use Src\Models\ClientModel;
 use Src\Models\ExpenseModel;
 use Src\Models\InvoiceModel;

@@ -1,12 +1,12 @@
 <?php
 declare (strict_types = 1);
 
-namespace Src\Controllers;
+namespace Src\Controllers\Dashboard;
 
-use Src\Middleware\Auth;
+use Src\Controllers\ErrorController;
 use Src\Models\ExpenseModel;
 
-class ExpenseController extends BaseController
+class ExpenseController extends OsvcController
 {
     /**
      * Display the expenses page after verifying auth
@@ -15,9 +15,6 @@ class ExpenseController extends BaseController
      */
     public function expensesAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $expenseModel = new ExpenseModel($this->db);
 
         $perPage = 15;
@@ -42,7 +39,6 @@ class ExpenseController extends BaseController
      */
     public function receiptAction(): void
     {
-        Auth::check();
         $err = new ErrorController($this->db);
         $id = (int)($_GET['id'] ?? 0);
         if (!$id || $id < 1) $err->notFoundAction();
@@ -71,9 +67,6 @@ class ExpenseController extends BaseController
      */
     public function addExpenseAction(): void
     {
-        // sanity check
-        Auth::check();
-
         // we get data from form
         $name = trim($_POST['name'] ?? '');
         $total_amount = $_POST['total_amount'] ?? null;
@@ -128,9 +121,6 @@ class ExpenseController extends BaseController
      */
     public function getExpenseByIdAjaxAction(): void
     {
-        // sanity check
-        Auth::check();
-
         header("Content-type: application/json");
         // gets id from ajax request
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -166,9 +156,6 @@ class ExpenseController extends BaseController
      */
     public function editExpenseAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $expenseId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$expenseId)
@@ -230,9 +217,6 @@ class ExpenseController extends BaseController
      */
     public function deleteExpenseAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $expenseId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$expenseId)

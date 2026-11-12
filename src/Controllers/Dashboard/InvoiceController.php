@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace Src\Controllers\Dashboard;
 
-use Src\Middleware\Auth;
 use Src\Models\ClientModel;
 use Src\Models\InvoiceModel;
 
-class InvoiceController extends BaseController
+class InvoiceController extends OsvcController
 {
     /**
      * Displays the invoices page after verifying authentication.
@@ -16,9 +15,6 @@ class InvoiceController extends BaseController
      */
     public function invoicesAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $invoiceModel = new InvoiceModel($this->db);
 
         $perPage = 15;
@@ -47,8 +43,6 @@ class InvoiceController extends BaseController
      */
     public function addInvoiceAction(): void
     {
-        // sanity check
-        Auth::check();
         header('Content-Type: application/json');
 
         // we get data from form
@@ -114,9 +108,6 @@ class InvoiceController extends BaseController
      */
     public function getInvoiceDetailAjaxAction(): void
     {
-        // sanity check
-        Auth::check();
-
         header('Content-Type: application/json');
         // Gets ID from AJAX request
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -154,9 +145,6 @@ class InvoiceController extends BaseController
      */
     public function deleteInvoiceAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $invoiceId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$invoiceId)

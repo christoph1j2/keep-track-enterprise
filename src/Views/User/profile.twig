@@ -34,7 +34,7 @@
                             <td class="fst-italic">{{ user.role_name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            {# TODO: accountant should see this #}
+                            {# TODO: accountant shouldnt see this #}
                             <td>Připojený účetní:</td>
                             <td class="fst-italic d-flex align-items-center gap-2">
                                 <span>{{ accountant_name }}</span>
@@ -54,14 +54,16 @@
                 <div class="card-body">
                     {# TODO: accountant shouldnt be able to add accountant #}
                     <h4 class="card-title">Pozvat účetního</h4>
-                    <form method="post" action="/profile/generate-accountant-key">
-                        <input type="submit" value="Vygenerovat Klíč" />
-                    </form>
-                    {% if user.accountant_key %}
-                        <p class="mb-1"><strong>Klíč:</strong> <code>{{ user.accountant_key }}</code></p>
+                    {% if user.accountant_key == 'invalid' %}
+                        <p>Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
+                    {% elseif user.accountant_key and user.accountant_key_expires|date('U') > 'now'|date('U') %}                        <p class="mb-1"><strong>Klíč:</strong> <code>{{ user.accountant_key }}</code></p>
                         <p class="text-muted small">
                             Platnost do: {{ user.accountant_key_expires|date("d. m. Y H:i:s") }}
                         </p>
+                    {% else %}
+                        <form method="post" action="/profile/generate-accountant-key">
+                            <input type="submit" value="Vygenerovat Klíč" />
+                        </form>
                     {% endif %}
                 </div>
             </div>

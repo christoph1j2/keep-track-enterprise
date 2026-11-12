@@ -27,12 +27,12 @@ if (isset($_COOKIE[session_name()]) && session_id())
 }
 
 use Src\Controllers\AuthController;
-use Src\Controllers\ClientController;
-use Src\Controllers\DashboardController;
-use Src\Controllers\ExpenseController;
+use Src\Controllers\Dashboard\ClientController;
+use Src\Controllers\Dashboard\DashboardController;
+use Src\Controllers\Dashboard\ExpenseController;
+use Src\Controllers\Dashboard\InvoiceController;
+use Src\Controllers\Dashboard\PaymentController;
 use Src\Controllers\HomeController;
-use Src\Controllers\InvoiceController;
-use Src\Controllers\PaymentController;
 use Src\Controllers\UserController;
 use Src\Core\Database;
 use Src\Core\Router;

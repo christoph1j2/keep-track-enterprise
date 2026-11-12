@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace Src\Controllers\Dashboard;
 
-use Src\Middleware\Auth;
 use Src\Models\ClientModel;
 
 class ClientController extends OsvcController

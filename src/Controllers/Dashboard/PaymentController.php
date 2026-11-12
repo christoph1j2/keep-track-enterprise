@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Src\Controllers;
+namespace Src\Controllers\Dashboard;
 
-use Src\Middleware\Auth;
 use Src\Models\PaymentModel;
 
-class PaymentController extends BaseController
+class PaymentController extends OsvcController
 {
     /**
      * Displays the payments page after verifying auth
@@ -15,9 +14,6 @@ class PaymentController extends BaseController
      */
     public function paymentsAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $paymentModel = new PaymentModel($this->db);
 
         $perPage = 15;
@@ -45,8 +41,6 @@ class PaymentController extends BaseController
      */
     public function addPaymentAction(): void
     {
-        // sanity check
-        Auth::check();
         header('Content-Type: application/json');
 
         // we get data from form
@@ -107,8 +101,6 @@ class PaymentController extends BaseController
      */
     public function getPaymentDetailAjaxAction(): void
     {
-        // sanity check
-        Auth::check();
         header('Content-Type: application/json');
 
         // Get ID from AJAX rq
@@ -149,9 +141,6 @@ class PaymentController extends BaseController
      */
     public function deletePaymentAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $paymentId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$paymentId)

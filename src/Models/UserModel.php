@@ -134,6 +134,15 @@ class UserModel extends BaseModel
      */
     public function generateAccountantKey(int $id): string
     {
+        // sanity check
+        $stmt = $this->db->prepare("SELECT accountant_id FROM " . $this->table . " WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$user || $user['accountant_id'] !== null) {
+            return 'invalid';
+        }
+
         // generate key
         $key = bin2hex(random_bytes(8));
         // set expiry
