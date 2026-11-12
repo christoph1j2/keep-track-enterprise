@@ -6,7 +6,7 @@ namespace Src\Controllers;
 use Src\Middleware\Auth;
 use Src\Models\ClientModel;
 
-class ClientController extends BaseController
+class ClientController extends OsvcController
 {
     /**
      * Renders all the user's clients.
@@ -18,9 +18,6 @@ class ClientController extends BaseController
      */
     public function clientsAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $model = new ClientModel($this->db);
         $clientTypes = $model->getAllClientTypes();
 
@@ -47,8 +44,6 @@ class ClientController extends BaseController
      */
     public function addClientAction(): void
     {
-        // sanity check
-        Auth::check();
         header('Content-Type: application/json');
 
         // we get data from form
@@ -104,9 +99,6 @@ class ClientController extends BaseController
      */
     public function getClientByIdAjaxAction(): void
     {
-        // sanity check
-        Auth::check();
-
         header('Content-Type: application/json');
         // Gets ID from AJAX request
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -141,9 +133,6 @@ class ClientController extends BaseController
      */
     public function deleteClientAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$clientId)
@@ -170,9 +159,6 @@ class ClientController extends BaseController
      */
     public function editClientAction(): void
     {
-        // sanity check
-        Auth::check();
-
         $clientId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$clientId)

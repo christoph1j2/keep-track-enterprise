@@ -167,7 +167,7 @@ abstract class BaseController {
         if ($active === 0 || !(new UserModel($this->db))->isClientOf($me, $active))
         {
             unset($_SESSION['active_osvc_id']);
-            $this->redirect('/accountant/select'); // select osvc
+            $this->redirect('/accountant/clients'); // select osvc
         }
 
         return $active;

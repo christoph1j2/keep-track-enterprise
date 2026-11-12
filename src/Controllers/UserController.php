@@ -51,6 +51,11 @@ class UserController extends BaseController
         $this->redirect('/profile');
     }
 
+    /**
+     * Method for unlinking an accountant from an OSVC account
+     *
+     * @return void
+     */
     public function unlinkAccountantAction()
     {
         // sanity check
@@ -61,5 +66,49 @@ class UserController extends BaseController
         $model->unlinkAccountant($_SESSION['user_id']);
 
         $this->redirect('/profile');
+    }
+
+    /**
+     * Accountant only action
+     * Used to switch between multiple OSVC clients for 1 accountant
+     *
+     * @return void
+     */
+    public function switchClientAction(): void
+    {
+        $this->requireRole('ucetni');
+
+        $userId = $_SESSION['user_id'];
+        $osvcId = (int) ($_POST['osvc_id'] ?? 0);
+        $model = new UserModel($this->db);
+
+        // if accountant has osvc linked
+        if ($model->isClientOf($userId, $osvcId))
+            $_SESSION['active_osvc_id'] = $osvcId;
+
+        $this->redirect('/dashboard');
+    }
+
+    /**
+     * Accountant only action
+     * Used to redeem a key after accountant is already registered
+     * to connect to more clients (osvc)
+     *
+     * @return void
+     */
+    public function redeemKeyAction(): void
+    {
+        $this->requireRole('ucetni');
+
+        $userId = $_SESSION['user_id'];
+        $osvcId = (int) ($_POST['osvc_id'] ?? 0);
+
+        $key = trim($_POST['key'] ?? '');
+        $model = new UserModel($this->db);
+
+        $ok = $model->redeemKey($key, $userId);
+        // todo: throw invalid/expired key
+
+        $this->redirect('/accountant/clients');
     }
 }

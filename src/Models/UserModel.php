@@ -191,4 +191,57 @@ class UserModel extends BaseModel
         $stmt->execute([':accountantId' => $accountantId]);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Returns bool value of if a specific osvc is a client of a specific accountant
+     *
+     * @param int $accountantId
+     * @param int $osvcId
+     * @return bool
+     */
+    public function isClientOf(int $accountantId, int $osvcId): bool
+    {
+        $sql = "SELECT 1 FROM ".$this->table." 
+                WHERE 
+                    accountant_id = :accountantId
+                    AND id = :osvcId
+                LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([':accountantId' => $accountantId, ':osvcId' => $osvcId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * This method is used to link more clients to
+     * accountants after they had already registered
+     *
+     * @param string $key
+     * @param int $accountantId
+     * @return bool
+     */
+    public function redeemKey(string $key, int $accountantId): bool
+    {
+        if ($key === '')
+            return false;
+
+        // check that osvc doesnt have accountant yet and that
+        // his key is not expired and valid, if all checks pass,
+        // then update the specific user
+        $sql = "UPDATE ".$this->table."
+                SET accountant_id = :accountantId,
+                    accountant_key = NULL,
+                    accountant_key_expires = NULL
+                WHERE accountant_key = :key
+                AND accountant_key_expires > :now
+                AND accountant_id IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':key' => $key,
+            ':now' => date("Y-m-d H:i:s"),
+            'accountantId' => $accountantId,
+        ]);
+
+        return $stmt->rowCount() === 1;
+    }
 }
