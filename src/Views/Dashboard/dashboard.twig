@@ -14,23 +14,40 @@
     {% if role == "osvc" %}
         {#  kpi cards  #}
         {% include "Dashboard/OSVC/kpi.twig" %}
-        <hr/>
+        {% if unpaidInvoices|length > 0 %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Unpaid invoices</span>
+                    <span class="badge theme-danger">{{ unpaidInvoices|length }}</span>
+                </div>
 
-        {# TODO: unpaid invoices pretty table #}
-        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                {% for i in unpaidInvoices %}
-                    <tr style="background-color: blueviolet; color: white;">
-                        <td style="padding: 8px;">{{ i.invoice_number }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-
-        <hr/>
+                <div class="table-responsive" style="max-height: 250px;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th class="sticky-top">Invoice #</th>
+                            <th class="sticky-top">Due date</th>
+                            <th class="sticky-top text-end">Total</th>
+                            <th class="sticky-top text-end">Remaining</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in unpaidInvoices %}
+                            {% set overdue = i.date_due is not null and i.date_due < 'today'|date('Y-m-d') %}
+                            <tr class="{{ overdue ? 'theme-danger' : '' }}">
+                                <td>{{ i.invoice_number }}</td>
+                                <td>{{ i.date_due ? i.date_due|date('d.m.Y') : '-' }}</td>
+                                <td class="text-end">{{ i.total_amount|number_format(2, ',', ' ') }} Kč</td>
+                                <td class="text-end fw-semibold">{{ i.remaining_amount|number_format(2, ',', ' ') }} Kč</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <hr/>
+        {% endif %}
         {# action cards #}
         {% include "Dashboard/OSVC/action.twig" %}
     {# todo: rework for accountant #}

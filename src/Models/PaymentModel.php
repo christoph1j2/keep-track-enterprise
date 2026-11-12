@@ -110,6 +110,7 @@ class PaymentModel extends BaseModel
             SELECT 
                 i.id AS invoice_id,
                 i.invoice_number,
+                i.date_due,
                 i.total_amount,
                 COALESCE(SUM(ip.amount_assigned), 0) AS total_assigned,
                 (i.total_amount - COALESCE(SUM(ip.amount_assigned), 0)) AS remaining_amount
@@ -122,6 +123,7 @@ class PaymentModel extends BaseModel
             GROUP BY
                 i.id,
                 i.invoice_number,
+                i.date_due,
                 i.total_amount
             ";
         $stmt = $this->db->prepare($sql);
