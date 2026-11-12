@@ -46,11 +46,18 @@ class DashboardController extends BaseController
 
         $unpaidInvoices = $paymentModel->getUnpaidInvoices();
 
+        $totalRemaining = array_sum(array_column($unpaidInvoices, 'remaining_amount'));
+        $paidPercent    = $invoiceSum > 0
+            ? (int) round((($invoiceSum - $totalRemaining) * 100) / $invoiceSum)
+            : 0;
+
         $stats = [
             "clients"  => $clientCount,
             "invoices" => $invoiceSum,
             "income"   => $paymentSum,
             "expenses" => $expenseSum,
+            "remaining" => $totalRemaining,
+            "paidPct"     => $paidPercent,
         ];
 
         $this->render("Dashboard/dashboard.twig", [

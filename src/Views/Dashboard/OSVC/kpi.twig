@@ -1,34 +1,28 @@
-<div class="row g-4">
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card text-center h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-muted fs-6 text-uppercase">Celkem klientů</h5>
-                <h2 class="display-4 fw-bold text-primary">{{ stats.clients }}</h2>
+{% set cards = [
+    {label: "Celkem klientů", value: stats.clients, money: false},
+    {label: "Celkem fakturováno", value: stats.invoices, money: true},
+    {label: "Příjmy celkem", value: stats.income, money: true},
+    {label: "Výdaje celkem", value: stats.expenses, money: true},
+    {label: "Bilance", value: stats.income - stats.expenses, money: true},
+    {label: "Neuhrazené pohledávky", value: stats.remaining, money: true},
+
+] %}
+
+<div class="row g-3 mb-4">
+    {% for c in cards %}
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-muted fs-6 text-uppercade">{{ c.label }}</h5>
+                    <h2 class="display-6 fw-bold">
+                        {% if c.money %}
+                            {{ c.value|number_format(2, ',', ',') }} Kč
+                        {% else %}
+                            {{ c.value }}
+                        {% endif %}
+                    </h2>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card text-center h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-muted fs-6 text-uppercase">Celkem fakturováno</h5>
-                <h2 class="display-4 fw-bold text-primary">{{ stats.invoices }} Kč</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card text-center h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-muted fs-6 text-uppercase">Celkem výdělek</h5>
-                <h2 class="display-4 fw-bold text-primary">{{ stats.income }} Kč</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card text-center h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-muted fs-6 text-uppercase">Celkem výdaje</h5>
-                <h2 class="display-4 fw-bold text-primary">-{{ stats.expenses }} Kč</h2>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>

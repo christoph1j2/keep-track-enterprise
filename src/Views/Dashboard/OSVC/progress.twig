@@ -1,0 +1,13 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="fw-semibold">Ukazatel uhrazení všech faktur</span>
+            <span>{{ stats.paidPct }} %</span>
+        </div>
+        <div class="progress" role="progressbar"
+             aria-valuenow="{{ stats.paidPct }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar theme-success" style="width:{{ stats.paidPct }}%">
+            </div>
+        </div>
+    </div>
+</div>

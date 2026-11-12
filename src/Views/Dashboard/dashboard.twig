@@ -14,10 +14,13 @@
     {% if role == "osvc" %}
         {#  kpi cards  #}
         {% include "Dashboard/OSVC/kpi.twig" %}
+
+        {% include "Dashboard/OSVC/progress.twig" %}
+
         {% if unpaidInvoices|length > 0 %}
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span class="fw-semibold">Unpaid invoices</span>
+            <div class="card my-4">
+                <div class="card-header d-flex flex-row justify-content-center gap-4 align-items-center">
+                    <span class="fw-semibold">Neuhrazené faktury</span>
                     <span class="badge theme-danger">{{ unpaidInvoices|length }}</span>
                 </div>
 
@@ -25,10 +28,10 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                         <tr>
-                            <th class="sticky-top">Invoice #</th>
-                            <th class="sticky-top">Due date</th>
-                            <th class="sticky-top text-end">Total</th>
-                            <th class="sticky-top text-end">Remaining</th>
+                            <th class="sticky-top">Číslo faktury #</th>
+                            <th class="sticky-top">Datum splatnosti</th>
+                            <th class="sticky-top text-end">Celkem</th>
+                            <th class="sticky-top text-end">Zbývá</th>
                         </tr>
                         </thead>
                         <tbody>
