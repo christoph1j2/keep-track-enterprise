@@ -171,6 +171,24 @@ class UserModel extends BaseModel
             ':id' => $id,
         ]);
 
-        return $stmt->rowCount();
+        return (bool) $stmt->rowCount();
+    }
+
+    // ####### Accountant AC logic ########
+
+    /**
+     * Gets all linked OSVC to accountant
+     *
+     * @param int $accountantId
+     * @return array
+     */
+    public function getClientsOf(int $accountantId): array
+    {
+        $sql = "SELECT id, username, profession FROM ".$this->table." 
+                WHERE accountant_id = :accountantId 
+                ORDER BY username";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':accountantId' => $accountantId]);
+        return $stmt->fetchAll();
     }
 }

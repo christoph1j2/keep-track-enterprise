@@ -7,6 +7,7 @@ use JetBrains\PhpStorm\NoReturn;
 use PDO;
 use Random\RandomException;
 use Src\Middleware\Auth;
+use Src\Models\UserModel;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -145,5 +146,30 @@ abstract class BaseController {
 
         header('Location: /login');
         exit;
+    }
+
+    /**
+     * User ID, whose data are being displayed
+     * - OSVC sees their own data,
+     * - accountant sees data of currently selected (and linked) OSVC
+     *
+     * @return int
+     */
+    protected function effectiveUserId(): int
+    {
+        $me = (int) $_SESSION['user_id'];
+
+        if (($_SESSION['role'] ?? '') !== 'ucetni')
+            return $me;
+
+        $active = (int) ($_SESSION['active_osvc_id'] ?? 0);
+
+        if ($active === 0 || !(new UserModel($this->db))->isClientOf($me, $active))
+        {
+            unset($_SESSION['active_osvc_id']);
+            $this->redirect('/accountant/select'); // select osvc
+        }
+
+        return $active;
     }
 }
