@@ -172,4 +172,32 @@ abstract class BaseController {
 
         return $active;
     }
+
+    /**
+     * Helper method to Display a receipt file in new tab
+     *
+     * @param array $r
+     * @return void
+     */
+    #[NoReturn]
+    protected function sendReceipt(array $r): void
+    {
+        $dir  = realpath(__DIR__ . '/../../storage/receipts');
+        $path = $dir !== false ? realpath($dir . '/' . $r['receipt_filename']) : false;
+
+        if ($path === false
+            || !str_starts_with($path, $dir . DIRECTORY_SEPARATOR)
+            || !is_file($path))
+        {
+            (new ErrorController($this->db))->notFoundAction();
+        }
+
+        header('Content-Type: ' . $r['receipt_mime']);
+        header('Content-Length: ' . filesize($path));
+        header('Content-Disposition: inline; filename*=UTF-8\'\'' . rawurlencode($r['receipt_original_name']));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, no-store');
+        readfile($path);
+        exit;
+    }
 }

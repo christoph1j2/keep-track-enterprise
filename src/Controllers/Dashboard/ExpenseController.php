@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace Src\Controllers\Dashboard;
 
+use JetBrains\PhpStorm\NoReturn;
 use Src\Controllers\ErrorController;
 use Src\Models\ExpenseModel;
 
@@ -37,27 +38,21 @@ class ExpenseController extends OsvcController
      *
      * @return void
      */
+    #[NoReturn]
     public function receiptAction(): void
     {
-        $err = new ErrorController($this->db);
-        $id = (int)($_GET['id'] ?? 0);
-        if (!$id || $id < 1) $err->notFoundAction();
+        $userId = (int) $_SESSION['user_id'];
+        $id = (int) ($_GET['id'] ?? 0);
+        $r  = $id > 0
+            ? new ExpenseModel($this->db)->findReceiptById($id, $userId)
+            : null;
 
-        $model = new ExpenseModel($this->db);
-        $r = $model->findReceiptById($id);
+        if (!$r)
+        {
+            new ErrorController($this->db)->notFoundAction();
+        }
 
-        if (!$r) $err->notFoundAction();
-
-        $path = realpath(__DIR__ . '/../../storage/receipts/' . $r['receipt_filename']);
-        if ($path === false || !is_file($path))
-            $err->notFoundAction();
-
-        header('Content-Type: ' . $r['receipt_mime']);
-        header('Content-Length: ' . filesize($path));
-        header('Content-Disposition: inline; filename*=UTF-8\'\'' . rawurlencode($r['receipt_original_name']));
-        header('X-Content-Type-Options: nosniff');
-        header('Cache-Control: private, no-store');
-        readfile($path);
+        $this->sendReceipt($r);
     }
 
     /**

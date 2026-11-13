@@ -1,0 +1,62 @@
+{% extends "layout.twig" %}
+
+{% block title %}Klienti | KeepTrack Enterprise{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <h1>Klienti</h1>
+    </div>
+
+    <div class="row g-4 my-1">
+        <div class="col-12 lg:col-8">
+            <div class="card h-100 p-3 p-md-5">
+                <h4 class="card-title">Moji klienti</h4>
+
+                {% if clients|length == 0 %}
+                    <p class="m-auto fg-3"><em>Zatím nemáte žádné klienty. Zadejte klíč od OSVČ.</em></p>
+                {% else %}
+                    <table class="table table-striped table-stack">
+                        <thead>
+                        <tr>
+                            <th>Uživatel</th>
+                            <th>Profese</th>
+                            <th class="text-end">Akce</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for c in clients %}
+                            <tr>
+                                <td data-label="Uživatel" class="align-middle fw-bold">{{ c.username }}</td>
+                                <td data-label="Profese" class="align-middle">{{ c.profession ?? '-' }}</td>
+                                <td class="text-end align-middle">
+                                    {% if c.id == activeOsvcId %}
+                                        <span class="fw-bold">Vybraný</span>
+                                    {% else %}
+                                        <form method="post" action="/accountant/switch-client" class="d-inline">
+                                            <input type="hidden" name="osvc_id" value="{{ c.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline theme-primary">Vybrat</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+        {# todo: move to accountant profile #}
+        <div class="col-12 lg:col-4">
+            <div class="card h-100 p-3 p-md-5">
+                <h4 class="card-title">Přidat klienta</h4>
+                <form method="post" action="/accountant/redeem-key">
+                    <input type="text" name="key" class="form-control mb-3" placeholder="Klíč od OSVČ" required>
+                    <button type="submit" class="btn-solid theme-secondary">Připojit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

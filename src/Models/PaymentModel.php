@@ -305,9 +305,10 @@ class PaymentModel extends BaseModel
      * @param int $perPage
      * @return array
      */
-    public function getPaginated(int $page, int $perPage): array
+    public function getPaginated(int $page, int $perPage, ?int $userId): array
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId == null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return [];
 
         $offset = ($page - 1) * $perPage;
@@ -333,9 +334,10 @@ class PaymentModel extends BaseModel
      *
      * @return int
      */
-    public function totalCount(): int
+    public function totalCount(?int $userId): int
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId == null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return -1;
 
         $sql = "SELECT COUNT(DISTINCT p.id) AS total

@@ -27,6 +27,7 @@ if (isset($_COOKIE[session_name()]) && session_id())
 }
 
 use Src\Controllers\AuthController;
+use Src\Controllers\Dashboard\AccountantController;
 use Src\Controllers\Dashboard\ClientController;
 use Src\Controllers\Dashboard\DashboardController;
 use Src\Controllers\Dashboard\ExpenseController;
@@ -78,6 +79,14 @@ $router->post('/expenses/add', ExpenseController::class, 'addExpenseAction');
 $router->post('/expenses/delete', ExpenseController::class, 'deleteExpenseAction');
 $router->post('/expenses/edit', ExpenseController::class, 'editExpenseAction');
 $router->get('/expenses/receipt', ExpenseController::class, 'receiptAction');
+
+$router->get('/accountant/clients', AccountantController::class, 'clientsAction');
+$router->post('/accountant/switch-client', AccountantController::class, 'switchClientAction');
+$router->post('/accountant/redeem-key', AccountantController::class, 'redeemKeyAction');
+$router->get('/accountant/invoices', AccountantController::class, 'invoicesAction');
+$router->get('/accountant/payments', AccountantController::class, 'paymentsAction');
+$router->get('/accountant/expenses', AccountantController::class, 'expensesAction');
+$router->get('/accountant/receipt', AccountantController::class, 'receiptAction');
 
 
 $router->dispatch($db);

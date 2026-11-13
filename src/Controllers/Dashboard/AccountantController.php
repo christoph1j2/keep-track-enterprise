@@ -5,7 +5,11 @@ namespace Src\Controllers\Dashboard;
 use JetBrains\PhpStorm\NoReturn;
 use PDO;
 use Src\Controllers\BaseController;
+use Src\Controllers\ErrorController;
 use Src\Middleware\Auth;
+use Src\Models\ExpenseModel;
+use Src\Models\InvoiceModel;
+use Src\Models\PaymentModel;
 use Src\Models\UserModel;
 
 class AccountantController extends BaseController
@@ -31,7 +35,17 @@ class AccountantController extends BaseController
      */
     public function clientsAction(): void
     {
-        // TODO
+        $userId = (int) $_SESSION['user_id'];
+        $model  = new UserModel($this->db);
+
+        $flash = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
+
+        $this->render('Accountant/clients.twig', [
+            'clients'      => $model->getClientsOf($userId),
+            'activeOsvcId' => $_SESSION['active_osvc_id'] ?? null,
+            'flash'        => $flash,
+        ]);
     }
 
     /**
@@ -44,7 +58,7 @@ class AccountantController extends BaseController
     {
         $this->requireRole('ucetni');
 
-        $userId = $_SESSION['user_id'];
+        $userId = (int) $_SESSION['user_id'];
         $osvcId = (int) ($_POST['osvc_id'] ?? 0);
         $model = new UserModel($this->db);
 
@@ -67,7 +81,7 @@ class AccountantController extends BaseController
     {
         $this->requireRole('ucetni');
 
-        $userId = $_SESSION['user_id'];
+        $userId = (int) $_SESSION['user_id'];
 
         $key = trim($_POST['key'] ?? '');
         $model = new UserModel($this->db);
@@ -88,7 +102,42 @@ class AccountantController extends BaseController
      */
     public function expensesAction(): void
     {
-        // TODO
+        $userId = $this->effectiveUserId();
+        $model  = new ExpenseModel($this->db);
+
+        $perPage  = 15;
+        $total    = $model->totalCount($userId);
+        $pages    = max(1, (int) ceil($total / $perPage));
+        $page     = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $this->render('Expense/expenses.twig', [
+            'expenses'   => $model->getPaginated($page, $perPage, $userId),
+            'page'       => $page,
+            'pages'      => $pages,
+            'total'      => $total,
+            'readOnly'   => true,
+            'receiptUrl' => '/accountant/receipt',
+            'basePath'   => '/accountant/expenses',
+        ]);
+    }
+
+
+    /**
+     * Method for rendering a receipt of the selected client
+     *
+     * @return void
+     */
+    public function receiptAction(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+        $r  = $id > 0
+            ? (new ExpenseModel($this->db))->findReceiptById($id, $this->effectiveUserId())
+            : null;
+
+        if (!$r)
+            (new ErrorController($this->db))->notFoundAction();
+
+        $this->sendReceipt($r);
     }
 
     // #### #### ####
@@ -101,9 +150,25 @@ class AccountantController extends BaseController
      *
      * @return void
      */
+    // TODO: FIX THROWS 403
     public function invoicesAction(): void
     {
-        // TODO
+        $userId = $this->effectiveUserId();
+        $model  = new InvoiceModel($this->db);
+
+        $perPage = 15;
+        $total   = $model->totalCount($userId);
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
+
+        $this->render('Invoice/invoices.twig', [
+            'invoices' => $model->getPaginated($page, $perPage, $userId),
+            'page'     => $page,
+            'pages'    => $pages,
+            'total'    => $total,
+            'readOnly' => true,
+            'basePath' => '/accountant/invoices',
+        ]);
     }
 
     // #### #### ####
@@ -118,18 +183,22 @@ class AccountantController extends BaseController
      */
     public function paymentsAction(): void
     {
-        // TODO
-    }
+        $userId = $this->effectiveUserId();
+        $model  = new PaymentModel($this->db);
 
+        $perPage = 15;
+        $total   = $model->totalCount($userId);
+        $pages   = max(1, (int) ceil($total / $perPage));
+        $page    = min(max(1, (int) ($_GET['page'] ?? 1)), $pages);
 
-    /**
-     * Method for rendering a receipt of the selected client
-     *
-     * @return void
-     */
-    public function receiptAction(): void
-    {
-        // TODO
+        $this->render('Payment/payments.twig', [
+            'payments' => $model->getPaginated($page, $perPage, $userId),
+            'page'     => $page,
+            'pages'    => $pages,
+            'total'    => $total,
+            'readOnly' => true,
+            'basePath' => '/accountant/payments',
+        ]);
     }
 
     // #### #### ####
