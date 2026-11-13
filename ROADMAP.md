@@ -87,7 +87,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
   - KPI karty: Příjmy celkem, Výdaje celkem, Čistá bilance (zisk), Neuhrazené pohledávky.
   - Přehled nezaplacených faktur s termínem splatnosti.
   - Vizuální ukazatel / graf procenta uhrazení a ~~rozložení výdajů podle kategorií.~~
-- [ ] **Pohled Účetního:**
+- [x] **Pohled Účetního:**
   - Přepínač mezi OSVČ, které účetnímu udělily přístup.
   - Read-only zobrazení faktur, plateb a výdajů dané OSVČ včetně nahraných účtenek.
   - Možnost změny kategorie výdaje (jediná povolená editace pro účetního).
@@ -97,6 +97,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [ ] Přehled uživatelů v systému s možností blokace (`is_blocked`) a smazání.
 - [ ] SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.
 - [ ] Správa číselníků: CRUD pro `expense_categories` a `client_types`.
+- [ ] Přidat CSRF
 
 ### Fáze 6: Volitelná technologická rozšíření (Maximalizace bodů)
 - [ ] **FullREST API endpoint (4 b):**
@@ -115,6 +116,7 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 
 ### Fáze 7: Finální cleanup kontrola a příprava na obhajobu
 - [ ] Až bude hotová všechny backend funkcionalita, tak projít veškerý frontend a udělat jej hezčím :-)
+- [ ] Projít celou appku a otestovat ... PŘIDAT LEPŠÍ CHYBOVÉ HLÁŠKY
 - [ ] Validace všech HTML stránek přes W3C validátor.
 - [ ] Test spuštění přes čistý `docker compose up --build`.
 - [ ] Kontrola PHP chybových hlášení při zapnutém `E_ALL`.
