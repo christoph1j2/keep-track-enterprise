@@ -13,10 +13,10 @@
         <div class="col-12 md:col-6 lg:col-4">
             <div class="card text-center h-100 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-muted fs-6 text-uppercade">{{ c.label }}</h5>
+                    <h5 class="card-title text-muted fs-6 text-uppercase">{{ c.label }}</h5>
                     <h2 class="display-6 fw-bold">
                         {% if c.money %}
-                            {{ c.value|number_format(2, ',', ',') }} Kč
+                            {{ c.value|number_format(2, ',', ' ') }} Kč
                         {% else %}
                             {{ c.value }}
                         {% endif %}

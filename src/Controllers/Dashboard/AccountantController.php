@@ -88,7 +88,7 @@ class AccountantController extends BaseController
 
         $ok = $model->redeemKey($key, $userId);
 
-        $this->redirect('/accountant/clients');
+        $this->redirect('/profile');
     }
 
     // #### #### ####

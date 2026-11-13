@@ -9,7 +9,7 @@
     </div>
 
     <div class="row g-4 my-1">
-        <div class="col-12 lg:col-8">
+        <div class="col-12">
             <div class="card h-100 p-3 p-md-5">
                 <h4 class="card-title">Moji klienti</h4>
 
@@ -44,17 +44,6 @@
                         </tbody>
                     </table>
                 {% endif %}
-            </div>
-        </div>
-
-        {# todo: move to accountant profile #}
-        <div class="col-12 lg:col-4">
-            <div class="card h-100 p-3 p-md-5">
-                <h4 class="card-title">Přidat klienta</h4>
-                <form method="post" action="/accountant/redeem-key">
-                    <input type="text" name="key" class="form-control mb-3" placeholder="Klíč od OSVČ" required>
-                    <button type="submit" class="btn-solid theme-secondary">Připojit</button>
-                </form>
             </div>
         </div>
     </div>

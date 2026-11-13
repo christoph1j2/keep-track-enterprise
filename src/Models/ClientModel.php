@@ -180,9 +180,10 @@ class ClientModel extends BaseModel
      *
      * @return int
      */
-    public function totalCount(): int
+    public function totalCount(?int $userId = null): int
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId === null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return -1;
 
         $sql = "SELECT COUNT(*) AS total FROM " . $this->table . " WHERE user_id = :user_id";

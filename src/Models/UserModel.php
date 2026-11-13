@@ -140,7 +140,7 @@ class UserModel extends BaseModel
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$user || $user['accountant_id'] !== null) {
-            return 'invalid';
+            return '';
         }
 
         // generate key

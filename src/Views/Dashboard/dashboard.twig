@@ -11,50 +11,61 @@
     </div>
 
 
-    {% if role == "osvc" %}
-        {#  kpi cards  #}
-        {% include "Dashboard/OSVC/kpi.twig" %}
+    {% if role in ["osvc", "ucetni"] %}
 
-        {% include "Dashboard/OSVC/progress.twig" %}
+    {% if role == "ucetni" and activeClient %}
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-4">
+                <span>Zobrazený klient: <strong>{{ activeClient.username }}</strong>
+                    {% if activeClient.profession %}({{ activeClient.profession }}){% endif %}
+                </span>
+            <a class="btn btn-sm btn-outline theme-primary" href="/accountant/clients">Změnit klienta</a>
+        </div>
+    {% endif %}
 
-        {% if unpaidInvoices|length > 0 %}
-            <div class="card my-4">
-                <div class="card-header d-flex flex-row justify-content-center gap-4 align-items-center">
-                    <span class="fw-semibold">Neuhrazené faktury</span>
-                    <span class="badge theme-danger">{{ unpaidInvoices|length }}</span>
-                </div>
+    {#  kpi cards  #}
+    {% include "Dashboard/OSVC/kpi.twig" %}
+    {% include "Dashboard/OSVC/progress.twig" %}
 
-                <div class="table-responsive" style="max-height: 250px;">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                        <tr>
-                            <th class="sticky-top">Číslo faktury #</th>
-                            <th class="sticky-top">Datum splatnosti</th>
-                            <th class="sticky-top text-end">Celkem</th>
-                            <th class="sticky-top text-end">Zbývá</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i in unpaidInvoices %}
-                            {% set overdue = i.date_due is not null and i.date_due < 'today'|date('Y-m-d') %}
-                            <tr class="{{ overdue ? 'theme-danger' : '' }}">
-                                <td>{{ i.invoice_number }}</td>
-                                <td>{{ i.date_due ? i.date_due|date('d.m.Y') : '-' }}</td>
-                                <td class="text-end">{{ i.total_amount|number_format(2, ',', ' ') }} Kč</td>
-                                <td class="text-end fw-semibold">{{ i.remaining_amount|number_format(2, ',', ' ') }} Kč</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    {% if unpaidInvoices|length > 0 %}
+        <div class="card my-4">
+            <div class="card-header d-flex flex-row justify-content-center gap-4 align-items-center">
+                <span class="fw-semibold">Neuhrazené faktury</span>
+                <span class="badge theme-danger">{{ unpaidInvoices|length }}</span>
             </div>
-        {% else %}
-            <hr/>
-        {% endif %}
+
+            <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th class="sticky-top">Číslo faktury #</th>
+                        <th class="sticky-top">Datum splatnosti</th>
+                        <th class="sticky-top text-end">Celkem</th>
+                        <th class="sticky-top text-end">Zbývá</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in unpaidInvoices %}
+                        {% set overdue = i.date_due is not null and i.date_due < 'today'|date('Y-m-d') %}
+                        <tr class="{{ overdue ? 'theme-danger' : '' }}">
+                            <td>{{ i.invoice_number }}</td>
+                            <td>{{ i.date_due ? i.date_due|date('d.m.Y') : '-' }}</td>
+                            <td class="text-end">{{ i.total_amount|number_format(2, ',', ' ') }} Kč</td>
+                            <td class="text-end fw-semibold">{{ i.remaining_amount|number_format(2, ',', ' ') }} Kč</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <hr/>
+    {% endif %}
+
+    {% if role == "osvc" %}
         {# action cards #}
         {% include "Dashboard/OSVC/action.twig" %}
-    {# todo: rework for accountant #}
-    {% elseif role == "ucetni" %}
-        <p>cigi</p>
+    {% else %}
+        {% include "Dashboard/Accountant/action.twig" %}
+    {% endif %}
     {% endif %}
 {% endblock %}

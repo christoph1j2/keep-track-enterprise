@@ -101,9 +101,10 @@ class PaymentModel extends BaseModel
      *
      * @return array
      */
-    public function getUnpaidInvoices(): array
+    public function getUnpaidInvoices(?int $userId = null): array
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId === null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return [];
 
         $sql = "
@@ -182,6 +183,10 @@ class PaymentModel extends BaseModel
      */
     private function createPayment(array $data): string
     {
+        // add time to date
+        if (strlen($data[':date_paid']) === 10)
+            $data[':date_paid'] .= ' ' . date('H:i:s');
+
         $sql = "INSERT INTO ".$this->table." 
                 (specific_symbol, amount, date_paid, note)
                 VALUES (:specific_symbol, :amount, :date_paid, :note)";
@@ -305,9 +310,9 @@ class PaymentModel extends BaseModel
      * @param int $perPage
      * @return array
      */
-    public function getPaginated(int $page, int $perPage, ?int $userId): array
+    public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
-        if ($userId == null)
+        if ($userId === null)
             $userId = $_SESSION['user_id'];
         if (!$userId) return [];
 
@@ -334,9 +339,9 @@ class PaymentModel extends BaseModel
      *
      * @return int
      */
-    public function totalCount(?int $userId): int
+    public function totalCount(?int $userId = null): int
     {
-        if ($userId == null)
+        if ($userId === null)
             $userId = $_SESSION['user_id'];
         if (!$userId) return -1;
 
@@ -356,9 +361,10 @@ class PaymentModel extends BaseModel
      *
      * @return float
      */
-    public function totalSum(): float
+    public function totalSum(?int $userId = null): float
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId === null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return -1.0;
 
         $sql = "SELECT COALESCE(SUM(amount_assigned), 0) FROM ".$this->table." p

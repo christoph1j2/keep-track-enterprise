@@ -92,6 +92,10 @@ class ExpenseModel extends BaseModel
         if ($file && $file['error'] !== UPLOAD_ERR_NO_FILE)
             $receipt = $this->saveFile($file);
 
+        // add time to date
+        if (strlen($expenseData[':expense_date']) === 10)
+            $expenseData[':expense_date'] .= ' ' . date('H:i:s');
+
         try
         {
             $sql = "
@@ -210,6 +214,10 @@ class ExpenseModel extends BaseModel
             ];
         }
 
+        // add time to date
+        if (strlen($expenseData[':expense_date']) === 10)
+            $expenseData[':expense_date'] .= ' ' . date('H:i:s');
+
         try
         {
             $sql = "UPDATE ".$this->table."
@@ -299,9 +307,9 @@ class ExpenseModel extends BaseModel
      * @param int $perPage
      * @return array
      */
-    public function getPaginated(int $page, int $perPage, ?int $userId): array
+    public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
-        if ($userId == null)
+        if ($userId === null)
             $userId = $_SESSION['user_id'];
         if (!$userId) return [];
 
@@ -321,9 +329,9 @@ class ExpenseModel extends BaseModel
      *
      * @return int
      */
-    public function totalCount(?int $userId): int
+    public function totalCount(?int $userId = null): int
     {
-        if ($userId == null)
+        if ($userId === null)
             $userId = $_SESSION['user_id'];
         if (!$userId) return -1;
 
@@ -338,9 +346,10 @@ class ExpenseModel extends BaseModel
      *
      * @return float
      */
-    public function totalSum(): float
+    public function totalSum(?int $userId = null): float
     {
-        $userId = $_SESSION['user_id'];
+        if ($userId === null)
+            $userId = $_SESSION['user_id'];
         if (!$userId) return -1.0;
 
         $sql = "SELECT COALESCE(SUM(total_amount), 0) FROM ".$this->table." e

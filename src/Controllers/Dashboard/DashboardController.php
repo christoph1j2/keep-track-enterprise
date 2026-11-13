@@ -9,6 +9,7 @@ use Src\Models\ClientModel;
 use Src\Models\ExpenseModel;
 use Src\Models\InvoiceModel;
 use Src\Models\PaymentModel;
+use Src\Models\UserModel;
 
 class DashboardController extends BaseController
 {
@@ -34,18 +35,20 @@ class DashboardController extends BaseController
     public function dashboardAction(): void
     {
         $role   = $_SESSION["role"];
+        $userId = $this->effectiveUserId();   // OSVČ: himself, accountant: selected client (osvc)
+
 
         $clientModel  = new ClientModel($this->db);
         $invoiceModel = new InvoiceModel($this->db);
         $paymentModel = new PaymentModel($this->db);
         $expenseModel = new ExpenseModel($this->db);
 
-        $clientCount  = $clientModel->totalCount();
-        $invoiceSum   = $invoiceModel->totalSum();
-        $paymentSum   = $paymentModel->totalSum();
-        $expenseSum   = $expenseModel->totalSum();
+        $clientCount  = $clientModel->totalCount($userId);
+        $invoiceSum   = $invoiceModel->totalSum($userId);
+        $paymentSum   = $paymentModel->totalSum($userId);
+        $expenseSum   = $expenseModel->totalSum($userId);
 
-        $unpaidInvoices = $paymentModel->getUnpaidInvoices();
+        $unpaidInvoices = $paymentModel->getUnpaidInvoices($userId);
 
         $totalRemaining = array_sum(array_column($unpaidInvoices, 'remaining_amount'));
         $paidPercent    = $invoiceSum > 0
@@ -61,10 +64,18 @@ class DashboardController extends BaseController
             "paidPct"     => $paidPercent,
         ];
 
+        $model  = new UserModel($this->db);
+        $client = $role === 'ucetni'
+                    ? $model->findById($userId)
+                    : null;
+
         $this->render("Dashboard/dashboard.twig", [
             "stats" => $stats,
             "role"  => $role,
             "unpaidInvoices" => $unpaidInvoices,
+            "activeClient" => $client
+                ? ['username' => $client['username'], 'profession' => $client['profession']]
+                : null,
         ]);
     }
 

@@ -44,16 +44,16 @@
                         <td data-label="Název" class="align-middle fw-bold">
                             {{ expense.name }}
                         </td>
-                        <td data-label="Částka" class="align-middle fw-bold">
+                        <td data-label="Částka" class="align-middle ">
                             {{ expense.total_amount }}
                         </td>
-                        <td data-label="Datum výdaje" class="align-middle fw-bold">
-                            {{ expense.expense_date }}
+                        <td data-label="Datum výdaje" class="align-middle ">
+                            {{ expense.expense_date|date("d. m. Y") }}
                         </td>
-                        <td data-label="Poznámka" class="align-middle fw-bold">
+                        <td data-label="Poznámka" class="align-middle ">
                             {{ expense.note }}
                         </td>
-                        <td data-label="Účtenka" class="align-middle fw-bold">
+                        <td data-label="Účtenka" class="align-middle ">
                             {% if expense.receipt_filename %}
                                 <a href="{{ receiptUrl|default('/expenses/receipt') }}?id={{ expense.id }}"
                                    target="_blank" rel="noopener"

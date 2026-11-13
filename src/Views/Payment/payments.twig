@@ -44,16 +44,16 @@
                         <td data-label="Specifický symbol" class="align-middle fw-bold">
                             {{ payment.specific_symbol }}
                         </td>
-                        <td data-label="Datum platby" class="align-middle fw-bold">
-                            {{ payment.date_paid }}
+                        <td data-label="Datum platby" class="align-middle">
+                            {{ payment.date_paid|date("d. m. Y") }}
                         </td>
-                        <td data-label="Částka" class="align-middle fw-bold">
+                        <td data-label="Částka" class="align-middle">
                             {{ payment.amount }}
                         </td>
-                        <td data-label="Spárované faktury" class="align-middle fw-bold">
+                        <td data-label="Spárované faktury" class="align-middle">
                             {{ payment.invoice_numbers }}
                         </td>
-                        <td data-label="Poznámka" class="align-middle fw-bold">
+                        <td data-label="Poznámka" class="align-middle">
                             {{ payment.note }}
                         </td>
 

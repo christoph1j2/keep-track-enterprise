@@ -20,10 +20,11 @@
             ] %}
         {% elseif session.role == 'ucetni' %}
             {% set nav_links = [
-                { label: 'Klienti',  href: '/accountant/clients'  },
-                { label: 'Faktury',  href: '/accountant/invoices' },
-                { label: 'Platby',   href: '/accountant/payments' },
-                { label: 'Výdaje',   href: '/accountant/expenses' }
+                { label: 'Dashboard',   href: '/dashboard'           },
+                { label: 'Klienti',     href: '/accountant/clients'  },
+                { label: 'Faktury',     href: '/accountant/invoices' },
+                { label: 'Platby',      href: '/accountant/payments' },
+                { label: 'Výdaje',      href: '/accountant/expenses' }
             ] %}
         {% elseif session.user_id %}
             {% set nav_links = [

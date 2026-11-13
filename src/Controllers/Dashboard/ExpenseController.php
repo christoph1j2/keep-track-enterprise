@@ -44,12 +44,12 @@ class ExpenseController extends OsvcController
         $userId = (int) $_SESSION['user_id'];
         $id = (int) ($_GET['id'] ?? 0);
         $r  = $id > 0
-            ? new ExpenseModel($this->db)->findReceiptById($id, $userId)
+            ? (new ExpenseModel($this->db))->findReceiptById($id, $userId)
             : null;
 
         if (!$r)
         {
-            new ErrorController($this->db)->notFoundAction();
+            (new ErrorController($this->db))->notFoundAction();
         }
 
         $this->sendReceipt($r);

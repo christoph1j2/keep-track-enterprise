@@ -25,16 +25,24 @@
                             <td class="fst-italic">{{ user.email }}</td>
                         </tr>
                         <tr>
+                            <td>Role:</td>
+                            <td class="fst-italic">
+                                {% if user.role_name == 'ucetni'%}
+                                    Účetní
+                                {% elseif user.role_name == 'osvc' %}
+                                    OSVČ
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if user.role_name != 'ucetni' %}
+                        <tr>
                             {# TODO: make it possible to edit #}
                             <td>Profese:</td>
                             <td class="fst-italic">{{ user.profession ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td>Role:</td>
-                            <td class="fst-italic">{{ user.role_name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            {# TODO: accountant shouldnt see this #}
                             <td>Připojený účetní:</td>
                             <td class="fst-italic d-flex align-items-center gap-2">
                                 <span>{{ accountant_name }}</span>
@@ -45,6 +53,7 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        {% endif %}
                     </table>
                 </div>
             </div>
@@ -52,18 +61,25 @@
         <div class="col-6">
             <div class="card h-100">
                 <div class="card-body">
-                    {# TODO: accountant shouldnt be able to add accountant #}
-                    <h4 class="card-title">Pozvat účetního</h4>
-                    {% if user.accountant_key == 'invalid' %}
-                        <p>Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
-                    {% elseif user.accountant_key and user.accountant_key_expires|date('U') > 'now'|date('U') %}                        <p class="mb-1"><strong>Klíč:</strong> <code>{{ user.accountant_key }}</code></p>
-                        <p class="text-muted small">
-                            Platnost do: {{ user.accountant_key_expires|date("d. m. Y H:i:s") }}
-                        </p>
-                    {% else %}
-                        <form method="post" action="/profile/generate-accountant-key">
-                            <input type="submit" value="Vygenerovat Klíč" />
+                    {% if user.role_name == 'ucetni' %}
+                        <h4 class="card-title">Přidat klienta</h4>
+                        <form action="/accountant/redeem-key" method="post">
+                            <input type="text" name="key" class="form-control mb-3" required>
+                            <input type="submit" value="Připojit">
                         </form>
+                    {% else %}
+                        <h4 class="card-title">Pozvat účetního</h4>
+                        {% if user.accountant_id %}
+                            <p>Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
+                        {% elseif user.accountant_key and user.accountant_key_expires|date('U') > 'now'|date('U') %}                        <p class="mb-1"><strong>Klíč:</strong> <code>{{ user.accountant_key }}</code></p>
+                            <p class="text-muted small">
+                                Platnost do: {{ user.accountant_key_expires|date("d. m. Y H:i:s") }}
+                            </p>
+                        {% else %}
+                            <form method="post" action="/profile/generate-accountant-key">
+                                <input type="submit" value="Vygenerovat Klíč" />
+                            </form>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
