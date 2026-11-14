@@ -58,10 +58,10 @@ class ExpenseModel extends BaseModel
      * @param int $id
      * @return array|false
      */
-    public function findReceiptById(int $id, int $userId): array|false
+    public function findReceiptById(int $id, ?int $userId = null): array|false
     {
-        if ($userId == null)
-            $userId = $_SESSION['user_id'];
+        if ($userId === null)
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
         if (!$userId) return false;
 
         $sql = "SELECT receipt_filename, receipt_original_name, receipt_mime
@@ -93,8 +93,8 @@ class ExpenseModel extends BaseModel
             $receipt = $this->saveFile($file);
 
         // add time to date
-        if (strlen($expenseData[':expense_date']) === 10)
-            $expenseData[':expense_date'] .= ' ' . date('H:i:s');
+        if (!empty($expenseData['expense_date']) && strlen($expenseData['expense_date']) === 10)
+            $expenseData['expense_date'] .= ' ' . date('H:i:s');
 
         try
         {
@@ -215,8 +215,8 @@ class ExpenseModel extends BaseModel
         }
 
         // add time to date
-        if (strlen($expenseData[':expense_date']) === 10)
-            $expenseData[':expense_date'] .= ' ' . date('H:i:s');
+        if (!empty($expenseData['expense_date']) && strlen($expenseData['expense_date']) === 10)
+            $expenseData['expense_date'] .= ' ' . date('H:i:s');
 
         try
         {
@@ -266,11 +266,11 @@ class ExpenseModel extends BaseModel
      */
     public function deleteExpense(int $id): bool
     {
-        $userId = $_SESSION['user_id'];
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
         if (!$userId) return false;
 
         // first we get reference to receipt file
-        $receipt = $this->findReceiptById($id);
+        $receipt = $this->findReceiptById($id, $userId);
         $filename = $receipt['receipt_filename'] ?? null;
 
         try
@@ -310,7 +310,7 @@ class ExpenseModel extends BaseModel
     public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
         if ($userId === null)
-            $userId = $_SESSION['user_id'];
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
         if (!$userId) return [];
 
         $offset = ($page - 1) * $perPage;
@@ -320,7 +320,10 @@ class ExpenseModel extends BaseModel
                 ORDER BY expense_date DESC
                 LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':user_id' => $userId, ':limit' => $perPage, ':offset' => $offset]);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

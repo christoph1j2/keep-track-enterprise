@@ -46,7 +46,7 @@ class ClientController extends OsvcController
         header('Content-Type: application/json');
 
         // we get data from form
-        $name = $_POST['name'];
+        $name = trim($_POST['name'] ?? '');
         $email = $_POST['contact_email'] ?? null;
         $phone = $_POST['contact_phone'] ?? null;
         $ico  = $_POST['ico'] ?? null;
@@ -78,12 +78,14 @@ class ClientController extends OsvcController
             else {
                 $model->addClient($name, $email, $phone, $ico, $dic, $description, $client_type);
                 $response = ['status' => 'success', 'message' => 'Klient úspěšně přidán.'];
+                $this->flash('success', $response['message']);
             }
         }
         else
         {
             $model->addClient($name, $email, $phone, $ico, $dic, $description, null);
             $response = ['status' => 'success', 'message' => 'Klient úspěšně přidán.'];
+            $this->flash('success', $response['message']);
         }
 
         // send header and json res
@@ -168,7 +170,7 @@ class ClientController extends OsvcController
         }
 
         $model = new ClientModel($this->db);
-        $name = $_POST['name'];
+        $name = trim($_POST['name'] ?? '');
         $email = $_POST['contact_email'] ?? null;
         $phone = $_POST['contact_phone'] ?? null;
         $ico = $_POST['ico'] ?? null;

@@ -67,20 +67,32 @@
                             const row = document.createElement('tr');
                             const totalAmount = parseFloat(p.total_amount).toFixed(2);
                             const assignedAmount = parseFloat(p.amount_assigned).toFixed(2);
-                            row.innerHTML = `
-                                <td><strong>#${p.invoice_number}</strong></td>
-                                <td>${totalAmount} Kč</td>
-                                <td class="text-end fw-bold text-success">${assignedAmount} Kč</td>
-                                `;
+
+                            const invTd = document.createElement('td');
+                            const strong = document.createElement('strong');
+                            strong.textContent = `#${p.invoice_number}`;
+                            invTd.appendChild(strong);
+
+                            const totalTd = document.createElement('td');
+                            totalTd.textContent = `${totalAmount} Kč`;
+
+                            const assignedTd = document.createElement('td');
+                            assignedTd.className = 'text-end fw-bold text-success';
+                            assignedTd.textContent = `${assignedAmount} Kč`;
+
+                            row.append(invTd, totalTd, assignedTd);
                             tbody.appendChild(row);
                         });
                     }
 
                     detDialog.showModal();
                 } else
-                    alert(data.message);
+                    showFlash('danger', data.message);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showFlash('danger', 'Nepodařilo se spojit se serverem.');
+            });
         });
     }
 </script>

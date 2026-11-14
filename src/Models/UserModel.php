@@ -47,6 +47,7 @@ class UserModel extends BaseModel
                         accountant_key_expires = NULL
                     WHERE accountant_key = :key
                         AND accountant_key_expires > NOW()
+                        AND accountant_id IS NULL
                 ");
                 $stmt->execute([
                     ':accountant_id' => $newUserId,

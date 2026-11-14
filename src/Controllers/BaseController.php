@@ -65,6 +65,21 @@ abstract class BaseController {
     }
 
     /**
+     * Stores a one-time flash message in session for the next rendered page.
+     *
+     * @param string $type - Bootstrap alert type (success, danger, warning, info)
+     * @param string $message - Message text
+     * @return void
+     */
+    protected function flash(string $type, string $message): void
+    {
+        $_SESSION['flash'] = [
+            'type' => $type,
+            'message' => $message,
+        ];
+    }
+
+    /**
      * Helper render method to render twig with csrf token included
      *
      * @param string $view - twig file
@@ -89,6 +104,12 @@ abstract class BaseController {
             // TODO: CSRF
             // $params['csrf_field'] = CSRF::getField();
             $params['csrf_field'] = bin2hex(random_bytes(32));
+        }
+
+        if (!array_key_exists('flash', $params) && isset($_SESSION['flash']))
+        {
+            $params['flash'] = $_SESSION['flash'];
+            unset($_SESSION['flash']);
         }
 
         try
@@ -167,6 +188,7 @@ abstract class BaseController {
         if ($active === 0 || !(new UserModel($this->db))->isClientOf($me, $active))
         {
             unset($_SESSION['active_osvc_id']);
+            $this->flash('info', 'Nejprve vyberte klienta.');
             $this->redirect('/accountant/clients'); // select osvc
         }
 

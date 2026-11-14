@@ -30,23 +30,25 @@ class ClientModel extends BaseModel
     }
 
     /**
-     * Returns user with specific ID
+     * Returns client with specific ID belonging to current user
      *
      * @param int $id
-     * @return array
+     * @return array|false
      */
-    public function getClientById(int $id): array
+    public function getClientById(int $id): array|false
     {
-        $userId = $_SESSION['user_id'];
-        if (!$userId) return [];
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        if (!$userId) return false;
 
         $sql = 'SELECT c.*, ct.name AS type_name
                 FROM '. $this->table .' c
                 LEFT JOIN '. $this->table_types .' ct ON ct.id = c.type_id
-                WHERE c.id = :id';
+                WHERE c.id = :id AND c.user_id = :user_id';
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        return $stmt->fetch();
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch() ?: false;
     }
 
     /**
@@ -159,19 +161,28 @@ class ClientModel extends BaseModel
      *
      * @param int $page
      * @param int $perPage
+     * @param int|null $userId
      * @return array
      */
-    public function getPaginated(int $page, int $perPage): array
+    public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
+        if ($userId === null)
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
+        if (!$userId) return [];
+
         $offset = ($page - 1) * $perPage;
 
         $sql = 'SELECT c.*, ct.name AS type_name
                 FROM '. $this->table .' c
                 LEFT JOIN '. $this->table_types .' ct ON ct.id = c.type_id
+                WHERE c.user_id = :user_id
                 ORDER BY c.name
                 LIMIT :limit OFFSET :offset';
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':limit' => $perPage, ':offset' => $offset]);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

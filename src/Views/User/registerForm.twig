@@ -34,7 +34,7 @@
                             type="email"
                             name="email"
                             value="{{ data.email }}"
-                            class="form-control {{ (errors.email) ? 'is_invalid' : '' }}"
+                            class="form-control {{ (errors.email) ? 'is-invalid' : '' }}"
                         />
                         {% if (errors.email) %}
                             <div class="invalid-feedback">{{ errors.email }}</div>
@@ -58,7 +58,7 @@
                         <input
                             type="password"
                             name="password_confirm"
-                            class="form-control {{ (errors.password) ? 'is-invalid' : '' }}"/>
+                            class="form-control {{ (errors.password_confirm) ? 'is-invalid' : '' }}"/>
                         {% if (errors.password_confirm) %}
                             <div class="invalid-feedback">{{ errors.password_confirm }}</div>
                         {% endif %}
@@ -71,8 +71,8 @@
                                 type="text"
                                 name="accountant_key"
                                 class="form-control {{ (errors.account_key) ? 'is-invalid' : '' }}"/>
-                                {% if (errors.password_confirm) %}
-                                    <div class="invalid-feedback">{{ errors.password_confirm }}</div>
+                                {% if (errors.accountant_key) %}
+                                    <div class="invalid-feedback">{{ errors.accountant_key }}</div>
                                 {% endif %}
                         {% endif %}
                         <input type="hidden" name="mode" value="{{ mode }}" />

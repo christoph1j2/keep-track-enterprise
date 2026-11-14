@@ -26,13 +26,15 @@
                             if (data.status === 'success')
                             {
                                 row.remove();
+                                showFlash('success', data.message);
                                 if (!table.querySelector('tbody tr')) window.location.reload();
                             }
                             else
-                                alert('Chyba: ' + data.message);
+                                showFlash('danger', data.message);
                         })
                         .catch(error => {
                             console.error('Chyba komunikace se serverem:',error);
+                            showFlash('danger', 'Chyba komunikace se serverem.');
                         })
 
                 }

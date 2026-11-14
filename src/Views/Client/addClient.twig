@@ -57,11 +57,12 @@
                     window.location.reload(); // refreshes page with new data
                 } else
                 {
-                    alert('Nastala chyba ' + data.message);
+                    showFlash('danger', data.message);
                 }
             })
             .catch(error => {
                 console.error("Chyba komunikace se serverem.", error);
+                showFlash('danger', 'Chyba komunikace se serverem.');
             })
     })
 </script>

@@ -61,14 +61,22 @@ class InvoiceController extends OsvcController
             return;
         }
 
+        $clientModel = new ClientModel($this->db);
+        if (!$clientModel->getClientById((int) $clientId))
+        {
+            echo json_encode(['status' => 'error', 'message' => 'Neplatný klient.']);
+            return;
+        }
+
         // calculate total amount
         $total_amount = 0.0;
         foreach ($items as $item)
         {
+            $itemName = trim((string) ($item['name'] ?? ''));
             $quantity = (int)($item['quantity'] ?? 0);
             $price = (float)($item['unit_price'] ?? 0);
-            if ($quantity <= 0 || $price < 0) {
-                echo json_encode(['status' => 'error', 'message' => 'Neplatné množství nebo cena položky.']);
+            if ($itemName === '' || $quantity <= 0 || $price < 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Neplatná položka faktury (název, množství nebo cena).']);
                 return;
             }
             $total_amount += ($quantity * $price);
@@ -93,6 +101,7 @@ class InvoiceController extends OsvcController
         if ($invoiceId)
         {
             $response = ['status' => 'success', 'message' => 'Faktura úspěšně vytvořena'];
+            $this->flash('success', $response['message']);
         }
         else
         {

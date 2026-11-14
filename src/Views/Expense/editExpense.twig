@@ -71,7 +71,7 @@
                 });
                 const data = await res.json();
                 if (!res.ok || data.status !== 'success') {
-                    alert('Nastala chyba: ' + (data.message ?? ''));
+                    showFlash('danger', data.message ?? 'Nepodařilo se načíst výdaj.');
                     return;
                 }
                 const e = data.expense;
@@ -97,6 +97,7 @@
                 editExpenseDialog.showModal();
             } catch (err) {
                 console.error(err);
+                showFlash('danger', 'Nepodařilo se spojit se serverem.');
             }
         })
     }
@@ -122,13 +123,13 @@
             });
             const data = await res.json();
             if (!res.ok || data.status !== 'success') {
-                alert('Nastala chyba: ' + (data.message ?? ''));
+                showFlash('danger', data.message ?? 'Nepodařilo se upravit výdaj.');
                 return;
             }
             window.location.reload();
         } catch (err) {
             console.error(err);
-            alert('Nepodařilo se spojit se serverem.');
+            showFlash('danger', 'Nepodařilo se spojit se serverem.');
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;

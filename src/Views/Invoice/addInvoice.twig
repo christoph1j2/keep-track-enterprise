@@ -86,10 +86,13 @@
                 {
                     window.location.reload(); // refreshes page with new data
                 } else {
-                    alert(data.message);
+                    showFlash('danger', data.message);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showFlash('danger', 'Chyba komunikace se serverem.');
+            });
     })
 
     //-- Invoice item logic --
@@ -136,7 +139,7 @@
         if (e.target.classList.contains('remove-item-btn')) {
             if (itemsContainer.querySelectorAll('tr').length <= 1)
             {
-                alert('Faktura musí mít aspoň jednu položku');
+                showFlash('warning', 'Faktura musí mít aspoň jednu položku.');
                 return;
             }
             e.target.closest('tr').remove();

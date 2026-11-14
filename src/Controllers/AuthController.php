@@ -80,7 +80,8 @@ class AuthController extends BaseController
                 $_SESSION['user_id'] = $userId;
                 $_SESSION['role'] = ($mode === 'accountant') ? 'ucetni' : 'osvc';
                 $_SESSION['username'] = $username;
-               $this->redirect('/dashboard');
+                $this->flash('success', 'Registrace proběhla úspěšně.');
+                $this->redirect('/dashboard');
             }
         }
         $this->registerFormAction($_POST, $validator->getErrors(), $mode);
@@ -118,8 +119,8 @@ class AuthController extends BaseController
         $model = new UserModel($this->db);
 
         // extract email and password from post request
-        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-        $password = $_POST['password'];
+        $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $password = $_POST['password'] ?? '';
 
         // fetch user
         if ($email == null)
@@ -151,6 +152,7 @@ class AuthController extends BaseController
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role_name'];
 
+            $this->flash('success', 'Přihlášení proběhlo úspěšně.');
             $this->redirect('/dashboard'); // TODO: if admin then redirect to /admin
         }
 

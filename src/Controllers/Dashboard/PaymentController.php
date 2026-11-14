@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Src\Controllers\Dashboard;
 
+use Src\Models\InvoiceModel;
 use Src\Models\PaymentModel;
 
 class PaymentController extends OsvcController
@@ -60,12 +61,28 @@ class PaymentController extends OsvcController
             return;
         }
 
-        // check sum of amount_assigned doesnt exceed total payment amount
+        // check ownership of invoices, amount_assigned > 0, and sum doesn't exceed payment amount
+        $invoiceModel = new InvoiceModel($this->db);
         $sum = 0.0;
         foreach ($pairings as $pairing)
         {
-            $sum += $pairing['amount_assigned'];
-            if ($sum > $amount)
+            $invoiceId = (int) ($pairing['invoice_id'] ?? 0);
+            $assigned  = $pairing['amount_assigned'] ?? null;
+
+            if ($invoiceId <= 0 || !is_numeric($assigned) || (float) $assigned <= 0)
+            {
+                echo json_encode(['status' => 'error', 'message' => 'Přiřazená částka musí být větší než 0.']);
+                return;
+            }
+
+            if (!$invoiceModel->getInvoiceById($invoiceId))
+            {
+                echo json_encode(['status' => 'error', 'message' => 'Neplatná faktura pro spárování.']);
+                return;
+            }
+
+            $sum += (float) $assigned;
+            if (round($sum, 2) > round((float) $amount, 2))
             {
                 $response = ['status' => 'error', 'message' => 'Překročení částky!'];
                 echo json_encode($response);
@@ -87,7 +104,10 @@ class PaymentController extends OsvcController
 
         // json res
         if ($paymentId)
+        {
             $response = ['status' => 'success', 'message' => 'Platba úspěšně vytvořena.'];
+            $this->flash('success', $response['message']);
+        }
         else
             $response = ['status' => 'error', 'message' => 'Nepodařilo se vytvořit platbu.'];
 

@@ -116,10 +116,10 @@ class InvoiceModel extends BaseModel
     private function createInvoice(array $data): false|string
     {
         // add time to dates
-        if (strlen($data[':date_issued']) === 10)
+        if (!empty($data[':date_issued']) && strlen($data[':date_issued']) === 10)
             $data[':date_issued'] .= ' ' . date('H:i:s');
-        if (strlen($data[':due_date']) === 10)
-            $data[':due_date'] .= ' ' . date('H:i:s');
+        if (!empty($data[':date_due']) && strlen($data[':date_due']) === 10)
+            $data[':date_due'] .= ' ' . date('H:i:s');
 
         $sql = "INSERT INTO ". $this->table ." 
                 (client_id, invoice_number, name, date_due, date_issued, total_amount, paid) 
@@ -179,7 +179,7 @@ class InvoiceModel extends BaseModel
     public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
         if ($userId === null)
-            $userId = $_SESSION['user_id'];
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
         if (!$userId) return [];
 
         $offset = ($page - 1) * $perPage;
@@ -191,7 +191,10 @@ class InvoiceModel extends BaseModel
                 ORDER BY i.date_issued DESC
                 LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':user_id' => $userId, ':limit' => $perPage, ':offset' => $offset]);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

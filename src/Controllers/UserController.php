@@ -22,16 +22,16 @@ class UserController extends BaseController
 
         // get user to parse into view
         $model = new UserModel($this->db);
-        $user = $model->findById($_SESSION['user_id']);
+        $user = $model->findById((int) $_SESSION['user_id']);
 
         // get accountant name
         $accountant_name = ($user['accountant_id'])
-            ? ($model->findById($user['accountant_id']))['username']
+            ? ($model->findById((int) $user['accountant_id']))['username']
             : 'N/A';
 
         $this->render('User/profile.twig', [
             'user' => $user,
-            'accountant_name' => $accountant_name
+            'accountant_name' => $accountant_name,
         ]);
     }
 
@@ -48,7 +48,12 @@ class UserController extends BaseController
 
         // generate the key
         $model = new UserModel($this->db);
-        $model->generateAccountantKey($_SESSION['user_id']);
+        $key = $model->generateAccountantKey((int) $_SESSION['user_id']);
+
+        if ($key !== '')
+            $this->flash('success', 'Pozvánkový klíč pro účetního byl vygenerován.');
+        else
+            $this->flash('warning', 'Klíč nelze vygenerovat, již máte připojeného účetního.');
 
         $this->redirect('/profile');
     }
@@ -65,7 +70,10 @@ class UserController extends BaseController
 
         // delete all references between user and accountant
         $model = new UserModel($this->db);
-        $model->unlinkAccountant($_SESSION['user_id']);
+        $unlinked = $model->unlinkAccountant((int) $_SESSION['user_id']);
+
+        if ($unlinked)
+            $this->flash('info', 'Účetní byl odpojen od Vašeho profilu.');
 
         $this->redirect('/profile');
     }

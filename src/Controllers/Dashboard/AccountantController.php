@@ -38,13 +38,9 @@ class AccountantController extends BaseController
         $userId = (int) $_SESSION['user_id'];
         $model  = new UserModel($this->db);
 
-        $flash = $_SESSION['flash'] ?? null;
-        unset($_SESSION['flash']);
-
         $this->render('Accountant/clients.twig', [
             'clients'      => $model->getClientsOf($userId),
             'activeOsvcId' => $_SESSION['active_osvc_id'] ?? null,
-            'flash'        => $flash,
         ]);
     }
 
@@ -64,7 +60,14 @@ class AccountantController extends BaseController
 
         // if accountant has osvc linked
         if ($model->isClientOf($userId, $osvcId))
+        {
             $_SESSION['active_osvc_id'] = $osvcId;
+            $this->flash('success', 'Aktivní klient byl přepnut.');
+        }
+        else
+        {
+            $this->flash('danger', 'Vybraného klienta nelze aktivovat.');
+        }
 
         $this->redirect('/dashboard');
     }
@@ -87,6 +90,11 @@ class AccountantController extends BaseController
         $model = new UserModel($this->db);
 
         $ok = $model->redeemKey($key, $userId);
+
+        $this->flash(
+            $ok ? 'success' : 'danger',
+            $ok ? 'Klient byl úspěšně připojen.' : 'Zadaný klíč je neplatný, vypršel, nebo OSVČ již má účetního.'
+        );
 
         $this->redirect('/profile');
     }
@@ -127,6 +135,7 @@ class AccountantController extends BaseController
      *
      * @return void
      */
+    #[NoReturn]
     public function receiptAction(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -150,7 +159,6 @@ class AccountantController extends BaseController
      *
      * @return void
      */
-    // TODO: FIX THROWS 403
     public function invoicesAction(): void
     {
         $userId = $this->effectiveUserId();

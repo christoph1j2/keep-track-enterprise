@@ -64,16 +64,16 @@
             // const text = await res.text();
             // console.log(res.status, res.redirected, text);
             const json = await res.json();
-            if (!res.ok)
+            if (!res.ok || json.status !== 'success')
             {
-                alert(json.message);
+                showFlash('danger', json.message ?? 'Nepodařilo se vytvořit výdaj.');
                 return;
             }
 
             window.location.reload();
         }catch (err) {
             console.error(err);
-            alert('Nepodařilo se spojit se serverem.');
+            showFlash('danger', 'Nepodařilo se spojit se serverem.');
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;

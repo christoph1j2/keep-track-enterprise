@@ -313,7 +313,7 @@ class PaymentModel extends BaseModel
     public function getPaginated(int $page, int $perPage, ?int $userId = null): array
     {
         if ($userId === null)
-            $userId = $_SESSION['user_id'];
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
         if (!$userId) return [];
 
         $offset = ($page - 1) * $perPage;
@@ -330,7 +330,10 @@ class PaymentModel extends BaseModel
                 ORDER BY p.date_paid DESC
                 LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':user_id' => $userId, ':limit' => $perPage, ':offset' => $offset]);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

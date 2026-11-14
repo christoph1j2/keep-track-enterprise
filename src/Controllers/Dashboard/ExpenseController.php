@@ -62,6 +62,8 @@ class ExpenseController extends OsvcController
      */
     public function addExpenseAction(): void
     {
+        header('Content-Type: application/json');
+
         // we get data from form
         $name = trim($_POST['name'] ?? '');
         $total_amount = $_POST['total_amount'] ?? null;
@@ -94,7 +96,10 @@ class ExpenseController extends OsvcController
 
             // json res
             if ($expenseId)
+            {
                 $response = ['status' => 'success', 'message' => 'Výdaj úspěšně vytvořen!'];
+                $this->flash('success', $response['message']);
+            }
             else
                 $response = ['status' => 'error', 'message' => 'Nepodařilo se vytvořit výdaj'];
 
@@ -151,11 +156,11 @@ class ExpenseController extends OsvcController
      */
     public function editExpenseAction(): void
     {
+        header('Content-Type: application/json');
         $expenseId = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
         if (!$expenseId)
         {
-            header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => 'Chybí ID výdaje']);
             return;
         }
@@ -191,8 +196,8 @@ class ExpenseController extends OsvcController
                 echo json_encode($response);
                 return;
             }
-            header('Content-Type: application/json');
-            $response = ['status' => 'success', 'message' => 'Výdaj nalezen!'];
+            $response = ['status' => 'success', 'message' => 'Výdaj úspěšně upraven!'];
+            $this->flash('success', $response['message']);
             echo json_encode($response);
         }
         catch (\RuntimeException $e) {

@@ -84,7 +84,7 @@
        event.preventDefault();
 
        if (invoiceContainer.querySelectorAll('tr').length === 0) {
-           alert('K platbě musíte přiřadit aspoň jednu fakturu.');
+           showFlash('warning', 'K platbě musíte přiřadit aspoň jednu fakturu.');
            return;
        }
 
@@ -99,9 +99,12 @@
                if (data.status === 'success')
                    window.location.reload();
                else
-                   alert(data.message);
+                   showFlash('danger', data.message);
            })
-           .catch(err => console.error('Error:', err));
+           .catch(err => {
+               console.error('Error:', err);
+               showFlash('danger', 'Nepodařilo se spojit se serverem.');
+           });
     });
 
     // default date to current day
@@ -117,7 +120,7 @@
     addInvoiceBtn.addEventListener('click', () => {
         const selectedOption = invoiceSelect.options[invoiceSelect.selectedIndex];
         if (!selectedOption || !selectedOption.value) {
-            alert('Vyberte prosím fakturu ze seznamu');
+            showFlash('warning', 'Vyberte prosím fakturu ze seznamu.');
             return;
         }
 
@@ -127,7 +130,7 @@
 
         // check if invoice not already in table
         if (invoiceContainer.querySelector(`input[value="${invoiceId}"]`)) {
-            alert('Tato faktura už je v seznamu přidána.');
+            showFlash('warning', 'Tato faktura už je v seznamu přidána.');
             return;
         }
 

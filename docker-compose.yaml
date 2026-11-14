@@ -15,7 +15,7 @@ services:
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-3306}
-      DB_NAME: ${DB_NAME:-mydatabase}
+      DB_NAME: ${DB_NAME:-keeptrack}
       DB_USER: ${DB_USER:-myuser}
       DB_PASS: ${DB_PASS:-mypassword}
       DB_CHARSET: ${DB_CHARSET:-utf8mb4}
@@ -32,7 +32,7 @@ services:
       - "${DB_PORT:-3306}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydatabase}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-keeptrack}
       MYSQL_USER: ${MYSQL_USER:-myuser}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
     volumes:

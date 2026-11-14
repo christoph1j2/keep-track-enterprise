@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}KeepTrack Enterprise{% endblock %}</title>
+    <link rel="stylesheet" href="/assets/css/header.css" />
     {% block stylesheets %}{% endblock %}
     <!-- Boostrap 6 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
@@ -45,12 +46,49 @@
     </nav>
 
     <main class="container">
+        <div id="flashContainer" class="mb-2">
+            {% if flash %}
+                <div class="alert theme-{{ flash.type ?? 'info' }}" role="alert">
+                    <span>{{ flash.message }}</span>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Zavřít"></button>
+                </div>
+            {% endif %}
+        </div>
         {% block content %}
         {% endblock %}
     </main>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Global flash alert helper (works both on page and inside open <dialog> modals)
+        window.showFlash = function(type, message) {
+            const openDialog = document.querySelector('dialog[open] .dialog-body');
+            const container = openDialog || document.getElementById('flashContainer');
+            if (!container) return;
+
+            if (openDialog) {
+                openDialog.querySelectorAll('.js-flash-alert').forEach(el => el.remove());
+            } else {
+                container.innerHTML = '';
+            }
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert theme-${type} mb-3 js-flash-alert`;
+            alertDiv.setAttribute('role', 'alert');
+
+            const msgSpan = document.createElement('span');
+            msgSpan.textContent = message;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'btn-close ms-auto';
+            closeBtn.setAttribute('data-bs-dismiss', 'alert');
+            closeBtn.setAttribute('aria-label', 'Zavřít');
+
+            alertDiv.append(msgSpan, closeBtn);
+            container.prepend(alertDiv);
+        };
+
         // Global Interceptor for AJAX fetch
         (function()
         {
