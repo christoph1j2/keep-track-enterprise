@@ -254,4 +254,166 @@ class UserModel extends BaseModel
 
         return $stmt->rowCount() === 1;
     }
+
+    // ####### Admin User Management logic ########
+
+    /**
+     * Gets all available roles.
+     *
+     * @return array
+     */
+    public function getAllRoles(): array
+    {
+        $stmt = $this->db->query("SELECT id, role FROM roles ORDER BY id ASC");
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Finds a role by name.
+     *
+     * @param string $roleName
+     * @return array|false
+     */
+    public function getRoleByName(string $roleName): array|false
+    {
+        $stmt = $this->db->prepare("SELECT id, role FROM roles WHERE role = :role LIMIT 1");
+        $stmt->execute([':role' => $roleName]);
+        return $stmt->fetch() ?: false;
+    }
+
+    /**
+     * Returns total count of users in the system.
+     *
+     * @return int
+     */
+    public function totalUsersCount(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) FROM " . $this->table)->fetchColumn();
+    }
+
+    public function totalBlockedCount(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) FROM " . $this->table ." WHERE is_blocked = 1")->fetchColumn();
+    }
+
+    /**
+     * Returns paginated list of users with their role names (without password hashes).
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     */
+    public function getPaginatedUsers(int $page, int $perPage): array
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "SELECT u.id, u.username, u.email, u.profession, u.is_blocked, u.role_id, r.role AS role_name
+                FROM " . $this->table . " u
+                LEFT JOIN roles r ON u.role_id = r.id
+                ORDER BY u.id ASC
+                LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        // PDO::PARAM_INT is required for LIMIT/OFFSET when ATTR_EMULATE_PREPARES is false
+        $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Updates blocked status for a user.
+     *
+     * @param int $userId
+     * @param bool $blocked
+     * @return bool
+     */
+    public function setBlocked(int $userId, bool $blocked): bool
+    {
+        $stmt = $this->db->prepare("UPDATE " . $this->table . " SET is_blocked = :blocked WHERE id = :id");
+        $stmt->execute([
+            ':blocked' => $blocked ? 1 : 0,
+            ':id'      => $userId,
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Updates role_id for a user.
+     *
+     * @param int $userId
+     * @param int $roleId
+     * @return bool
+     */
+    public function updateUserRole(int $userId, int $roleId): bool
+    {
+        $stmt = $this->db->prepare("UPDATE " . $this->table . " SET role_id = :role_id WHERE id = :id");
+        $stmt->execute([
+            ':role_id' => $roleId,
+            ':id'      => $userId,
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Deletes a user and clears any dangling accountant_id references.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function deleteUser(int $userId): bool
+    {
+        try
+        {
+            $this->db->beginTransaction();
+
+            // Unlink OSVC users if deleted user was their accountant
+            $stmt = $this->db->prepare("UPDATE " . $this->table . " SET accountant_id = NULL WHERE accountant_id = :id");
+            $stmt->execute([':id' => $userId]);
+
+            $stmt = $this->db->prepare("DELETE FROM " . $this->table . " WHERE id = :id");
+            $stmt->execute([':id' => $userId]);
+            $deleted = $stmt->rowCount() > 0;
+
+            $this->db->commit();
+            return $deleted;
+        }
+        catch (\Throwable $e)
+        {
+            if ($this->db->inTransaction())
+                $this->db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Returns system-wide counts for the admin overview page.
+     *
+     * @return array
+     */
+    public function getAdminOverviewStats(): array
+    {
+        $roleRows = $this->db->query("
+            SELECT COALESCE(r.role, 'none') AS role_name, COUNT(*) AS cnt
+            FROM " . $this->table . " u
+            LEFT JOIN roles r ON u.role_id = r.id
+            GROUP BY r.role
+        ")->fetchAll(\PDO::FETCH_KEY_PAIR);
+
+        $cCount = $this->db->query("SELECT COUNT(*) FROM clients")->fetchColumn();
+        $iCount = $this->db->query("SELECT COUNT(*) FROM invoices")->fetchColumn();
+        $pCount = $this->db->query("SELECT COUNT(*) FROM payments")->fetchColumn();
+        $eCount = $this->db->query("SELECT COUNT(*) FROM expenses")->fetchColumn();
+
+        return [
+            'users_total'  => $this->totalUsersCount(),
+            'users_blocked'=> $this->totalBlockedCount(),
+            'osvc'         => (int) ($roleRows['osvc'] ?? 0),
+            'ucetni'       => (int) ($roleRows['ucetni'] ?? 0),
+            'admins'       => (int) (($roleRows['admin'] ?? 0) + ($roleRows['superadmin'] ?? 0)),
+            'clients'      => (int) ($cCount),
+            'invoices'     => (int) ($iCount),
+            'payments'     => (int) ($pCount),
+            'expenses'     => (int) ($eCount),
+        ];
+    }
 }

@@ -28,6 +28,7 @@ if (isset($_COOKIE[session_name()]) && session_id())
 
 use Src\Controllers\AuthController;
 use Src\Controllers\Dashboard\AccountantController;
+use Src\Controllers\Dashboard\AdminController;
 use Src\Controllers\Dashboard\ClientController;
 use Src\Controllers\Dashboard\DashboardController;
 use Src\Controllers\Dashboard\ExpenseController;
@@ -87,6 +88,17 @@ $router->get('/accountant/invoices', AccountantController::class, 'invoicesActio
 $router->get('/accountant/payments', AccountantController::class, 'paymentsAction');
 $router->get('/accountant/expenses', AccountantController::class, 'expensesAction');
 $router->get('/accountant/receipt', AccountantController::class, 'receiptAction');
+
+$router->get('/admin/overview', AdminController::class, 'overviewAction');
+$router->get('/admin/users', AdminController::class, 'usersAction');
+$router->post('/admin/users/toggle-block', AdminController::class, 'toggleBlockAction');
+$router->post('/admin/users/change-role', AdminController::class, 'changeRoleAction');
+$router->post('/admin/users/delete', AdminController::class, 'deleteUserAction');
+$router->get('/admin/client-types', AdminController::class, 'clientTypesAction');
+$router->post('/admin/client-types/get', AdminController::class, 'getClientTypeAjaxAction');
+$router->post('/admin/client-types/add', AdminController::class, 'addClientTypeAction');
+$router->post('/admin/client-types/edit', AdminController::class, 'editClientTypeAction');
+$router->post('/admin/client-types/delete', AdminController::class, 'deleteClientTypeAction');
 
 
 $router->dispatch($db);

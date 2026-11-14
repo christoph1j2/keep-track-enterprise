@@ -28,11 +28,12 @@
             {% if session.user_id != null %}
                 <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">
                     <a href="/profile">{{ session.username }}</a>
-                    <form action="/dashboard" method="GET">
-                        <input type="submit" value="Dashboard" />
+                    <form action="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}" method="GET">
+                        <input type="submit" value="{{ session.role in ['admin', 'superadmin'] ? 'Administrace' : 'Dashboard' }}" />
                     </form>
                     {# TODO: icon instead of text #}
                     <form action="/logout" method="POST">
+                        {{ csrf_field|raw }}
                         <input type="submit" value="Odhlásit" />
                     </form>
                 </span>

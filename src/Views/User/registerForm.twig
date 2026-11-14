@@ -13,6 +13,7 @@
                 <h3 class="card-title mb-1">Registrace {% if (mode === 'accountant') %}jako účetní{% endif %}</h3>
 
                 <form method="POST" action="/register">
+                    {{ csrf_field|raw }}
 
                     {# Username #}
                     <div class="mb-3">

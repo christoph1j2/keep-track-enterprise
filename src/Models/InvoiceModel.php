@@ -192,6 +192,7 @@ class InvoiceModel extends BaseModel
                 LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        // PDO::PARAM_INT is required for LIMIT/OFFSET when ATTR_EMULATE_PREPARES is false
         $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();

@@ -140,3 +140,85 @@ INSERT IGNORE INTO `client_types` (`id`, `name`) VALUES
   (2, 'Firma'),
   (3, 'OSVČ');
 
+-- Sample users (password for all: "asdfasdf")
+INSERT IGNORE INTO `users` (`username`, `email`, `profession`, `role_id`, `password_hash`, `accountant_id`, `is_blocked`) VALUES
+  ('superadmin', 'superadmin@asdf.asdf', NULL, 1, '$2y$10$gql9b.myt0.z7iOR/E0IfOQxuX9eHNJM4iDEz985a3DZD9dDzfc6C', NULL, 0),
+  ('admin', 'admin@asdf.asdf', NULL, 2, '$2y$10$gql9b.myt0.z7iOR/E0IfOQxuX9eHNJM4iDEz985a3DZD9dDzfc6C', NULL, 0),
+  ('accountant', 'accountant@asdf.asdf', NULL, 4, '$2y$10$gql9b.myt0.z7iOR/E0IfOQxuX9eHNJM4iDEz985a3DZD9dDzfc6C', NULL, 0),
+  ('user', 'user@asdf.asdf', 'Vývoj webových aplikací', 3, '$2y$10$gql9b.myt0.z7iOR/E0IfOQxuX9eHNJM4iDEz985a3DZD9dDzfc6C', NULL, 0);
+
+SET @accountant_id = (SELECT `id` FROM `users` WHERE `email` = 'accountant@asdf.asdf' LIMIT 1);
+SET @osvc_id       = (SELECT `id` FROM `users` WHERE `email` = 'user@asdf.asdf' LIMIT 1);
+
+-- Link demo OSVC user to demo accountant
+UPDATE `users`
+SET `accountant_id` = @accountant_id
+WHERE `id` = @osvc_id AND `accountant_id` IS NULL;
+
+-- Sample clients for demo OSVC (user@asdf.asdf)
+INSERT INTO `clients` (`name`, `user_id`, `contact_email`, `contact_phone`, `description`, `ico`, `dic`, `type_id`) VALUES
+  ('ACME Software s.r.o.', @osvc_id, 'fakturace@acme-sw.cz', '+420 222 333 444', 'Vývoj a údržba webového portálu', '12345678', 'CZ12345678', 2);
+SET @client1_id = LAST_INSERT_ID();
+
+INSERT INTO `clients` (`name`, `user_id`, `contact_email`, `contact_phone`, `description`, `ico`, `dic`, `type_id`) VALUES
+  ('Petr Svoboda', @osvc_id, 'petr.svoboda@email.cz', '+420 603 111 222', 'Konzultace a návrh databáze', '87654321', NULL, 3);
+SET @client2_id = LAST_INSERT_ID();
+
+INSERT INTO `clients` (`name`, `user_id`, `contact_email`, `contact_phone`, `description`, `ico`, `dic`, `type_id`) VALUES
+  ('Marie Dvořáková', @osvc_id, 'marie.dvorakova@example.cz', '+420 777 888 999', 'Tvorba osobního webu', NULL, NULL, 1);
+SET @client3_id = LAST_INSERT_ID();
+
+-- Sample invoices & items
+INSERT INTO `invoices` (`client_id`, `invoice_number`, `name`, `date_issued`, `date_due`, `total_amount`, `paid`) VALUES
+  (@client1_id, '2026-01', 'Tvorba e-shopu – 1. etapa', '2026-09-01 10:00:00', '2026-09-15', 45000.00, 1);
+SET @inv1_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_items` (`name`, `quantity`, `unit_price`, `invoice_id`) VALUES
+  ('Analýza a návrh architektury', 1, 15000.00, @inv1_id),
+  ('Implementace frontendu a košíku', 30, 1000.00, @inv1_id);
+
+INSERT INTO `invoices` (`client_id`, `invoice_number`, `name`, `date_issued`, `date_due`, `total_amount`, `paid`) VALUES
+  (@client2_id, '2026-02', 'Databázová optimalizace', '2026-10-05 14:30:00', '2026-10-19', 18000.00, 1);
+SET @inv2_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_items` (`name`, `quantity`, `unit_price`, `invoice_id`) VALUES
+  ('Audit SQL dotazů a indexů', 12, 1500.00, @inv2_id);
+
+INSERT INTO `invoices` (`client_id`, `invoice_number`, `name`, `date_issued`, `date_due`, `total_amount`, `paid`) VALUES
+  (@client1_id, '2026-03', 'Měsíční správa a SLA', '2026-10-20 09:00:00', '2026-11-03', 20000.00, 0);
+SET @inv3_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_items` (`name`, `quantity`, `unit_price`, `invoice_id`) VALUES
+  ('Správa serveru a monitoring', 1, 12000.00, @inv3_id),
+  ('Rozvoj nových modulů', 8, 1000.00, @inv3_id);
+
+INSERT INTO `invoices` (`client_id`, `invoice_number`, `name`, `date_issued`, `date_due`, `total_amount`, `paid`) VALUES
+  (@client3_id, '2026-04', 'Osobní portfolio', '2026-11-10 11:15:00', '2026-11-24', 14500.00, 0);
+SET @inv4_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_items` (`name`, `quantity`, `unit_price`, `invoice_id`) VALUES
+  ('Grafický návrh a šablony', 1, 8500.00, @inv4_id),
+  ('Nasazení na hosting a DNS', 1, 6000.00, @inv4_id);
+
+-- Sample payments & invoice_payment pairing
+INSERT INTO `payments` (`specific_symbol`, `amount`, `date_paid`, `note`) VALUES
+  ('VS202601', 45000.00, '2026-09-12 08:45:00', 'Úhrada faktury 2026-01');
+SET @pay1_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_payment` (`invoice_id`, `payment_id`, `amount_assigned`) VALUES
+  (@inv1_id, @pay1_id, 45000.00);
+
+INSERT INTO `payments` (`specific_symbol`, `amount`, `date_paid`, `note`) VALUES
+  ('VS20260203', 28000.00, '2026-10-28 16:20:00', 'Úhrada 2026-02 + částečná úhrada 2026-03');
+SET @pay2_id = LAST_INSERT_ID();
+
+INSERT INTO `invoice_payment` (`invoice_id`, `payment_id`, `amount_assigned`) VALUES
+  (@inv2_id, @pay2_id, 18000.00),
+  (@inv3_id, @pay2_id, 10000.00);
+
+-- Sample expenses
+INSERT INTO `expenses` (`user_id`, `name`, `total_amount`, `expense_date`, `note`) VALUES
+  (@osvc_id, 'Notebook Lenovo ThinkPad', 32990.00, '2026-09-05 12:00:00', 'Pracovní hardware'),
+  (@osvc_id, 'Licence JetBrains PhpStorm', 2490.00, '2026-09-18 09:30:00', 'Roční předplatné IDE'),
+  (@osvc_id, 'Hosting a doména VPS', 1850.00, '2026-10-02 15:00:00', 'Provoz testovacích serverů'),
+  (@osvc_id, 'Internet a mobilní tarif', 1290.00, '2026-11-01 10:15:00', 'Měsíční konektivita');

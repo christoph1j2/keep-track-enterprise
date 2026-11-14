@@ -180,6 +180,7 @@ class ClientModel extends BaseModel
                 LIMIT :limit OFFSET :offset';
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        // PDO::PARAM_INT is required for LIMIT/OFFSET when ATTR_EMULATE_PREPARES is false
         $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
@@ -211,8 +212,23 @@ class ClientModel extends BaseModel
      */
     public function getAllClientTypes(): array
     {
-        $stmt = $this->db->query("SELECT * FROM ". $this->table_types );
+        $stmt = $this->db->query("SELECT * FROM ". $this->table_types ." ORDER BY id ASC");
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Gets all client types with usage count in clients table.
+     *
+     * @return array
+     */
+    public function getAllClientTypesWithUsage(): array
+    {
+        $sql = "SELECT ct.id, ct.name, COUNT(c.id) AS usage_count
+                FROM " . $this->table_types . " ct
+                LEFT JOIN " . $this->table . " c ON c.type_id = ct.id
+                GROUP BY ct.id, ct.name
+                ORDER BY ct.id ASC";
+        return $this->db->query($sql)->fetchAll();
     }
 
     public function getClientTypeById(int $id): bool
@@ -220,5 +236,80 @@ class ClientModel extends BaseModel
         $stmt = $this->db->prepare("SELECT 1 FROM ". $this->table_types ." WHERE id = :id");
         $stmt->execute([':id' => $id]);
         return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * Fetches client type row by ID.
+     *
+     * @param int $id
+     * @return array|false
+     */
+    public function findClientTypeById(int $id): array|false
+    {
+        $stmt = $this->db->prepare("SELECT id, name FROM " . $this->table_types . " WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch() ?: false;
+    }
+
+    /**
+     * Checks whether a client type name already exists (optionally ignoring an ID).
+     *
+     * @param string $name
+     * @param int|null $ignoreId
+     * @return bool
+     */
+    public function clientTypeNameExists(string $name, ?int $ignoreId = null): bool
+    {
+        $sql = "SELECT 1 FROM " . $this->table_types . " WHERE name = :name";
+        $params = [':name' => $name];
+
+        if ($ignoreId !== null)
+        {
+            $sql .= " AND id != :id";
+            $params[':id'] = $ignoreId;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * Adds a new client type.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function addClientType(string $name): bool
+    {
+        $stmt = $this->db->prepare("INSERT INTO " . $this->table_types . " (name) VALUES (:name)");
+        return $stmt->execute([':name' => $name]);
+    }
+
+    /**
+     * Updates an existing client type name.
+     *
+     * @param int $id
+     * @param string $name
+     * @return bool
+     */
+    public function editClientType(int $id, string $name): bool
+    {
+        $stmt = $this->db->prepare("UPDATE " . $this->table_types . " SET name = :name WHERE id = :id");
+        return $stmt->execute([':id' => $id, ':name' => $name]);
+    }
+
+    /**
+     * Deletes a client type (clients referencing it get type_id = NULL via FK).
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteClientType(int $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM " . $this->table_types . " WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->rowCount() > 0;
     }
 }

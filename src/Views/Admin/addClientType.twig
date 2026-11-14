@@ -1,0 +1,40 @@
+<!-- dialog for client type add -->
+<dialog class="dialog" id="addClientTypeDialog">
+    <form id="addClientTypeForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Nový typ klienta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <label class="form-label" for="clientTypeName">Název typu klienta<span class="fg-danger">*</span></label>
+            <input type="text" id="clientTypeName" name="name" class="form-control" maxlength="100" required>
+        </div>
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Uložit</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    document.getElementById('addClientTypeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/admin/client-types/add', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    showFlash('danger', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Chyba komunikace se serverem:', error);
+                showFlash('danger', 'Chyba komunikace se serverem.');
+            });
+    });
+</script>

@@ -42,12 +42,20 @@ abstract class BaseController {
         {
             session_start();
         }
-        $this->checkAuth();
+        $csrfToken = $this->ensureCsrfToken();
+
+        if (!$this instanceof ErrorController)
+        {
+            $this->checkAuth();
+            $this->verifyCsrf();
+        }
 
         // Prepare twig for all child controllers
         $loader = new FilesystemLoader(__DIR__ . "/../Views");
         $this->twig = new Environment($loader);
         $this->twig->addGlobal('session', $_SESSION); // global injection of SESSION
+        $this->twig->addGlobal('csrf_token', $csrfToken);
+        $this->twig->addGlobal('csrf_field', $this->getCsrfField());
 
         $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->twig->addGlobal('current_path', $request); // global injection of currpath
@@ -80,6 +88,67 @@ abstract class BaseController {
     }
 
     /**
+     * Ensures a CSRF token exists in the current session and returns it.
+     *
+     * @return string
+     * @throws RandomException
+     */
+    protected function ensureCsrfToken(): string
+    {
+        if (empty($_SESSION['csrf_token']))
+        {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
+     * Returns HTML hidden input containing the current CSRF token.
+     *
+     * @return string
+     * @throws RandomException
+     */
+    protected function getCsrfField(): string
+    {
+        $token = htmlspecialchars($this->ensureCsrfToken(), ENT_QUOTES, 'UTF-8');
+        return '<input type="hidden" name="_csrf" value="' . $token . '">';
+    }
+
+    /**
+     * Verifies CSRF token on POST requests.
+     *
+     * @return void
+     */
+    private function verifyCsrf(): void
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST')
+            return;
+
+        $submitted = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        $expected  = $this->ensureCsrfToken();
+
+        if (!is_string($submitted) || !hash_equals($expected, $submitted))
+        {
+            $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+            if ($isAjax)
+            {
+                http_response_code(403);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'status'  => 'error',
+                    'message' => 'Neplatný bezpečnostní token (CSRF). Obnovte prosím stránku.'
+                ]);
+                exit;
+            }
+
+            (new ErrorController($this->db))->forbiddenAction();
+        }
+    }
+
+    /**
      * Helper render method to render twig with csrf token included
      *
      * @param string $view - twig file
@@ -91,21 +160,6 @@ abstract class BaseController {
      */
     protected function render(string $view, array $params = []): void
     {
-        if (!isset($params['csrf_token']))
-        {
-            // TODO: CSRF
-            // $params['csrf_token'] = CSRF::getToken();
-            //TEMP
-            $params['csrf_token'] = bin2hex(random_bytes(32));
-        }
-
-        if (!isset($params['csrf_field']))
-        {
-            // TODO: CSRF
-            // $params['csrf_field'] = CSRF::getField();
-            $params['csrf_field'] = bin2hex(random_bytes(32));
-        }
-
         if (!array_key_exists('flash', $params) && isset($_SESSION['flash']))
         {
             $params['flash'] = $_SESSION['flash'];
@@ -146,8 +200,19 @@ abstract class BaseController {
         // if current path is public, continue
         if (in_array($currPath, $this->publicRoutes, true)) return;
 
-        // if user is logged in, continue
-        if (isset($_SESSION['user_id'])) return;
+        // if user is logged in, verify user still exists and isn't blocked
+        if (isset($_SESSION['user_id']))
+        {
+            $stmt = $this->db->prepare("SELECT is_blocked FROM users WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => (int) $_SESSION['user_id']]);
+            $row = $stmt->fetch();
+
+            if ($row && empty($row['is_blocked']))
+                return;
+
+            session_unset();
+            $this->flash('danger', 'Váš účet byl zablokován nebo odstraněn.');
+        }
 
         // check if request is AJAX
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])

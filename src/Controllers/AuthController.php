@@ -153,7 +153,13 @@ class AuthController extends BaseController
             $_SESSION['role'] = $user['role_name'];
 
             $this->flash('success', 'Přihlášení proběhlo úspěšně.');
-            $this->redirect('/dashboard'); // TODO: if admin then redirect to /admin
+            if (in_array($user['role_name'], ['admin', 'superadmin'], true))
+                $this->redirect('/admin/overview');
+
+            if ($user['role_name'] === 'ucetni')
+                $this->redirect('/accountant/clients'); // hack to prevent "select client" flash overwriting login success flash
+
+            $this->redirect('/dashboard');
         }
 
         $errors = ['password' => 'Vaše přihlašovací údaje jsou chybné.'];

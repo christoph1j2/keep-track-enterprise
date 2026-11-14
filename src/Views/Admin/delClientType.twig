@@ -1,0 +1,35 @@
+<script>
+    if (table) {
+        table.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-btn');
+            if (!deleteBtn) return;
+
+            const typeId = deleteBtn.dataset.id;
+            const row = deleteBtn.closest('tr');
+
+            if (confirm(`Opravdu chcete smazat tento typ klienta (ID: ${typeId})?`)) {
+                fetch('/admin/client-types/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ id: typeId }),
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            row.remove();
+                            showFlash('success', data.message);
+                            if (!table.querySelector('tbody tr')) window.location.reload();
+                        } else {
+                            showFlash('danger', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Chyba komunikace se serverem:', error);
+                        showFlash('danger', 'Chyba komunikace se serverem.');
+                    });
+            }
+        });
+    }
+</script>

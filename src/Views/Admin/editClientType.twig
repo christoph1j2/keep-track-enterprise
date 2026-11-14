@@ -1,0 +1,82 @@
+<!-- dialog for client type edit -->
+<dialog class="dialog" id="editClientTypeDialog">
+    <form id="editClientTypeForm" data-bs-validate>
+        <div class="dialog-header">
+            <h5 class="dialog-title">Upravit typ klienta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Zavřít"></button>
+        </div>
+        <div class="dialog-body">
+            <input type="hidden" name="id" id="editClientTypeId" />
+
+            <label class="form-label" for="editClientTypeName">Název typu klienta<span class="fg-danger">*</span></label>
+            <input type="text" id="editClientTypeName" name="name" class="form-control" maxlength="100" required>
+        </div>
+        <div class="dialog-footer">
+            <button type="submit" class="btn-solid theme-secondary">Uložit změny</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    /** @type {HTMLDialogElement} */
+    const editDialog = document.getElementById('editClientTypeDialog');
+    const editForm = document.getElementById('editClientTypeForm');
+
+    if (table) {
+        table.addEventListener('click', function(event) {
+            const editBtn = event.target.closest('.edit-btn');
+            if (!editBtn) return;
+
+            const typeId = editBtn.dataset.id;
+
+            fetch('/admin/client-types/get', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ id: typeId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const ct = data.clientType;
+                        document.getElementById('editClientTypeId').value = ct.id;
+                        document.getElementById('editClientTypeName').value = ct.name || '';
+                        editDialog.showModal();
+                    } else {
+                        showFlash('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    showFlash('danger', 'Chyba komunikace se serverem.');
+                });
+        });
+    }
+
+    editForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/admin/client-types/edit', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const row = table.querySelector(`tr[data-id='${formData.get('id')}']`);
+                    const cell = row ? row.querySelector('[data-field="name"]') : null;
+                    if (cell) cell.textContent = formData.get('name');
+                    editDialog.close();
+                    showFlash('success', data.message);
+                } else {
+                    showFlash('danger', data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                showFlash('danger', 'Chyba komunikace se serverem.');
+            });
+    });
+</script>

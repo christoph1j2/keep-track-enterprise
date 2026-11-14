@@ -1,0 +1,65 @@
+{% extends "layout.twig" %}
+
+{% block title %}Typy klientů | KeepTrack Enterprise{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/clients.css">
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <h1>Typy klientů</h1>
+        <button class="btn-solid theme-secondary" data-bs-toggle="dialog" data-bs-target="#addClientTypeDialog">
+            Přidat typ klienta
+        </button>
+    </div>
+
+    <div class="card h-100 p-3 p-md-5 my-5">
+        {% if clientTypes|length == 0 %}
+            <p class="m-auto fg-3"><em>Číselník typů klientů je prázdný.</em></p>
+        {% else %}
+            <table class="table table-striped table-stack">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Název</th>
+                        <th>Počet klientů</th>
+                        <th class="text-end">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ct in clientTypes %}
+                    <tr data-id="{{ ct.id }}">
+                        <td data-label="ID" class="align-middle">{{ ct.id }}</td>
+                        <td data-label="Název" data-field="name" class="align-middle fw-bold">{{ ct.name }}</td>
+                        <td data-label="Počet klientů" class="align-middle">{{ ct.usage_count }}</td>
+                        <td class="text-end align-middle text-nowrap">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-success edit-btn"
+                                    data-id="{{ ct.id }}"
+                                    title="Upravit typ klienta">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline theme-danger delete-btn"
+                                    data-id="{{ ct.id }}"
+                                    title="Smazat typ klienta">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <script>
+        const table = document.querySelector('table');
+    </script>
+    {% include "Admin/addClientType.twig" %}
+    {% include "Admin/editClientType.twig" %}
+    {% include "Admin/delClientType.twig" %}
+
+{% endblock %}

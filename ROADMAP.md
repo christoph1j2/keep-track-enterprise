@@ -94,13 +94,13 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
   - Možnost přidat další OSVČ zadáním nového pass key.
 
 ### Fáze 5: Administrace a číselníky
-- [ ] Přehled uživatelů v systému s možností blokace (`is_blocked`) a smazání.
-- [ ] SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.
-- [ ] Správa číselníků: CRUD pro `expense_categories` a `client_types`.
-- [ ] Přidat CSRF
+- [x] Přehled uživatelů v systému s možností blokace (`is_blocked`) a smazání.
+- [x] SuperAdmin ochrana: Pouze `superadmin` smí měnit role nebo mazat uživatele s rolí `admin`. Běžný admin smí spravovat pouze OSVČ a účetní.
+- [x] Správa číselníků: CRUD pro ~~`expense_categories` a~~ `client_types`.
+- [x] Přidat CSRF
 
 ### Fáze 6: Volitelná technologická rozšíření (Maximalizace bodů)
-- [ ] **FullREST API endpoint (4 b):**
+- [ ] ~~**FullREST API endpoint (4 b):**~~
   - Implementovat např. `/api/clients`:
     - `GET /api/clients` – seznam klientů v JSON
     - `GET /api/clients/{id}` – detail klienta
@@ -108,9 +108,9 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
     - `PUT /api/clients/{id}` – aktualizace
     - `DELETE /api/clients/{id}` – odstranění
   - Správné HTTP stavové kódy (200, 201, 400, 401, 404).
-- [ ] **WYSIWYG editor (3–4 b):**
+- [ ] ~~**WYSIWYG editor (3–4 b):**~~
   - Integrace Quill.js přes CDN na pole poznámky u faktur a výdajů.
-- [ ] **AJAX & Bootstrap vylepšení (4 b):**
+- [x] **AJAX & Bootstrap vylepšení (4 b):**
   - Asynchronní operace s feedbackem přes Bootstrap toast / alert.
   - Potvrzovací modaly před smazáním záznamů.
 

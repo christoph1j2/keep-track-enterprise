@@ -34,6 +34,7 @@
                                         <span class="fw-bold">Vybraný</span>
                                     {% else %}
                                         <form method="post" action="/accountant/switch-client" class="d-inline">
+                                            {{ csrf_field|raw }}
                                             <input type="hidden" name="osvc_id" value="{{ c.id }}">
                                             <button type="submit" class="btn btn-sm btn-outline theme-primary">Vybrat</button>
                                         </form>

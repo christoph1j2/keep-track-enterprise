@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% block title %}KeepTrack Enterprise{% endblock %}</title>
     <link rel="stylesheet" href="/assets/css/header.css" />
     {% block stylesheets %}{% endblock %}
@@ -13,11 +14,11 @@
 <body>
 
     <nav class="navbar md:navbar-expand border-bottom mb-4" data-bs-theme="dark">
-        {# TODO: only for testing atm, rework actual pages! (add more, modify, ...) #}
-        {% if session.role == 'admin' %}
+        {% if session.role in ['admin', 'superadmin'] %}
             {% set nav_links = [
-                { label: 'Uživatelé', href: '/admin/users' },
-                { label: 'Přehled', href: '/admin/overview' }
+                { label: 'Přehled',      href: '/admin/overview' },
+                { label: 'Uživatelé',    href: '/admin/users' },
+                { label: 'Typy klientů', href: '/admin/client-types' }
             ] %}
         {% elseif session.role == 'ucetni' %}
             {% set nav_links = [
@@ -94,6 +95,7 @@
         {
             // store native fetch reference
             const originalFetch = window.fetch;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
             // override global fetch
             window.fetch = async function(...args)
@@ -107,14 +109,24 @@
                     config.headers = {};
                 }
 
-                // attach AJAX identification header for backend (BaseController::isAjax)
+                const method = (config.method || 'GET').toUpperCase();
+
+                // attach AJAX + CSRF headers for backend
                 if (config.headers instanceof Headers)
                 {
                     config.headers.append('X-Requested-With', 'XMLHttpRequest');
+                    if (method === 'POST' && csrfToken && !config.headers.has('X-CSRF-Token'))
+                    {
+                        config.headers.append('X-CSRF-Token', csrfToken);
+                    }
                 }
                 else
                 {
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
+                    if (method === 'POST' && csrfToken && !config.headers['X-CSRF-Token'])
+                    {
+                        config.headers['X-CSRF-Token'] = csrfToken;
+                    }
                 }
 
                 // execute actual request

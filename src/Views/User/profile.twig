@@ -52,6 +52,7 @@
                                 <span>{{ accountant_name }}</span>
                                 {% if (accountant_name != 'N/A' and accountant_name != null) %}
                                     <form action="/profile/unlink-accountant" method="post">
+                                        {{ csrf_field|raw }}
                                         <input type="submit" value="Odebrat" />
                                     </form>
                                 {% endif %}
@@ -69,6 +70,7 @@
                     {% if user.role_name == 'ucetni' %}
                         <h4 class="card-title">Přidat klienta</h4>
                         <form action="/accountant/redeem-key" method="post">
+                            {{ csrf_field|raw }}
                             <input type="text" name="key" class="form-control mb-3" required>
                             <input type="submit" value="Připojit">
                         </form>
@@ -83,6 +85,7 @@
                             </p>
                         {% else %}
                             <form method="post" action="/profile/generate-accountant-key">
+                                {{ csrf_field|raw }}
                                 <input type="submit" value="Vygenerovat Klíč" />
                             </form>
                         {% endif %}
