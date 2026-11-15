@@ -2,10 +2,16 @@
 <div class="container">
     <a href="/" class="navbar-brand" style="font-size: 1.1em">KeepTrack <sub style="color: blueviolet;">Enterprise</sub></a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="drawer" data-bs-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Přepnout navigaci">
-        <span class="navbar-toggler-icon" aria-hidden="true"></span>
+    <button class="btn-outline btn-sm theme-secondary md:d-none ms-auto d-inline-flex align-items-center justify-content-center"
+            type="button"
+            data-bs-toggle="drawer"
+            data-bs-target="#navbarDrawer"
+            aria-controls="navbarDrawer"
+            aria-expanded="false"
+            aria-label="Přepnout navigaci">
+        <i class="bi bi-list fs-4"></i>
     </button>
-    <div class="vr mx-3"></div> {# TODO: looks weird on smaller viewport #}
+    <div class="vr mx-3 d-none md:d-block"></div>
     <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
         <div class="drawer-header">
             <h5 class="drawer-title" id="navbarDrawerLabel">Menu</h5>
@@ -24,24 +30,26 @@
                     </li>
                 {% endfor %}
             </ul>
-            {# TODO: rework for mobile #}
             {% if session.user_id != null %}
-                <span class="text-info mx-md-auto text-center d-flex gap-3 align-items-center">
-                    <a href="/profile">{{ session.username }}</a>
-                    <form action="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}" method="GET">
-                        <input type="submit" value="{{ session.role in ['admin', 'superadmin'] ? 'Administrace' : 'Dashboard' }}" />
-                    </form>
-                    {# TODO: icon instead of text #}
-                    <form action="/logout" method="POST">
+                <div class="d-flex flex-column md:flex-row align-items-stretch md:align-items-center gap-2 md:gap-3 mt-3 md:mt-0">
+                    <a href="/profile" class="text-info text-decoration-none fw-semibold text-center">
+                        <i class="bi bi-person-circle me-1"></i>{{ session.username }}
+                    </a>
+                    <a href="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}"
+                       class="btn-solid btn-sm theme-primary text-center">
+                        {{ session.role in ['admin', 'superadmin'] ? 'Administrace' : 'Dashboard' }}
+                    </a>
+                    <form action="/logout" method="POST" class="d-grid md:d-inline">
                         {{ csrf_field|raw }}
-                        <input type="submit" value="Odhlásit" />
+                        <button type="submit" class="btn-outline btn-sm theme-danger" title="Odhlásit se">
+                            <i class="bi bi-box-arrow-right me-1"></i>Odhlásit
+                        </button>
                     </form>
-                </span>
-
+                </div>
             {% else %}
-                <div class="d-flex gap-1">
-                    <a href="/register" class="btn btn-primary btn-sm">Registrovat</a>
-                    <a href="/login" class="btn btn-outline-secondary btn-sm">Přihlásit se</a>
+                <div class="d-flex flex-column md:flex-row gap-2 mt-3 md:mt-0">
+                    <a href="/register" class="btn-solid btn-sm theme-primary">Registrovat</a>
+                    <a href="/login" class="btn-outline btn-sm theme-secondary">Přihlásit se</a>
                 </div>
             {% endif %}
         </div>

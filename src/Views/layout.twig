@@ -129,18 +129,52 @@
                     }
                 }
 
-                // execute actual request
-                const res = await originalFetch(resource, config);
-
-                // session expired - redirect unauthorized user back to login
-                if (res.status === 401)
+                // prevent double submit
+                const guardBtns = [];
+                if (method === 'POST')
                 {
-                    window.location.href = '/login';
-                    return Promise.reject(new Error('Relace vypršela - přesměrování na přihlášení.'));
+                    document.querySelectorAll('dialog[open] button[type="submit"], dialog[open] input[type="submit"]').forEach(btn => {
+                        if (!btn.disabled) guardBtns.push(btn);
+                    });
+                    if (document.activeElement instanceof HTMLButtonElement && !document.activeElement.disabled && !guardBtns.includes(document.activeElement))
+                    {
+                        guardBtns.push(document.activeElement);
+                    }
+                    guardBtns.forEach(btn => { btn.disabled = true; });
                 }
 
-                return res;
+                try
+                {
+                    // execute actual request
+                    const res = await originalFetch(resource, config);
+
+                    // session expired - redirect unauthorized user back to login
+                    if (res.status === 401)
+                    {
+                        window.location.href = '/login';
+                        return Promise.reject(new Error('Relace vypršela - přesměrování na přihlášení.'));
+                    }
+
+                    return res;
+                }
+                finally
+                {
+                    if (guardBtns.length)
+                    {
+                        setTimeout(() => guardBtns.forEach(btn => { btn.disabled = false; }), 400);
+                    }
+                }
             };
+
+            // Prevent double-submit on classic (non-AJAX) forms
+            document.addEventListener('submit', function(event) {
+                const form = event.target;
+                if (!(form instanceof HTMLFormElement) || event.defaultPrevented) return;
+
+                form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(btn => {
+                    btn.disabled = true;
+                });
+            });
         })();
     </script>
 </body>

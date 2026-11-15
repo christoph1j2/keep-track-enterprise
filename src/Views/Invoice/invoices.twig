@@ -3,7 +3,7 @@
 {% block title %}Evidence Faktur | KeepTrack Enterprise{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/assets/css/invoices.css">
+    <link rel="stylesheet" href="/assets/css/table.css">
 {% endblock %}
 
 {% block content %}
@@ -63,9 +63,9 @@
                     </td>
                     <td data-label="Stav" class="align-middle">
                         {% if invoice.paid %}
-                            <span class="badge bg-success">Uhrazeno</span>
+                            <span class="badge theme-success">Uhrazeno</span>
                         {% else %}
-                            <span class="badge bg-danger">Neuhrazeno</span>
+                            <span class="badge theme-danger">Neuhrazeno</span>
                         {% endif %}
                     </td>
                     {% if not readOnly|default(false) %}
@@ -97,7 +97,6 @@
 <script>
     const table = document.querySelector('table');
 </script>
-{# TODO: add/edit/... button is able tob e clicked multiple times leading to many transactions happening, block button after req send (for ALL, not just invoices) #}
 {% if not readOnly|default(false) %}
 {% include "Invoice/addInvoice.twig" %}
 {% include "Invoice/detInvoice.twig" %}

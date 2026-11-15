@@ -57,6 +57,7 @@ $router->post('/login', AuthController::class, 'loginSubmitAction');
 $router->post('/logout', AuthController::class, 'logoutAction');
 
 // private routes (authed only)
+// OSVC routes
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/profile', UserController::class, 'profileAction');
 $router->post('/profile/generate-accountant-key', UserController::class, 'generateAccountantKeyAction');
@@ -81,6 +82,7 @@ $router->post('/expenses/delete', ExpenseController::class, 'deleteExpenseAction
 $router->post('/expenses/edit', ExpenseController::class, 'editExpenseAction');
 $router->get('/expenses/receipt', ExpenseController::class, 'receiptAction');
 
+// accountant routes
 $router->get('/accountant/clients', AccountantController::class, 'clientsAction');
 $router->post('/accountant/switch-client', AccountantController::class, 'switchClientAction');
 $router->post('/accountant/redeem-key', AccountantController::class, 'redeemKeyAction');
@@ -89,6 +91,7 @@ $router->get('/accountant/payments', AccountantController::class, 'paymentsActio
 $router->get('/accountant/expenses', AccountantController::class, 'expensesAction');
 $router->get('/accountant/receipt', AccountantController::class, 'receiptAction');
 
+// admin routes
 $router->get('/admin/overview', AdminController::class, 'overviewAction');
 $router->get('/admin/users', AdminController::class, 'usersAction');
 $router->post('/admin/users/toggle-block', AdminController::class, 'toggleBlockAction');

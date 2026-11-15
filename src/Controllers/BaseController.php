@@ -7,6 +7,7 @@ use JetBrains\PhpStorm\NoReturn;
 use PDO;
 use Random\RandomException;
 use Src\Middleware\Auth;
+use Src\Middleware\CSRF;
 use Src\Models\UserModel;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -42,12 +43,12 @@ abstract class BaseController {
         {
             session_start();
         }
-        $csrfToken = $this->ensureCsrfToken();
+        $csrfToken = CSRF::token();
 
         if (!$this instanceof ErrorController)
         {
             $this->checkAuth();
-            $this->verifyCsrf();
+            CSRF::verify($this->db);
         }
 
         // Prepare twig for all child controllers
@@ -55,7 +56,7 @@ abstract class BaseController {
         $this->twig = new Environment($loader);
         $this->twig->addGlobal('session', $_SESSION); // global injection of SESSION
         $this->twig->addGlobal('csrf_token', $csrfToken);
-        $this->twig->addGlobal('csrf_field', $this->getCsrfField());
+        $this->twig->addGlobal('csrf_field', CSRF::field());
 
         $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->twig->addGlobal('current_path', $request); // global injection of currpath
@@ -85,67 +86,6 @@ abstract class BaseController {
             'type' => $type,
             'message' => $message,
         ];
-    }
-
-    /**
-     * Ensures a CSRF token exists in the current session and returns it.
-     *
-     * @return string
-     * @throws RandomException
-     */
-    protected function ensureCsrfToken(): string
-    {
-        if (empty($_SESSION['csrf_token']))
-        {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-
-        return $_SESSION['csrf_token'];
-    }
-
-    /**
-     * Returns HTML hidden input containing the current CSRF token.
-     *
-     * @return string
-     * @throws RandomException
-     */
-    protected function getCsrfField(): string
-    {
-        $token = htmlspecialchars($this->ensureCsrfToken(), ENT_QUOTES, 'UTF-8');
-        return '<input type="hidden" name="_csrf" value="' . $token . '">';
-    }
-
-    /**
-     * Verifies CSRF token on POST requests.
-     *
-     * @return void
-     */
-    private function verifyCsrf(): void
-    {
-        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST')
-            return;
-
-        $submitted = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-        $expected  = $this->ensureCsrfToken();
-
-        if (!is_string($submitted) || !hash_equals($expected, $submitted))
-        {
-            $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-            if ($isAjax)
-            {
-                http_response_code(403);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'status'  => 'error',
-                    'message' => 'Neplatný bezpečnostní token (CSRF). Obnovte prosím stránku.'
-                ]);
-                exit;
-            }
-
-            (new ErrorController($this->db))->forbiddenAction();
-        }
     }
 
     /**

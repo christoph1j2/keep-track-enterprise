@@ -121,3 +121,4 @@ gurt# Roadmapa semestrální práce KIV/WEB: KeepTrack Enterprise
 - [ ] Test spuštění přes čistý `docker compose up --build`.
 - [ ] Kontrola PHP chybových hlášení při zapnutém `E_ALL`.
 - [ ] Příprava předváděcího scénáře pro cvičícího (před Vánocemi).
+- [ ] DOKUMENTACE!!!
