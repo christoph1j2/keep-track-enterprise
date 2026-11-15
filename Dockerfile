@@ -13,6 +13,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Enable apache mod_rewrite
 RUN a2enmod rewrite
 
+# Disable Apache KeepAlive to avoid stale sockets
+RUN echo "KeepAlive Off" >> /etc/apache2/apache2.conf
+
 # Point Apache DocumentRoot to public folder
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -26,7 +29,7 @@ RUN { \
     echo 'post_max_size=8M'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
 
-# Install Composer dependencies (leveraging Docker layer cache)
+# Install Composer dependencies
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --optimize-autoloader
 
