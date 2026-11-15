@@ -1,55 +1,93 @@
-# keep-track-enterprise
+# KeepTrack Enterprise
 
-Finální zadání:
+Semestrální práce z předmětu **KIV/WEB** (Západočeská univerzita v Plzni) — webová aplikace pro správu financí OSVČ.
+
+- **Autor:** Ernst Christoph Leschka (`A25B0266P`, `leschkae@students.zcu.cz`)
+- **Cvičící:** Michal Nykl
 
 ---
 
-**Zadání semestrální práce KIV/WEB: Správa financí OSVČ**
+## 1. Cíl a popis aplikace
 
-Student: Ernst Christoph Leschka, A25B0266P, leschkae@students.zcu.cz
+Aplikace umožňuje osobám samostatně výdělečně činným (OSVČ) evidovat klienty, vystavovat faktury s jednotlivými položkami, evidovat platby (včetně párování jedné platby na více faktur i postupných splátek jedné faktury) a zaznamenávat výdaje včetně přikládání účtenek. Datový model vychází ze semestrální práce **KIV/DB1** a je rozšířen o správu uživatelů, rolí, blokací a jednorázových pozvánek pro účetní.
 
-**1. Cíl práce**
+---
 
-Cílem je vytvořit webovou aplikaci pro evidenci financí OSVČ, která vychází z databázového modelu z mé semestrální práce KIV/DB1 (stejné téma). OSVČ v ní eviduje klienty, vystavuje faktury s položkami, zaznamenává platby (včetně splátek jedné faktury a jedné platby pro více faktur) a spravuje výdaje v kategoriích. Aplikace nabízí přehledy příjmů, výdajů a pohledávek. Oproti modelu z DB1 je ERA model zredukovaný a upravený tak, aby podporoval více uživatelů a rolí. Nejde o demoverzi, ale o plně funkční aplikaci.
+## 2. Uživatelské role a oprávnění
 
-**2. Uživatelské role**
+- **Nepřihlášený uživatel (`anon`):** prohlíží veřejné stránky (`/`, `/about`, `/features`), může se přihlásit nebo zaregistrovat:
+  - *Registrace jako OSVČ:* standardní účet (uživatelské jméno, e-mail, profese, heslo).
+  - *Registrace jako účetní:* vyžaduje platný jednorázový klíč (`accountant_key`) vygenerovaný OSVČ.
+- **OSVČ (`osvc`):** plná CRUD správa vlastních klientů, faktur a jejich položek (v DB transakci), plateb s přiřazením k fakturám (v DB transakci s automatickým označením uhrazených faktur) a výdajů včetně nahrání/stažení účtenky. Na dashboardu vidí přehled příjmů, výdajů, neuhrazených pohledávek a procento uhrazení faktur. V profilu generuje pozvánkový klíč pro účetního a může mu přístup odebrat.
+- **Účetní (`ucetni`):** může obsluhovat více OSVČ (další OSVČ připojí zadáním klíče ve svém profilu nebo přes sekci klientů), přepíná mezi nimi a v režimu *read-only* prohlíží jejich přehledy, faktury, platby, výdaje i nahrané doklady.
+- **Administrátor (`admin`):** zobrazuje systémový přehled, spravuje běžné uživatele (`osvc`, `ucetni` – blokace, změna role mimo povýšení na admin/superadmin, mazání) a spravuje číselník typů klientů (`client_types`).
+- **SuperAdmin (`superadmin`):** má plná práva nad správou uživatelů včetně administrátorů („neovlivnitelnost adminů“ – běžní administrátoři nemohou upravovat ani mazat jiné administrátory ani superadmina).
 
-- **Nepřihlášený uživatel** vidí úvodní stránku s popisem aplikace a může se přihlásit nebo zaregistrovat. Registrace nabízí dvě volby:
-  - *Registrovat jako OSVČ*: standardní registrace (jméno, e-mail, heslo).
-  - *Registrovat jako účetní pod OSVČ*: stejné údaje a navíc přístupový klíč (accountant pass key) s omezenou platností, který vygenerovala OSVČ.
-- **OSVČ** spravuje (CRUD) své klienty, faktury včetně položek, platby a jejich přiřazení k fakturám a své výdaje. Platba se vždy vytváří společně s přiřazením k alespoň jedné faktuře (jeden krok, jedna transakce). Na přehledu vidí bilanci, výdaje podle kategorií, příjmy podle klientů, nezaplacené faktury a procento uhrazení faktur. V profilu může vygenerovat přístupový klíč pro účetního a kdykoli mu přístup odebrat.
-- **Účetní** vidí (read-only) data OSVČ, které mu klíčem udělily přístup, včetně přehledů a nahraných dokladů. Může upravit kategorii výdaje. Další OSVČ může přidat zadáním dalšího klíče ve svém profilu.
-- **Administrátor** spravuje uživatele (blokace, smazání, povýšení na administrátora) a číselníky (kategorie výdajů, typy klientů).
-- *Volitelně* **SuperAdmin**, který jako jediný spravuje ostatní administrátory (klasičtí administrátoři se navzájem upravovat nemohou).
+Role `admin` a `superadmin` nelze získat přes veřejnou registraci. Každý uživatel má přístup pouze k datům odpovídajícím jeho roli a vlastnictví.
 
-Role admin a SuperAdmin nelze získat registrací. Každý uživatel vidí a mění jen data, na která má podle své role nárok.
+---
 
-**3. Přiřazení účetního (pass key)**
+## 3. Přiřazení účetního (Pass Key)
 
-1. OSVČ v profilu klikne na "Pozvat účetního". Systém vygeneruje náhodný klíč (`bin2hex(random_bytes(8))`) s časově omezenou platností a uloží ho do `users.accountant_key` / `users.accountant_key_expires`.
-2. OSVČ klíč předá účetnímu mimo aplikaci.
-3. Účetní se zaregistruje volbou "Registrovat jako účetní pod OSVČ" a klíč vyplní. Systém ověří platnost klíče, vytvoří uživatele s rolí účetní, nastaví OSVČ `accountant_id` na nového uživatele a klíč zneplatní (jednorázový).
-4. OSVČ může přístup kdykoli odebrat a vygenerovat nový klíč.
+1. OSVČ ve svém profilu (`/profile`) vygeneruje náhodný klíč (`bin2hex(random_bytes(8))`) s časovou platností (24 hodin), který se uloží do `users.accountant_key` a `users.accountant_key_expires`.
+2. Klíč předá účetnímu mimo aplikaci.
+3. Účetní se buď zaregistruje na `/register?mode=accountant`, nebo již existující účetní zadá klíč v rozhraní účetního (`/accountant/clients`).
+4. Systém ověří platnost a expiraci klíče, nastaví `users.accountant_id` u dané OSVČ a klíč zneplatní.
+5. OSVČ může přístup účetního kdykoli odebrat v profilu.
 
-Jeden účetní tak může obsluhovat více OSVČ, každá OSVČ má nejvýše jednoho účetního.
+---
 
-**4. Databázový model**
+## 4. Databázový model
 
-Vychází z 8 tabulek z DB1 (1 odebrána): `users`, `clients`, `client_types`, `invoices`, `invoice_items`, `payments`, `invoice_payment` (vazba M:N), `expenses`. Odebrána `expense_categories`. Pro potřeby webu je rozšířen o:
+Schéma obsahuje **9 tabulek** (v [`sql/seed.sql`](sql/seed.sql)):
 
-- tabulku `roles` a sloupec `users.role_id`,
-- `users.is_blocked` (blokace uživatele),
-- `users.accountant_id` (účetní přiřazený OSVČ),
-- `users.accountant_key` a `users.accountant_key_expires` (pozvánka pro účetního),
+- `roles` – uživatelské role (`superadmin`, `admin`, `osvc`, `ucetni`)
+- `users` – účty uživatelů, hash hesla, `role_id`, `is_blocked`, `accountant_id`, `accountant_key`, `accountant_key_expires`
+- `client_types` – číselník typů klientů (`Fyzická osoba`, `Firma`, `OSVČ`, …)
+- `clients` – klienti přiřazení ke konkrétní OSVČ (`user_id`, `type_id`, IČO, DIČ, kontakty)
+- `invoices` – hlavičky faktur (`client_id`, číslo faktury, splatnost, celková částka, stav `paid`)
+- `invoice_items` – položky faktur (`invoice_id`, název, množství, jednotková cena)
+- `payments` – přijaté platby (`specific_symbol`, částka, datum)
+- `invoice_payment` – vazba M:N mezi fakturami a platbami (`amount_assigned`)
+- `expenses` – výdaje OSVČ včetně metadat nahrané účtenky (`receipt_filename`, `receipt_original_name`, `receipt_mime`)
 
-Platba (`payments`) nemá vlastní odkaz na uživatele. Protože se vždy vytváří zároveň s přiřazením k faktuře, je její vlastnictví odvoditelné přes `invoice_payment → invoices → clients → users`, čímž se model vyhýbá zbytečnému cyklu.
+Vlastnictví platby je odvoditelné přes `invoice_payment → invoices → clients → users` bez redundantních vazeb.
 
-Databáze bude naplněna ukázkovými daty pro všechny role a instalační SQL skript bude součástí odevzdání.
+---
 
-**5. Technické řešení**
+## 5. Technické řešení a bezpečnost
 
-HTML5, CSS, PHP (OOP, MVC, jeden vstupní soubor `index.php`), MySQL přes PDO. Hesla jsou hashována Bcryptem, aplikace je chráněna proti XSS a SQL injection. Design je responzivní (PC a mobil). Framework typu Nette či Symfony nepoužiji.
+- **Architektura:** Vlastní objektové **MVC** v PHP 8.2 (`declare(strict_types=1)`), PSR-4 autoloading pod jmenným prostorem `Src\`, jednotný vstupní bod [`public/index.php`](public/index.php) a vlastní [`Src\Core\Router`](src/Core/Router.php).
+- **Šablony a UI:** **Twig 3** (dědičnost přes `layout.twig`, partials pro hlavičku, patičku a modály), **Bootstrap 6** + **Bootstrap Icons**, responzivní mobilní drawer menu a card-stack tabulky (`public/assets/css/table.css`).
+- **Interaktivita:** Vanilla JavaScript + **AJAX (`fetch`)** pro modální načítání, vytváření, úpravy a mazání záznamů bez zbytečného reloadu, dynamické přidávání položek faktur a platební párování, ochrana proti dvojitému odeslání formulářů.
+- **Bezpečnost:**
+  - Hesla hashována pomocí `password_hash(..., PASSWORD_BCRYPT)`.
+  - Všechny SQL dotazy se vstupy od uživatele přes **PDO prepared statements** (ochrana proti SQL Injection).
+  - Výchozí Twig auto-escaping (ochrana proti XSS).
+  - Globální **CSRF** ochrana všech `POST` požadavků přes [`Src\Middleware\CSRF`](src/Middleware/CSRF.php).
+  - Upload účtenek (JPG, PNG, WEBP, PDF, max. 5 MB) validován přes `finfo` MIME kontrolu, ukládán pod kryptograficky unikátním názvem (`bin2hex(random_bytes(32))`) mimo veřejný adresář `public/` a vydáván pouze oprávněnému vlastníkovi či přiřazenému účetnímu.
+- **Validace:** Všechny veřejné i autentizované pohledy procházejí W3C/Nu HTML5 validací s 0 chybami.
 
-**6. Plánovaná volitelná rozšíření**
+---
 
-Bootstrap, JavaScript/AJAX, Git, Composer, Docker, namespaces, unikátní názvy nahraných souborů, případně SuperAdmin.
+## 6. Spuštění projektu (Docker)
+
+```bash
+docker compose up --build -d
+```
+
+Docker při prvním spuštění automaticky:
+1. Sestaví PHP 8.2 Apache image a nainstaluje Composer závislosti (`twig/twig`).
+2. Inicializuje MariaDB databázi a importuje schéma i ukázková data z [`sql/seed.sql`](sql/seed.sql).
+3. Spustí služby:
+   - **Aplikace:** <http://localhost:8080>
+   - **phpMyAdmin:** <http://localhost:8081>
+
+### Testovací účty (heslo pro všechny: `asdfasdf`)
+
+| Role | E-mail | Popis |
+| :--- | :--- | :--- |
+| **SuperAdmin** | `superadmin@kte.cz` | Plná správa uživatelů včetně adminů a číselníku typů klientů |
+| **Admin** | `admin@kte.cz` | Správa OSVČ/účetních a číselníku typů klientů |
+| **OSVČ** | `user@kte.cz` | Demo účet s předvyplněnými klienty, fakturami, platbami a výdaji |
+| **Účetní** | `accountant@kte.cz` | Propojený s demo OSVČ účtem |

@@ -9,9 +9,10 @@ services:
       - "${WEB_PORT:-8080}:80"
     volumes:
       - ./:/var/www/html
+      - /var/www/html/vendor
       - receipts:/var/www/html/storage
     env_file:
-      - .env
+      - dev.env
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-3306}
@@ -37,6 +38,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
     volumes:
       - mariadb_data:/var/lib/mysql
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
 
   # phpMyAdmin service
   phpmyadmin:

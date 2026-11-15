@@ -1,10 +1,16 @@
 # Official PHP image
 FROM php:8.2-apache
 
-# Install PHP extensions; pdo & mariadb driver
-RUN docker-php-ext-install pdo pdo_mysql
+# Install PHP extensions & utilities needed by Composer
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_mysql
 
-# Enable apache
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Enable apache mod_rewrite
 RUN a2enmod rewrite
 
 # Point Apache DocumentRoot to public folder
@@ -19,6 +25,10 @@ RUN { \
     echo 'upload_max_filesize=6M'; \
     echo 'post_max_size=8M'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
+
+# Install Composer dependencies (leveraging Docker layer cache)
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --optimize-autoloader
 
 # Copy project code into container
 COPY . /var/www/html
