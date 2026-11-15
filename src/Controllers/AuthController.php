@@ -54,10 +54,14 @@ class AuthController extends BaseController
         }
 
         // All modes field check
-        $username = $_POST['username'] ?? null;
-        $email = filter_var($_POST['email'] ?? null, FILTER_VALIDATE_EMAIL);
+        $username = trim((string) ($_POST['username'] ?? '')) ?: null;
+        $email = filter_var(trim((string) ($_POST['email'] ?? '')), FILTER_VALIDATE_EMAIL);
         $password = $_POST['password'] ?? null;
         $password_confirm = $_POST['password_confirm'] ?? null;
+
+        // OSVC mode only field check
+        $professionRaw = ($mode !== 'accountant') ? trim((string) ($_POST['profession'] ?? '')) : '';
+        $profession = ($professionRaw !== '') ? $professionRaw : null;
 
         // Accountant mode only field check
         $accountant_key = ($mode === 'accountant') ? ($_POST['accountant_key'] ?? null) : null;
@@ -71,7 +75,7 @@ class AuthController extends BaseController
             $model = new UserModel($this->db);
             $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
-            $userId = $model->createUser($username, $email, $password_hash, $accountant_key);
+            $userId = $model->createUser($username, $email, $password_hash, $accountant_key, $profession);
 
             // automatically login after register
             if ($userId)

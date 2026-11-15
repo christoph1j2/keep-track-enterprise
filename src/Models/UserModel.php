@@ -13,9 +13,11 @@ class UserModel extends BaseModel
      * @param string $username - the inputted username
      * @param string $email - the inputted email
      * @param string $password_hash - hashed password
-     * @return bool
+     * @param string|null $accountant_key - optional accountant invite key
+     * @param string|null $profession - optional OSVC profession
+     * @return int|false
      */
-    public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key): int|false
+    public function createUser(string $username, string $email, string $password_hash, ?string $accountant_key, ?string $profession = null): int|false
     {
         try {
             $this->db->beginTransaction();
@@ -24,12 +26,13 @@ class UserModel extends BaseModel
 
             // insert new user
             $stmt = $this->db->prepare("
-                INSERT INTO " . $this->table . " (username, email, password_hash, role_id)
-                VALUES (:username, :email, :password_hash, :role_id)
+                INSERT INTO " . $this->table . " (username, email, profession, password_hash, role_id)
+                VALUES (:username, :email, :profession, :password_hash, :role_id)
             ");
             $stmt->execute([
                 ':username' => $username,
                 ':email' => $email,
+                ':profession' => $profession,
                 ':password_hash' => $password_hash,
                 ':role_id' => $roleId
             ]);

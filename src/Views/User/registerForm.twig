@@ -44,6 +44,24 @@
                         {% endif %}
                     </div>
 
+                    {% if (mode !== 'accountant') %}
+                    <div class="mb-3">
+                        <label for="profession" class="form-label">Profese <span class="text-muted small">(volitelné)</span></label>
+                        <input
+                            type="text"
+                            id="profession"
+                            name="profession"
+                            maxlength="255"
+                            value="{{ data.profession ?? '' }}"
+                            placeholder="Např. Vývoj webových aplikací"
+                            class="form-control {{ (errors.profession) ? 'is-invalid' : '' }}"
+                        />
+                        {% if (errors.profession) %}
+                            <div class="invalid-feedback">{{ errors.profession }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
                     <div class="mb-3">
                         <label for="password" class="form-label">Heslo</label>
                         <input
@@ -69,20 +87,21 @@
                         {% endif %}
                     </div>
 
+                    {% if (mode === 'accountant') %}
                     <div class="mb-4">
-                        {% if (mode === 'accountant') %}
-                            <label for="accountant_key" class="form-label">Unikátní klíč</label>
-                            <input
-                                type="text"
-                                id="accountant_key"
-                                name="accountant_key"
-                                class="form-control {{ (errors.accountant_key) ? 'is-invalid' : '' }}"/>
-                                {% if (errors.accountant_key) %}
-                                    <div class="invalid-feedback">{{ errors.accountant_key }}</div>
-                                {% endif %}
-                        {% endif %}
-                        <input type="hidden" name="mode" value="{{ mode }}" />
+                        <label for="accountant_key" class="form-label">Unikátní klíč</label>
+                        <input
+                            type="text"
+                            id="accountant_key"
+                            name="accountant_key"
+                            value="{{ data.accountant_key ?? '' }}"
+                            class="form-control {{ (errors.accountant_key) ? 'is-invalid' : '' }}"/>
+                            {% if (errors.accountant_key) %}
+                                <div class="invalid-feedback">{{ errors.accountant_key }}</div>
+                            {% endif %}
                     </div>
+                    {% endif %}
+                    <input type="hidden" name="mode" value="{{ mode }}" />
 
                     <button type="submit" class="btn-solid theme-primary w-100">Registrovat se</button>
                 </form>

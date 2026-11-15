@@ -34,6 +34,10 @@ class RegisterValidator extends BaseValidator
             $this->required('accountant_key', 'Klíč je povinný!')
                 ->accountantKeyValid('accountant_key');
         }
+        else
+        {
+            $this->max('profession', 255, 'Profese může mít nejvýše 255 znaků!');
+        }
 
         return $this;
     }

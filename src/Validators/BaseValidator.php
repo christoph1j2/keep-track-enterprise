@@ -66,7 +66,7 @@ abstract class BaseValidator
      */
     public function min(string $field, int $limit, string $msg = null): static
     {
-        if (strlen($this->getValue($field)) < $limit)
+        if (mb_strlen($this->getValue($field)) < $limit)
         {
             $this->errors[$field] = $msg ?? "Field '$field' must be at least $limit characters";
         }
@@ -83,7 +83,7 @@ abstract class BaseValidator
      */
     public function max(string $field, int $limit, string $msg = null): static
     {
-        if (strlen($this->getValue($field)) > $limit)
+        if (mb_strlen($this->getValue($field)) > $limit)
         {
             $this->errors[$field] = $msg ?? "Field '$field' must be at most $limit characters";
         }
