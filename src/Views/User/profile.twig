@@ -10,22 +10,22 @@
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-6">
+    <div class="row g-4 mb-4">
+        <div class="col-12 md:col-6">
             <div class="card h-100">
                 <div class="card-body">
                     <h2 class="card-title h4">Uživatelské Údaje</h2>
-                    <table>
+                    <table class="table table-borderless mb-0">
                         <tr>
-                            <td>Uživatelské jméno:</td>
+                            <td class="ps-0">Uživatelské jméno:</td>
                             <td class="fst-italic">{{ user.username }}</td>
                         </tr>
                         <tr>
-                            <td>E-Mail:</td>
+                            <td class="ps-0">E-Mail:</td>
                             <td class="fst-italic">{{ user.email }}</td>
                         </tr>
                         <tr>
-                            <td>Role:</td>
+                            <td class="ps-0">Role:</td>
                             <td class="fst-italic">
                                 {% if user.role_name == 'ucetni' %}
                                     Účetní
@@ -42,18 +42,31 @@
                         </tr>
                         {% if user.role_name == 'osvc' %}
                         <tr>
-                            {# TODO: make it possible to edit #}
-                            <td>Profese:</td>
-                            <td class="fst-italic">{{ user.profession ?? 'N/A' }}</td>
+                            <td class="ps-0 align-middle">
+                                <label for="profession" class="form-label mb-0">Profese:</label>
+                            </td>
+                            <td>
+                                <form action="/profile/update-profession" method="post" class="d-flex gap-2 align-items-center">
+                                    {{ csrf_field|raw }}
+                                    <input type="text"
+                                           id="profession"
+                                           name="profession"
+                                           class="form-control form-control-sm"
+                                           maxlength="255"
+                                           value="{{ user.profession ?? '' }}"
+                                           placeholder="Např. Vývoj webových aplikací">
+                                    <button type="submit" class="btn-solid btn-sm theme-primary text-nowrap">Uložit</button>
+                                </form>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Připojený účetní:</td>
+                            <td class="ps-0 align-middle">Připojený účetní:</td>
                             <td class="fst-italic d-flex align-items-center gap-2">
                                 <span>{{ accountant_name }}</span>
                                 {% if (accountant_name != 'N/A' and accountant_name != null) %}
                                     <form action="/profile/unlink-accountant" method="post">
                                         {{ csrf_field|raw }}
-                                        <input type="submit" value="Odebrat" />
+                                        <button type="submit" class="btn-outline btn-sm theme-danger">Odebrat</button>
                                     </form>
                                 {% endif %}
                             </td>
@@ -64,29 +77,30 @@
             </div>
         </div>
         {% if user.role_name in ['ucetni', 'osvc'] %}
-        <div class="col-6">
+        <div class="col-12 md:col-6">
             <div class="card h-100">
                 <div class="card-body">
                     {% if user.role_name == 'ucetni' %}
                         <h2 class="card-title h4">Přidat klienta</h2>
                         <form action="/accountant/redeem-key" method="post">
                             {{ csrf_field|raw }}
-                            <input type="text" name="key" class="form-control mb-3" required>
-                            <input type="submit" value="Připojit">
+                            <label for="accountantRedeemKey" class="form-label">Pozvánkový klíč od OSVČ</label>
+                            <input type="text" id="accountantRedeemKey" name="key" class="form-control mb-3" required>
+                            <button type="submit" class="btn-solid btn-sm theme-primary">Připojit</button>
                         </form>
                     {% else %}
                         <h2 class="card-title h4">Pozvat účetního</h2>
                         {% if user.accountant_id %}
-                            <p>Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
+                            <p class="mb-0">Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
                         {% elseif user.accountant_key and user.accountant_key_expires|date('U') > 'now'|date('U') %}
                             <p class="mb-1"><strong>Klíč:</strong> <code>{{ user.accountant_key }}</code></p>
-                            <p class="text-muted small">
+                            <p class="fg-3 small mb-0">
                                 Platnost do: {{ user.accountant_key_expires|date("d. m. Y H:i:s") }}
                             </p>
                         {% else %}
                             <form method="post" action="/profile/generate-accountant-key">
                                 {{ csrf_field|raw }}
-                                <input type="submit" value="Vygenerovat Klíč" />
+                                <button type="submit" class="btn-solid btn-sm theme-primary">Vygenerovat klíč</button>
                             </form>
                         {% endif %}
                     {% endif %}

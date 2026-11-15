@@ -60,6 +60,7 @@ $router->post('/logout', AuthController::class, 'logoutAction');
 // OSVC routes
 $router->get('/dashboard', DashboardController::class, 'dashboardAction');
 $router->get('/profile', UserController::class, 'profileAction');
+$router->post('/profile/update-profession', UserController::class, 'updateProfessionAction');
 $router->post('/profile/generate-accountant-key', UserController::class, 'generateAccountantKeyAction');
 $router->post('/profile/unlink-accountant', UserController::class, 'unlinkAccountantAction');
 $router->get('/clients', ClientController::class, 'clientsAction');

@@ -165,6 +165,27 @@ class UserModel extends BaseModel
     }
 
     /**
+     * Updates the profession of a user.
+     *
+     * @param int         $id
+     * @param string|null $profession
+     * @return bool
+     */
+    public function updateProfession(int $id, ?string $profession): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE " . $this->table . "
+            SET profession = :profession
+            WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            ':profession' => $profession,
+            ':id'         => $id,
+        ]);
+    }
+
+    /**
      * Unlinks the accountant with user with specified id
      *
      * @param int $id

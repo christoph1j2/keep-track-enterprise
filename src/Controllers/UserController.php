@@ -78,4 +78,33 @@ class UserController extends BaseController
         $this->redirect('/profile');
     }
 
+    /**
+     * Updates the profession of the currently logged-in OSVC user.
+     *
+     * @return void
+     */
+    #[NoReturn]
+    public function updateProfessionAction(): void
+    {
+        $this->requireRole('osvc');
+
+        $profession = trim((string) ($_POST['profession'] ?? ''));
+
+        if (mb_strlen($profession) > 255)
+        {
+            $this->flash('danger', 'Profese může mít maximálně 255 znaků.');
+            $this->redirect('/profile');
+        }
+
+        $model = new UserModel($this->db);
+        $ok = $model->updateProfession((int) $_SESSION['user_id'], $profession === '' ? null : $profession);
+
+        $this->flash(
+            $ok ? 'success' : 'danger',
+            $ok ? 'Profese byla aktualizována.' : 'Nepodařilo se aktualizovat profesi.'
+        );
+
+        $this->redirect('/profile');
+    }
+
 }

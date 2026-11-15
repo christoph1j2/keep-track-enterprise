@@ -14,13 +14,13 @@
             <div class="card text-center h-100 shadow-sm">
                 <div class="card-body">
                     <h2 class="card-title h4 text-uppercase">{{ c.label }}</h2>
-                    <p class="display-6 fw-bold mb-0">
+                    <h3 class="display-6 h4  fw-bold mb-0">
                         {% if c.money %}
                             {{ c.value|number_format(2, ',', ' ') }} Kč
                         {% else %}
                             {{ c.value }}
                         {% endif %}
-                    </p>
+                    </h3>
                 </div>
             </div>
         </div>

@@ -4,3 +4,11 @@
     border-bottom: 2px dotted blueviolet;
     padding-left: .75rem;
 }
+
+/* Bootstrap 6 alpha gives closed .dialog display:flex + position:absolute,
+   which inflates scrollHeight below the footer when placed inside <main>. */
+dialog.dialog:not([open]) {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
