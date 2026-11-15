@@ -1,0 +1,23 @@
+<footer class="mt-auto border-top py-4 fg-3 small">
+    <div class="container d-flex flex-column md:flex-row justify-content-between align-items-center gap-3">
+        <div>
+            <strong class="fg-body">KeepTrack <span style="color: blueviolet;">Enterprise</span></strong>
+            &middot; Ernst Christoph LESCHKA (A25B0266P)
+            &middot; Semestrální práce KIV/WEB (ZS 26/27)
+        </div>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="/" class="fg-3 text-decoration-none">Úvod</a>
+            <a href="/features" class="fg-3 text-decoration-none">Funkce</a>
+            <a href="/about" class="fg-3 text-decoration-none">O aplikaci</a>
+            {% if session.user_id != null %}
+                <a href="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}"
+                   class="fg-3 text-decoration-none">
+                    {{ session.role in ['admin', 'superadmin'] ? 'Administrace' : 'Dashboard' }}
+                </a>
+            {% else %}
+                <a href="/login" class="fg-3 text-decoration-none">Přihlášení</a>
+                <a href="/register" class="fg-3 text-decoration-none">Registrace</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>

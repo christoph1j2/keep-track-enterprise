@@ -4,23 +4,134 @@
 
 {% block content %}
 
-    <div class="row">
-        <div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 80vh">
-            <h1>KeepTrack Enterprise</h1>
-            <p class="lead">Mějte své faktury, klienty a výdaje pod kontrolou.</p>
+    {# Hero section #}
+    <section class="text-center py-5">
+        <span class="badge-subtle theme-primary mb-3">Pro OSVČ a jejich účetní</span>
+        <h1 class="display-5 fw-bold mb-3">
+            KeepTrack <span style="color: blueviolet;">Enterprise</span>
+        </h1>
+        <p class="lead fg-3 mx-auto mb-4" style="max-width: 660px;">
+            Přehledná evidence klientů, fakturace s položkami, párování plateb, nahrávání účtenek
+            a bezpečná spolupráce s vaším účetním na jednom místě.
+        </p>
 
-            <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
-                {% if session.user_id != null %}
-                    <a href="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}"
-                       class="btn-solid theme-primary btn-lg">
-                        {{ session.role in ['admin', 'superadmin'] ? 'Přejít do administrace' : 'Přejít na Dashboard' }}
-                    </a>
-                {% else %}
-                    <a href="/register" class="btn-solid theme-primary btn-lg">Registrovat</a>
-                    <a href="/login" class="btn-outline theme-secondary btn-lg">Přihlásit se</a>
-                {% endif %}
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            {% if session.user_id != null %}
+                <a href="{{ session.role in ['admin', 'superadmin'] ? '/admin/overview' : '/dashboard' }}"
+                   class="btn-solid theme-primary btn-lg">
+                    {{ session.role in ['admin', 'superadmin'] ? 'Přejít do administrace' : 'Přejít na Dashboard' }}
+                </a>
+                <a href="/features" class="btn-outline theme-secondary btn-lg">Přehled funkcí</a>
+            {% else %}
+                <a href="/register" class="btn-solid theme-primary btn-lg">Vytvořit účet OSVČ</a>
+                <a href="/login" class="btn-outline theme-secondary btn-lg">Přihlásit se</a>
+            {% endif %}
+        </div>
+    </section>
+
+    {# Core modules #}
+    <section class="py-4">
+        <h2 class="h4 text-center mb-4">Vše podstatné pro správu podnikání</h2>
+        <div class="row g-3">
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fs-2 fg-primary mb-2"><i class="bi bi-people-fill"></i></div>
+                        <h3 class="card-title h5">Klienti</h3>
+                        <p class="card-text fg-3 small mb-0">
+                            Evidence kontaktů, IČO/DIČ a zařazení podle typu klienta (fyzická osoba, firma, OSVČ).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fs-2 fg-success mb-2"><i class="bi bi-file-earmark-text-fill"></i></div>
+                        <h3 class="card-title h5">Faktury a položky</h3>
+                        <p class="card-text fg-3 small mb-0">
+                            Vystavení faktury s dynamickým přidáváním položek, automatickým součtem a sledováním splatnosti.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fs-2 fg-info mb-2"><i class="bi bi-cash-stack"></i></div>
+                        <h3 class="card-title h5">Platby a párování</h3>
+                        <p class="card-text fg-3 small mb-0">
+                            Přiřazení plateb ke konkrétním fakturám (včetně částečných úhrad) a automatické označení zaplacení.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fs-2 fg-warning mb-2"><i class="bi bi-receipt"></i></div>
+                        <h3 class="card-title h5">Výdaje a účtenky</h3>
+                        <p class="card-text fg-3 small mb-0">
+                            Záznam nákladů s bezpečným nahráváním dokladů (PDF, JPG, PNG) a průběžným výpočtem bilance.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    {# Roles / How it works #}
+    <section class="py-4">
+        <div class="row g-3">
+            <div class="col-12 md:col-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between gap-3">
+                        <div>
+                            <h2 class="card-title h4"><i class="bi bi-briefcase me-2"></i>Pro OSVČ</h2>
+                            <p class="fg-3 mb-2">
+                                Mějte okamžitý přehled o příjmech, výdajích, čisté bilanci a neuhrazených pohledávkách.
+                            </p>
+                            <ul class="list-unstyled small fg-3 mb-0">
+                                <li><i class="bi bi-check2 fg-success me-1"></i>KPI přehled a seznam faktur po splatnosti</li>
+                                <li><i class="bi bi-check2 fg-success me-1"></i>Rychlé úpravy bez zbytečného obnovování</li>
+                                <li><i class="bi bi-check2 fg-success me-1"></i>Jednorázový klíč pro bezpečné přizvání účetního</li>
+                            </ul>
+                        </div>
+                        {% if session.user_id == null %}
+                            <div>
+                                <a href="/register" class="btn-outline btn-sm theme-primary">Registrovat jako OSVČ</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between gap-3">
+                        <div>
+                            <h2 class="card-title h4"><i class="bi bi-calculator me-2"></i>Pro účetní</h2>
+                            <p class="fg-3 mb-2">
+                                Spravujte přehledně více klientů z jednoho účtu bez nutnosti sdílet hesla.
+                            </p>
+                            <ul class="list-unstyled small fg-3 mb-0">
+                                <li><i class="bi bi-check2 fg-success me-1"></i>Připojení OSVČ pomocí časově omezeného klíče</li>
+                                <li><i class="bi bi-check2 fg-success me-1"></i>Snadné přepínání mezi jednotlivými klienty</li>
+                                <li><i class="bi bi-check2 fg-success me-1"></i>Read-only přístup k fakturám, platbám a účtenkám</li>
+                            </ul>
+                        </div>
+                        {% if session.user_id == null %}
+                            <div>
+                                <a href="/register?mode=accountant" class="btn-outline btn-sm theme-secondary">Registrovat jako účetní</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}

@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <nav class="navbar md:navbar-expand border-bottom mb-4" data-bs-theme="dark">
         {% if session.role in ['admin', 'superadmin'] %}
@@ -46,7 +46,7 @@
         {% include "Partial/header.twig" with { nav_links: nav_links } %}
     </nav>
 
-    <main class="container">
+    <main class="container flex-grow-1 mb-5">
         <div id="flashContainer" class="mb-2">
             {% if flash %}
                 <div class="alert theme-{{ flash.type ?? 'info' }}" role="alert">
@@ -58,6 +58,8 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    {% include "Partial/footer.twig" %}
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>
     <script>

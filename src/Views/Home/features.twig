@@ -3,60 +3,94 @@
 {% block title %}Funkce | KeepTrack Enterprise{% endblock %}
 
 {% block content %}
-<div class="py-5">
+<div class="py-4">
     <div class="text-center mb-5">
         <h1 class="fw-bold">Přehled funkcí</h1>
-        <p class="lead text-muted">Vše, co potřebujete pro efektivní řízení svých financí a podnikání na jednom místě.</p>
+        <p class="lead fg-3">Vše, co potřebujete pro přehledné řízení financí OSVČ a spolupráci s účetním.</p>
     </div>
 
     <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Fakturace</h4>
-                    <p class="card-text text-muted">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vytvářejte a spravujte faktury během několika vteřin.
+                    <h2 class="card-title h4 mb-3"><i class="bi bi-file-earmark-text me-2"></i>Fakturace</h2>
+                    <p class="card-text fg-3">
+                        Vystavujte faktury s libovolným počtem položek a sledujte jejich splatnost na jednom místě.
                     </p>
-                    <ul class="list-unstyled mt-3">
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
+                    <ul class="list-unstyled mt-3 small fg-3 mb-0">
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Dynamické přidávání a odebírání položek</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Automatický výpočet celkové částky</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Zápis v atomické databázové transakci</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Evidence výdajů</h4>
-                    <p class="card-text text-muted">
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
+                    <h2 class="card-title h4 mb-3"><i class="bi bi-cash-stack me-2"></i>Platby a pohledávky</h2>
+                    <p class="card-text fg-3">
+                        Evidujte příchozí platby a okamžitě je párujte k jedné nebo více fakturám.
                     </p>
-                    <ul class="list-unstyled mt-3">
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
+                    <ul class="list-unstyled mt-3 small fg-3 mb-0">
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Plné i částečné úhrady faktur</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Automatické označení zaplacených faktur</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Přehled zbývajících pohledávek v dashboardu</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Správa klientů</h4>
-                    <p class="card-text text-muted">
-                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum.
+                    <h2 class="card-title h4 mb-3"><i class="bi bi-receipt me-2"></i>Výdaje a doklady</h2>
+                    <p class="card-text fg-3">
+                        Zaznamenávejte pracovní náklady a přikládejte k nim naskenované účtenky nebo faktury.
                     </p>
-                    <ul class="list-unstyled mt-3">
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
-                        <li>✓ Lorem ipsum</li>
+                    <ul class="list-unstyled mt-3 small fg-3 mb-0">
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Upload souborů PDF, JPG a PNG s kontrolou MIME</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Uložení pod unikátním SHA-256 názvem</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Zobrazení dokladů jen oprávněným uživatelům</li>
                     </ul>
                 </div>
             </div>
         </div>
+
+        <div class="col-12 md:col-6 lg:col-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title h4 mb-3"><i class="bi bi-people me-2"></i>Správa klientů</h2>
+                    <p class="card-text fg-3">
+                        Udržujte přehlednou databázi odběratelů napojenou přímo na vystavené faktury.
+                    </p>
+                    <ul class="list-unstyled mt-3 small fg-3 mb-0">
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Evidence kontaktních údajů, IČO a DIČ</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Kategorizace pomocí číselníku typů klientů</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Rychlé úpravy a mazání.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title h4 mb-3"><i class="bi bi-calculator me-2"></i>Rozhraní pro účetního</h2>
+                    <p class="card-text fg-3">
+                        Bezpečné propojení OSVČ a účetního bez sdílení přihlašovacích údajů.
+                    </p>
+                    <ul class="list-unstyled mt-3 small fg-3 mb-0">
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Jednorázový klíč s časovou platností</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Přepínání mezi více přiřazenými OSVČ</li>
+                        <li><i class="bi bi-check2 fg-success me-1"></i>Read-only přehled dat i stažení účtenek</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
 {% endblock %}

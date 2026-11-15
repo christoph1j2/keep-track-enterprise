@@ -14,7 +14,7 @@
         <div class="col-6">
             <div class="card h-100">
                 <div class="card-body">
-                    <h4 class="card-title">Uživatelské Údaje</h4>
+                    <h2 class="card-title h4">Uživatelské Údaje</h2>
                     <table>
                         <tr>
                             <td>Uživatelské jméno:</td>
@@ -68,14 +68,14 @@
             <div class="card h-100">
                 <div class="card-body">
                     {% if user.role_name == 'ucetni' %}
-                        <h4 class="card-title">Přidat klienta</h4>
+                        <h2 class="card-title h4">Přidat klienta</h2>
                         <form action="/accountant/redeem-key" method="post">
                             {{ csrf_field|raw }}
                             <input type="text" name="key" class="form-control mb-3" required>
                             <input type="submit" value="Připojit">
                         </form>
                     {% else %}
-                        <h4 class="card-title">Pozvat účetního</h4>
+                        <h2 class="card-title h4">Pozvat účetního</h2>
                         {% if user.accountant_id %}
                             <p>Již máte připojeného účetního, chcete-li přidat nového, odstraňte předchozího.</p>
                         {% elseif user.accountant_key and user.accountant_key_expires|date('U') > 'now'|date('U') %}

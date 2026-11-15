@@ -3,14 +3,52 @@
 {% block title %}O aplikaci | KeepTrack Enterprise{% endblock %}
 
 {% block content %}
-<div class="py-5">
+<div class="py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="mb-4">O aplikaci KeepTrack Enterprise</h1>
-            <p class="lead text-muted">
-                KeepTrack Enterprise je moderní systém pro správu financí, fakturace a evidence klientů určený pro podnikatele a firmy.
+        <div class="col-12 lg:col-9">
+            <h1 class="mb-3">O aplikaci KeepTrack Enterprise</h1>
+            <p class="lead fg-3">
+                KeepTrack Enterprise je webová aplikace pro správu financí, fakturace, výdajů a klientských vztahů
+                určená pro OSVČ a jejich účetní.
             </p>
             <hr class="my-4">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="card-title h4 mb-3">Semestrální práce KIV/WEB</h2>
+                    <p class="fg-3">
+                        Aplikace vznikla jako semestrální projekt předmětu <strong>KIV/WEB</strong> (Západočeská univerzita v Plzni)
+                        podle vlastní OOP MVC architektury bez použití full-stack frameworků.
+                    </p>
+                    <div class="row g-3 mt-2">
+                        <div class="col-12 md:col-6">
+                            <h3 class="h6 fw-bold">Technologický základ</h3>
+                            <ul class="list-unstyled small fg-3 mb-0">
+                                <li><i class="bi bi-dot"></i><strong>Backend:</strong> PHP 8.2</li>
+                                <li><i class="bi bi-dot"></i><strong>Databáze:</strong> MariaDB přes PDO (prepared statements, transakce)</li>
+                                <li><i class="bi bi-dot"></i><strong>Šablony &amp; UI:</strong> Twig 3, Bootstrap 6 &amp; Bootstrap Icons</li>
+                                <li><i class="bi bi-dot"></i><strong>Prostředí:</strong> Composer, Docker &amp; Docker Compose</li>
+                            </ul>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <h3 class="h6 fw-bold">Bezpečnost a architektura</h3>
+                            <ul class="list-unstyled small fg-3 mb-0">
+                                <li><i class="bi bi-dot"></i><strong>Autentizace:</strong> Bcrypt hashování hesel, sliding session</li>
+                                <li><i class="bi bi-dot"></i><strong>RBAC &amp; SuperAdmin:</strong> Role <code>osvc</code>, <code>ucetni</code>, <code>admin</code>, <code>superadmin</code></li>
+                                <li><i class="bi bi-dot"></i><strong>Ochrana vstupů:</strong> CSRF tokeny na všech POST/AJAX akcích, XSS escaping</li>
+                                <li><i class="bi bi-dot"></i><strong>Soubory:</strong> Upload účtenek mimo veřejný <code>public/</code> s autorizovaným výdejem</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/features" class="btn-solid theme-primary">Prohlédnout funkce</a>
+                {% if session.user_id == null %}
+                    <a href="/register" class="btn-outline theme-secondary">Vytvořit účet</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

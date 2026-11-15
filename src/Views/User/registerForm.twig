@@ -10,7 +10,7 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
 
-                <h3 class="card-title mb-1">Registrace {% if (mode === 'accountant') %}jako účetní{% endif %}</h3>
+                <h1 class="card-title h3 mb-1">Registrace {% if (mode === 'accountant') %}jako účetní{% endif %}</h1>
 
                 <form method="POST" action="/register">
                     {{ csrf_field|raw }}
@@ -20,6 +20,7 @@
                         <label for="username" class="form-label">Uživatelské Jméno</label>
                         <input
                             type="text"
+                            id="username"
                             name="username"
                             value="{{ data.username }}"
                             class="form-control {{ (errors.username) ? 'is-invalid' : '' }}"
@@ -33,6 +34,7 @@
                         <label for="email" class="form-label">E-mail</label>
                         <input
                             type="email"
+                            id="email"
                             name="email"
                             value="{{ data.email }}"
                             class="form-control {{ (errors.email) ? 'is-invalid' : '' }}"
@@ -46,6 +48,7 @@
                         <label for="password" class="form-label">Heslo</label>
                         <input
                             type="password"
+                            id="password"
                             name="password"
                             class="form-control {{ (errors.password) ? 'is-invalid' : '' }}"
                         />
@@ -58,6 +61,7 @@
                         <label for="password_confirm" class="form-label">Potvrdit heslo</label>
                         <input
                             type="password"
+                            id="password_confirm"
                             name="password_confirm"
                             class="form-control {{ (errors.password_confirm) ? 'is-invalid' : '' }}"/>
                         {% if (errors.password_confirm) %}
@@ -70,8 +74,9 @@
                             <label for="accountant_key" class="form-label">Unikátní klíč</label>
                             <input
                                 type="text"
+                                id="accountant_key"
                                 name="accountant_key"
-                                class="form-control {{ (errors.account_key) ? 'is-invalid' : '' }}"/>
+                                class="form-control {{ (errors.accountant_key) ? 'is-invalid' : '' }}"/>
                                 {% if (errors.accountant_key) %}
                                     <div class="invalid-feedback">{{ errors.accountant_key }}</div>
                                 {% endif %}
